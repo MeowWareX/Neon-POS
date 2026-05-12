@@ -42,15 +42,21 @@ interface AppState extends ReturnType<typeof buildDemoState> {
 const demo = buildDemoState();
 
 async function loadRemoteCatalog() {
-  const [sizesRes, typesRes, extrasRes, flavorsRes, activeFlavorsRes, inventoryItemsRes] =
-    await Promise.all([
-      fetch("/api/configuration/sizes"),
-      fetch("/api/configuration/product-types"),
-      fetch("/api/configuration/extras"),
-      fetch("/api/configuration/flavors"),
-      fetch("/api/active-flavors"),
-      fetch("/api/inventory/items"),
-    ]);
+  const [
+    sizesRes,
+    typesRes,
+    extrasRes,
+    flavorsRes,
+    activeFlavorsRes,
+    inventoryItemsRes,
+  ] = await Promise.all([
+    fetch("/api/configuration/sizes"),
+    fetch("/api/configuration/product-types"),
+    fetch("/api/configuration/extras"),
+    fetch("/api/configuration/flavors"),
+    fetch("/api/active-flavors"),
+    fetch("/api/inventory/items"),
+  ]);
 
   return {
     sizes: sizesRes.ok ? await sizesRes.json() : null,
@@ -58,7 +64,9 @@ async function loadRemoteCatalog() {
     extras: extrasRes.ok ? await extrasRes.json() : null,
     flavors: flavorsRes.ok ? await flavorsRes.json() : null,
     activeFlavors: activeFlavorsRes.ok ? await activeFlavorsRes.json() : null,
-    inventoryItems: inventoryItemsRes.ok ? await inventoryItemsRes.json() : null,
+    inventoryItems: inventoryItemsRes.ok
+      ? await inventoryItemsRes.json()
+      : null,
   };
 }
 

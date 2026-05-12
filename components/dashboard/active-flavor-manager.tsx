@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { getBusinessDate } from "@/lib/business";
 import type { ActiveFlavor, Flavor } from "@/types/domain";
@@ -12,7 +18,11 @@ export function ActiveFlavorManager() {
   const [flavors, setFlavors] = useState<Flavor[]>([]);
   const [activeFlavors, setActiveFlavors] = useState<ActiveFlavor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedFlavors, setSelectedFlavors] = useState<{ tank1: string; tank2: string; tank3: string }>({
+  const [selectedFlavors, setSelectedFlavors] = useState<{
+    tank1: string;
+    tank2: string;
+    tank3: string;
+  }>({
     tank1: "",
     tank2: "",
     tank3: "",
@@ -37,14 +47,20 @@ export function ActiveFlavorManager() {
       if (activeFlavorsRes.ok) {
         const data = await activeFlavorsRes.json();
         const active = data.find(
-          (af: ActiveFlavor) => af.businessDate === businessDate
+          (af: ActiveFlavor) => af.businessDate === businessDate,
         );
 
         if (active) {
           setActiveFlavors(data);
-          const tank1 = data.find((af: ActiveFlavor) => af.tankNumber === 1)?.flavorId || "";
-          const tank2 = data.find((af: ActiveFlavor) => af.tankNumber === 2)?.flavorId || "";
-          const tank3 = data.find((af: ActiveFlavor) => af.tankNumber === 3)?.flavorId || "";
+          const tank1 =
+            data.find((af: ActiveFlavor) => af.tankNumber === 1)?.flavorId ||
+            "";
+          const tank2 =
+            data.find((af: ActiveFlavor) => af.tankNumber === 2)?.flavorId ||
+            "";
+          const tank3 =
+            data.find((af: ActiveFlavor) => af.tankNumber === 3)?.flavorId ||
+            "";
           setSelectedFlavors({ tank1, tank2, tank3 });
         }
       }
@@ -65,8 +81,8 @@ export function ActiveFlavorManager() {
       // Delete old active flavors for today
       await Promise.all(
         activeFlavors.map((af) =>
-          fetch(`/api/active-flavors/${af.id}`, { method: "DELETE" })
-        )
+          fetch(`/api/active-flavors/${af.id}`, { method: "DELETE" }),
+        ),
       );
 
       // Create new active flavors
@@ -118,8 +134,8 @@ export function ActiveFlavorManager() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-0">
-      <Card className="border-white/10 bg-card/80 backdrop-blur">
+    <div className="mx-auto w-full max-w-4xl p-0">
+      <Card className="bg-card/80 border-white/10 backdrop-blur">
         <CardHeader>
           <CardTitle>Asignación de tanques</CardTitle>
           <p className="text-muted text-sm">
@@ -127,45 +143,54 @@ export function ActiveFlavorManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-        {([1, 2, 3] as const).map((tank) => (
-          <div key={tank} className="space-y-2">
-            <Label htmlFor={`tank-${tank}`} className="text-base font-semibold text-foreground">
-              {getTankLabel(tank)}
-            </Label>
-            <Select
-              value={selectedFlavors[`tank${tank}` as keyof typeof selectedFlavors]}
-              onValueChange={(value) =>
-                setSelectedFlavors({
-                  ...selectedFlavors,
-                  [`tank${tank}`]: value,
-                })
-              }
-            >
-              <SelectTrigger id={`tank-${tank}`}>
-                <SelectValue placeholder="Selecciona un sabor" />
-              </SelectTrigger>
-              <SelectContent>
-                {flavors.map((flavor) => (
-                  <SelectItem key={flavor.id} value={flavor.id}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: flavor.color }}
-                      />
-                      {flavor.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        ))}
+          {([1, 2, 3] as const).map((tank) => (
+            <div key={tank} className="space-y-2">
+              <Label
+                htmlFor={`tank-${tank}`}
+                className="text-foreground text-base font-semibold"
+              >
+                {getTankLabel(tank)}
+              </Label>
+              <Select
+                value={
+                  selectedFlavors[`tank${tank}` as keyof typeof selectedFlavors]
+                }
+                onValueChange={(value) =>
+                  setSelectedFlavors({
+                    ...selectedFlavors,
+                    [`tank${tank}`]: value,
+                  })
+                }
+              >
+                <SelectTrigger id={`tank-${tank}`}>
+                  <SelectValue placeholder="Selecciona un sabor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {flavors.map((flavor) => (
+                    <SelectItem key={flavor.id} value={flavor.id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: flavor.color }}
+                        />
+                        {flavor.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
 
-        <div className="pt-2">
-          <Button onClick={handleSave} disabled={isLoading} className="w-full">
-            {isLoading ? "Guardando..." : "Guardar Sabores"}
-          </Button>
-        </div>
+          <div className="pt-2">
+            <Button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="w-full"
+            >
+              {isLoading ? "Guardando..." : "Guardar Sabores"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

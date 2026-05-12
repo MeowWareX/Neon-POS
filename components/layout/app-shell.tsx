@@ -32,7 +32,12 @@ const navItems: Array<{
   { href: "/dashboard", label: "Dashboard", icon: BarChart3, adminOnly: true },
   { href: "/inventory", label: "Inventario", icon: Package, adminOnly: true },
   { href: "/flavors", label: "Sabores", icon: Settings2, adminOnly: true },
-  { href: "/configuration", label: "Configuración", icon: Settings2, adminOnly: true },
+  {
+    href: "/configuration",
+    label: "Configuración",
+    icon: Settings2,
+    adminOnly: true,
+  },
   { href: "/cash", label: "Caja", icon: Wallet },
   { href: "/accounting", label: "Finanzas", icon: CreditCard, adminOnly: true },
 ];

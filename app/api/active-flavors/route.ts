@@ -7,20 +7,15 @@ import { activeFlavorSyncSchema } from "@/schemas/flavors";
 export async function GET() {
   try {
     const supabase = getSupabaseAdminClient();
-    
+
     if (!supabase) {
       return NextResponse.json([]);
     }
 
-    const { data, error } = await supabase
-      .from("active_flavors")
-      .select("*");
+    const { data, error } = await supabase.from("active_flavors").select("*");
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     return NextResponse.json((data ?? []).map(mapActiveFlavorRow));
@@ -28,7 +23,10 @@ export async function GET() {
     console.error(error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Error fetching active flavors",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Error fetching active flavors",
       },
       { status: 500 },
     );
@@ -38,7 +36,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const json = await request.json();
-    
+
     // Try schema validation for sync, if it fails just use the raw data
     let input = json;
     try {
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -73,11 +71,11 @@ export async function POST(request: Request) {
 export async function DELETE(request: NextRequest) {
   try {
     const supabase = getSupabaseAdminClient();
-    
+
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -85,10 +83,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
     const { error } = await supabase
@@ -97,10 +92,7 @@ export async function DELETE(request: NextRequest) {
       .eq("id", id);
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     return NextResponse.json({ success: true });

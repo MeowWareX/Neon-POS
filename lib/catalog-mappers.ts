@@ -1,4 +1,11 @@
-import type { ActiveFlavor, Extra, Flavor, InventoryItem, ProductSize, ProductType } from "@/types/domain";
+import type {
+  ActiveFlavor,
+  Extra,
+  Flavor,
+  InventoryItem,
+  ProductSize,
+  ProductType,
+} from "@/types/domain";
 
 function toNumber(value: unknown, fallback = 0) {
   const parsed = typeof value === "number" ? value : Number(value);
@@ -59,7 +66,9 @@ export function mapActiveFlavorRow(row: Record<string, unknown>): ActiveFlavor {
   };
 }
 
-export function mapInventoryItemRow(row: Record<string, unknown>): InventoryItem {
+export function mapInventoryItemRow(
+  row: Record<string, unknown>,
+): InventoryItem {
   return {
     id: row.id,
     name: row.name,

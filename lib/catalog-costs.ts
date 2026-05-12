@@ -29,7 +29,10 @@ function matchInventoryItem(
   return inventoryItems.find((item) => {
     const itemName = normalize(item.name);
     return normalizedCandidates.some(
-      (candidate) => candidate === itemName || itemName.includes(candidate) || candidate.includes(itemName),
+      (candidate) =>
+        candidate === itemName ||
+        itemName.includes(candidate) ||
+        candidate.includes(itemName),
     );
   });
 }

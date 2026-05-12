@@ -177,7 +177,7 @@ export async function updateProductSizeWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.price !== undefined) {
     const { error } = await supabase
       .from("product_sizes")
@@ -185,7 +185,7 @@ export async function updateProductSizeWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.baseCost !== undefined) {
     const { error } = await supabase
       .from("product_sizes")
@@ -248,10 +248,7 @@ export async function deleteProductSizeWithSupabase(
   supabase: SupabaseClient<Database>,
   id: string,
 ) {
-  const { error } = await supabase
-    .from("product_sizes")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("product_sizes").delete().eq("id", id);
 
   if (error) {
     throw new Error(error.message);
@@ -276,7 +273,7 @@ export async function updateProductTypeWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.priceModifier !== undefined) {
     const { error } = await supabase
       .from("product_types")
@@ -284,7 +281,7 @@ export async function updateProductTypeWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.costModifier !== undefined) {
     const { error } = await supabase
       .from("product_types")
@@ -345,10 +342,7 @@ export async function deleteProductTypeWithSupabase(
   supabase: SupabaseClient<Database>,
   id: string,
 ) {
-  const { error } = await supabase
-    .from("product_types")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("product_types").delete().eq("id", id);
 
   if (error) {
     throw new Error(error.message);
@@ -373,7 +367,7 @@ export async function updateExtraWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.price !== undefined) {
     const { error } = await supabase
       .from("extras")
@@ -381,7 +375,7 @@ export async function updateExtraWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.cost !== undefined) {
     const { error } = await supabase
       .from("extras")
@@ -463,7 +457,7 @@ export async function updateFlavorWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.color !== undefined) {
     const { error } = await supabase
       .from("flavors")
@@ -471,7 +465,7 @@ export async function updateFlavorWithSupabase(
       .eq("id", id);
     if (error) throw new Error(error.message);
   }
-  
+
   if (updates.isActive !== undefined) {
     const { error } = await supabase
       .from("flavors")
