@@ -6,6 +6,13 @@ import {
 import type { OrderSyncInput } from "@/schemas/order";
 import type { Database } from "@/types/database";
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function normalizeUuid(value: string) {
+  return UUID_PATTERN.test(value) ? value : crypto.randomUUID();
+}
+
 export async function syncOrderRemote(order: OrderSyncInput) {
   const response = await fetch("/api/orders", {
     method: "POST",
@@ -29,8 +36,39 @@ export async function insertOrderWithSupabase(
   supabase: SupabaseClient<Database>,
   order: OrderSyncInput,
 ) {
+  const normalizedOrderId = normalizeUuid(order.id);
+  const normalizedItemIds = new Map<string, string>();
+
+  const { data: existingById, error: existingByIdError } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("id", normalizedOrderId)
+    .maybeSingle();
+
+  if (existingByIdError) {
+    throw new Error(existingByIdError.message);
+  }
+
+  if (existingById) {
+    return;
+  }
+
+  const { data: existingByNumber, error: existingByNumberError } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("order_number", order.orderNumber)
+    .maybeSingle();
+
+  if (existingByNumberError) {
+    throw new Error(existingByNumberError.message);
+  }
+
+  if (existingByNumber) {
+    return;
+  }
+
   const orderPayload = {
-    id: order.id,
+    id: normalizedOrderId,
     order_number: order.orderNumber,
     payment_method: order.paymentMethod,
     subtotal: order.subtotal,
@@ -48,17 +86,22 @@ export async function insertOrderWithSupabase(
     throw new Error(orderError.message);
   }
 
-  const items = order.items.map((item) => ({
-    id: item.id,
-    order_id: order.id,
-    product_size_id: item.sizeId,
-    product_type_id: item.typeId,
-    flavor_id: item.flavorId,
-    quantity: item.quantity,
-    unit_price: item.unitPrice,
-    unit_cost: item.unitCost,
-    line_total: item.lineTotal,
-  }));
+  const items = order.items.map((item) => {
+    const normalizedItemId = normalizeUuid(item.id);
+    normalizedItemIds.set(item.id, normalizedItemId);
+
+    return {
+      id: normalizedItemId,
+      order_id: normalizedOrderId,
+      product_size_id: item.sizeId,
+      product_type_id: item.typeId,
+      flavor_id: item.flavorId,
+      quantity: item.quantity,
+      unit_price: item.unitPrice,
+      unit_cost: item.unitCost,
+      line_total: item.lineTotal,
+    };
+  });
 
   const { error: itemError } = await supabase.from("order_items").insert(items);
 
@@ -68,7 +111,7 @@ export async function insertOrderWithSupabase(
 
   const orderExtras = order.items.flatMap((item) =>
     item.extraIds.map((extraId) => ({
-      order_item_id: item.id,
+      order_item_id: normalizedItemIds.get(item.id) ?? item.id,
       extra_id: extraId,
     })),
   );

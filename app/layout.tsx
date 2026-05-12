@@ -54,7 +54,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(displayFont.variable, bodyFont.variable, "dark")}
     >
-      <body className="bg-background text-foreground min-h-screen antialiased">
+      <body
+        suppressHydrationWarning
+        className="bg-background text-foreground min-h-screen antialiased"
+      >
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
