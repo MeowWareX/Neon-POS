@@ -26,6 +26,8 @@ export interface ProductSize {
   ounces: number;
   price: number;
   baseCost: number;
+  inventoryItemId?: string | null;
+  usageQuantity?: number;
 }
 
 export interface ProductType {
@@ -34,6 +36,8 @@ export interface ProductType {
   label: string;
   priceModifier: number;
   costModifier: number;
+  inventoryItemId?: string | null;
+  usageQuantity?: number;
 }
 
 export interface Flavor {
@@ -56,6 +60,7 @@ export interface Extra {
   price: number;
   cost: number;
   inventoryItemId?: string | null;
+  usageQuantity?: number;
 }
 
 export interface InventoryItem {

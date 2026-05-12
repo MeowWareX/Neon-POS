@@ -251,7 +251,7 @@ export function PosTerminal() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+            <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
               <p className="text-muted text-xs tracking-[0.18em] uppercase">
                 Producto listo
               </p>
@@ -309,7 +309,7 @@ export function PosTerminal() {
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4"
+                      className="rounded-3xl border border-white/10 bg-white/4 p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

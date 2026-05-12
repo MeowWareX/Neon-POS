@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SectionHeader } from "@/components/common/section-header";
-import { ActiveFlavorManager } from "@/components/dashboard/active-flavor-manager";
+import { ConfigurationManager } from "@/components/dashboard/configuration-manager";
 import { useAuthStore } from "@/stores/auth-store";
 
-export default function FlavorsPage() {
+export default function ConfigurationPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
@@ -39,11 +39,11 @@ export default function FlavorsPage() {
     <div className="space-y-6">
       <SectionHeader
         eyebrow="Admin mode"
-        title="Sabores Activos"
-        description="Asigna sabores activos a los tres tanques del día y controla la rotación desde datos persistidos."
-        badge="3 tanks"
+        title="Configuración"
+        description="Gestiona tamaños, tipos, extras y sabores desde una sola vista conectada a la base de datos."
+        badge="Catalog sync"
       />
-      <ActiveFlavorManager />
+      <ConfigurationManager />
     </div>
   );
 }

@@ -27,6 +27,8 @@ create table if not exists public.product_sizes (
   ounces integer not null,
   base_price numeric(12,2) not null,
   base_cost numeric(12,2) not null,
+  inventory_item_id uuid,
+  usage_quantity numeric(12,2) not null default 1,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -38,6 +40,8 @@ create table if not exists public.product_types (
   label text not null,
   price_modifier numeric(12,2) not null default 0,
   cost_modifier numeric(12,2) not null default 0,
+  inventory_item_id uuid,
+  usage_quantity numeric(12,2) not null default 1,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -69,6 +73,7 @@ create table if not exists public.extras (
   price numeric(12,2) not null,
   cost numeric(12,2) not null default 0,
   inventory_item_id uuid,
+  usage_quantity numeric(12,2) not null default 1,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -181,9 +186,20 @@ create table if not exists public.loan_payments (
   deleted_at timestamptz
 );
 
-alter table public.extras
-  add constraint if not exists extras_inventory_item_fk
-  foreign key (inventory_item_id) references public.inventory_items(id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'extras_inventory_item_fk'
+      and conrelid = 'public.extras'::regclass
+  ) then
+    alter table public.extras
+      add constraint extras_inventory_item_fk
+      foreign key (inventory_item_id) references public.inventory_items(id);
+  end if;
+end
+$$;
 
 create index if not exists idx_orders_created_at on public.orders(created_at desc);
 create index if not exists idx_orders_payment_method on public.orders(payment_method);

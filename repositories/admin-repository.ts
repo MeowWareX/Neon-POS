@@ -158,6 +158,365 @@ export async function insertLoanPaymentWithSupabase(
   }
 }
 
+// Configuration management functions
+export async function updateProductSizeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+  updates: {
+    label?: string;
+    price?: number;
+    baseCost?: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  if (updates.label !== undefined) {
+    const { error } = await supabase
+      .from("product_sizes")
+      .update({ label: updates.label })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.price !== undefined) {
+    const { error } = await supabase
+      .from("product_sizes")
+      .update({ base_price: updates.price })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.baseCost !== undefined) {
+    const { error } = await supabase
+      .from("product_sizes")
+      .update({ base_cost: updates.baseCost })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.inventoryItemId !== undefined) {
+    const { error } = await supabase
+      .from("product_sizes")
+      .update({ inventory_item_id: updates.inventoryItemId })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.usageQuantity !== undefined) {
+    const { error } = await supabase
+      .from("product_sizes")
+      .update({ usage_quantity: updates.usageQuantity })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function createProductSizeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  size: {
+    code: string;
+    label: string;
+    ounces: number;
+    price: number;
+    baseCost: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  const { data, error } = await supabase
+    .from("product_sizes")
+    .insert({
+      code: size.code,
+      label: size.label,
+      ounces: size.ounces,
+      base_price: size.price,
+      base_cost: size.baseCost,
+      inventory_item_id: size.inventoryItemId ?? null,
+      usage_quantity: size.usageQuantity ?? 1,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function deleteProductSizeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+) {
+  const { error } = await supabase
+    .from("product_sizes")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateProductTypeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+  updates: {
+    label?: string;
+    priceModifier?: number;
+    costModifier?: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  if (updates.label !== undefined) {
+    const { error } = await supabase
+      .from("product_types")
+      .update({ label: updates.label })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.priceModifier !== undefined) {
+    const { error } = await supabase
+      .from("product_types")
+      .update({ price_modifier: updates.priceModifier })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.costModifier !== undefined) {
+    const { error } = await supabase
+      .from("product_types")
+      .update({ cost_modifier: updates.costModifier })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.inventoryItemId !== undefined) {
+    const { error } = await supabase
+      .from("product_types")
+      .update({ inventory_item_id: updates.inventoryItemId })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.usageQuantity !== undefined) {
+    const { error } = await supabase
+      .from("product_types")
+      .update({ usage_quantity: updates.usageQuantity })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function createProductTypeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  type: {
+    code: string;
+    label: string;
+    priceModifier: number;
+    costModifier: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  const { data, error } = await supabase
+    .from("product_types")
+    .insert({
+      code: type.code,
+      label: type.label,
+      price_modifier: type.priceModifier,
+      cost_modifier: type.costModifier,
+      inventory_item_id: type.inventoryItemId ?? null,
+      usage_quantity: type.usageQuantity ?? 1,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function deleteProductTypeWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+) {
+  const { error } = await supabase
+    .from("product_types")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateExtraWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+  updates: {
+    name?: string;
+    price?: number;
+    cost?: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  if (updates.name !== undefined) {
+    const { error } = await supabase
+      .from("extras")
+      .update({ name: updates.name })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.price !== undefined) {
+    const { error } = await supabase
+      .from("extras")
+      .update({ price: updates.price })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.cost !== undefined) {
+    const { error } = await supabase
+      .from("extras")
+      .update({ cost: updates.cost })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.inventoryItemId !== undefined) {
+    const { error } = await supabase
+      .from("extras")
+      .update({ inventory_item_id: updates.inventoryItemId })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (updates.usageQuantity !== undefined) {
+    const { error } = await supabase
+      .from("extras")
+      .update({ usage_quantity: updates.usageQuantity })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function createExtraWithSupabase(
+  supabase: SupabaseClient<Database>,
+  extra: {
+    name: string;
+    price: number;
+    cost: number;
+    inventoryItemId?: string | null;
+    usageQuantity?: number;
+  },
+) {
+  const { data, error } = await supabase
+    .from("extras")
+    .insert({
+      name: extra.name,
+      price: extra.price,
+      cost: extra.cost,
+      inventory_item_id: extra.inventoryItemId ?? null,
+      usage_quantity: extra.usageQuantity ?? 1,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function deleteExtraWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+) {
+  const { error } = await supabase.from("extras").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateFlavorWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+  updates: {
+    name?: string;
+    color?: string;
+    isActive?: boolean;
+  },
+) {
+  if (updates.name !== undefined) {
+    const { error } = await supabase
+      .from("flavors")
+      .update({ name: updates.name })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.color !== undefined) {
+    const { error } = await supabase
+      .from("flavors")
+      .update({ color: updates.color })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  
+  if (updates.isActive !== undefined) {
+    const { error } = await supabase
+      .from("flavors")
+      .update({ is_active: updates.isActive })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function createFlavorWithSupabase(
+  supabase: SupabaseClient<Database>,
+  flavor: {
+    name: string;
+    color: string;
+    isActive: boolean;
+  },
+) {
+  const { data, error } = await supabase
+    .from("flavors")
+    .insert({
+      name: flavor.name,
+      color: flavor.color,
+      is_active: flavor.isActive,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function deleteFlavorWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+) {
+  const { error } = await supabase.from("flavors").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 export async function syncActiveFlavorWithSupabase(
   supabase: SupabaseClient<Database>,
   input: Pick<ActiveFlavor, "flavorId" | "businessDate"> & {

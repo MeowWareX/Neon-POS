@@ -32,6 +32,7 @@ const navItems: Array<{
   { href: "/dashboard", label: "Dashboard", icon: BarChart3, adminOnly: true },
   { href: "/inventory", label: "Inventario", icon: Package, adminOnly: true },
   { href: "/flavors", label: "Sabores", icon: Settings2, adminOnly: true },
+  { href: "/configuration", label: "Configuración", icon: Settings2, adminOnly: true },
   { href: "/cash", label: "Caja", icon: Wallet },
   { href: "/accounting", label: "Finanzas", icon: CreditCard, adminOnly: true },
 ];
@@ -49,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen md:grid-cols-[280px_1fr]">
       <aside className="hidden border-r border-white/10 bg-black/18 p-5 md:flex md:flex-col">
-        <div className="glass-panel rounded-[2rem] border border-white/10 p-5">
+        <div className="glass-panel rounded-4xl border border-white/10 p-5">
           <p className="font-display text-primary text-2xl tracking-[0.3em]">
             NEON
           </p>

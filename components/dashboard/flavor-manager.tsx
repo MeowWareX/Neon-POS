@@ -83,7 +83,7 @@ export function FlavorManager() {
           {[1, 2, 3].map((tank) => (
             <div
               key={tank}
-              className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4"
+              className="rounded-3xl border border-white/10 bg-white/4 p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -136,7 +136,7 @@ export function FlavorManager() {
             return (
               <div
                 key={flavor.id}
-                className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4"
+                className="rounded-3xl border border-white/10 bg-white/4 p-4"
               >
                 <div className="flex items-center gap-3">
                   <div

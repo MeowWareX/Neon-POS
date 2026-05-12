@@ -24,7 +24,7 @@ type LoanPaymentInput = Omit<LoanPayment, "id" | "createdAt">;
 interface AppState extends ReturnType<typeof buildDemoState> {
   initialized: boolean;
   businessDate: string;
-  initialize: () => void;
+  initialize: () => Promise<void>;
   addOrder: (order: Order) => void;
   markOrdersSynced: (orderIds: string[]) => void;
   setFlavorTank: (
@@ -41,18 +41,64 @@ interface AppState extends ReturnType<typeof buildDemoState> {
 
 const demo = buildDemoState();
 
+async function loadRemoteCatalog() {
+  const [sizesRes, typesRes, extrasRes, flavorsRes, activeFlavorsRes, inventoryItemsRes] =
+    await Promise.all([
+      fetch("/api/configuration/sizes"),
+      fetch("/api/configuration/product-types"),
+      fetch("/api/configuration/extras"),
+      fetch("/api/configuration/flavors"),
+      fetch("/api/active-flavors"),
+      fetch("/api/inventory/items"),
+    ]);
+
+  return {
+    sizes: sizesRes.ok ? await sizesRes.json() : null,
+    productTypes: typesRes.ok ? await typesRes.json() : null,
+    extras: extrasRes.ok ? await extrasRes.json() : null,
+    flavors: flavorsRes.ok ? await flavorsRes.json() : null,
+    activeFlavors: activeFlavorsRes.ok ? await activeFlavorsRes.json() : null,
+    inventoryItems: inventoryItemsRes.ok ? await inventoryItemsRes.json() : null,
+  };
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       ...demo,
       initialized: false,
       businessDate: getBusinessDate(),
-      initialize: () => {
+      initialize: async () => {
         if (get().initialized) {
           return;
         }
 
         set({ initialized: true });
+
+        try {
+          if (typeof window === "undefined" || !window.navigator.onLine) {
+            return;
+          }
+
+          const catalog = await loadRemoteCatalog();
+
+          set((state) => ({
+            sizes: catalog.sizes?.length ? catalog.sizes : state.sizes,
+            productTypes: catalog.productTypes?.length
+              ? catalog.productTypes
+              : state.productTypes,
+            extras: catalog.extras?.length ? catalog.extras : state.extras,
+            flavors: catalog.flavors?.length ? catalog.flavors : state.flavors,
+            activeFlavors: catalog.activeFlavors?.length
+              ? catalog.activeFlavors
+              : state.activeFlavors,
+            inventoryItems: catalog.inventoryItems?.length
+              ? catalog.inventoryItems
+              : state.inventoryItems,
+          }));
+        } catch (error) {
+          console.error("Failed to hydrate remote catalog", error);
+        }
       },
       addOrder: (order) =>
         set((state) => {
@@ -298,7 +344,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 2,
+      version: 3,
       migrate: () => ({
         ...buildDemoState(),
         initialized: false,
