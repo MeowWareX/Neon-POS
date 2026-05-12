@@ -35,9 +35,7 @@ export async function loginUser(
         data.user.user_metadata.full_name ??
         data.user.email?.split("@")[0] ??
         "Usuario",
-      role:
-        profile?.role ??
-        (email.includes("admin") ? "admin" : "operator"),
+      role: profile?.role ?? (email.includes("admin") ? "admin" : "operator"),
     };
   }
 
