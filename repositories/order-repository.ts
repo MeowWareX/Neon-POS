@@ -53,11 +53,12 @@ export async function insertOrderWithSupabase(
     return;
   }
 
-  const { data: existingByNumber, error: existingByNumberError } = await supabase
-    .from("orders")
-    .select("id")
-    .eq("order_number", order.orderNumber)
-    .maybeSingle();
+  const { data: existingByNumber, error: existingByNumberError } =
+    await supabase
+      .from("orders")
+      .select("id")
+      .eq("order_number", order.orderNumber)
+      .maybeSingle();
 
   if (existingByNumberError) {
     throw new Error(existingByNumberError.message);
