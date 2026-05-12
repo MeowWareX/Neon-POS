@@ -3,7 +3,10 @@ import type {
   InventoryConsumptionRule,
   OrderItem,
 } from "@/types/domain";
-import { EXTRA_TO_INVENTORY_ITEM_ID, SIZE_TO_INVENTORY_ITEM_ID } from "@/lib/catalog-ids";
+import {
+  EXTRA_TO_INVENTORY_ITEM_ID,
+  SIZE_TO_INVENTORY_ITEM_ID,
+} from "@/lib/catalog-ids";
 
 export interface InventoryConsumptionDelta {
   inventoryItemId: string;
@@ -16,10 +19,7 @@ export interface InventoryConsumptionCatalog {
   rules: InventoryConsumptionRule[];
 }
 
-function matchesRule(
-  rule: InventoryConsumptionRule,
-  item: OrderItem,
-): boolean {
+function matchesRule(rule: InventoryConsumptionRule, item: OrderItem): boolean {
   if (rule.productTypeId && rule.productTypeId !== item.typeId) {
     return false;
   }
@@ -43,7 +43,9 @@ export function calculateInventoryConsumptionDeltas(
   const matchingRules = activeRules.filter((rule) => matchesRule(rule, item));
 
   if (matchingRules.length > 0) {
-    const selectedFlavor = catalog.flavors.find((flavor) => flavor.id === item.flavorId);
+    const selectedFlavor = catalog.flavors.find(
+      (flavor) => flavor.id === item.flavorId,
+    );
 
     return matchingRules.flatMap((rule) => {
       const inventoryItemId = rule.consumesSelectedFlavor

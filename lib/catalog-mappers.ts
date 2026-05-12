@@ -14,7 +14,11 @@ function toNumber(value: unknown, fallback = 0) {
 }
 
 function toString(value: unknown, fallback = "") {
-  return typeof value === "string" ? value : value == null ? fallback : String(value);
+  return typeof value === "string"
+    ? value
+    : value == null
+      ? fallback
+      : String(value);
 }
 
 function toNullableString(value: unknown) {

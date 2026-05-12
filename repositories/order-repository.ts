@@ -125,14 +125,16 @@ export async function insertOrderWithSupabase(
     }
   }
 
-  const [{ data: rulesData, error: rulesError }, { data: flavorsData, error: flavorsError }] =
-    await Promise.all([
-      supabase
-        .from("inventory_consumption_rules")
-        .select()
-        .eq("is_active", true),
-      supabase.from("flavors").select("id,inventory_item_id").is("deleted_at", null),
-    ]);
+  const [
+    { data: rulesData, error: rulesError },
+    { data: flavorsData, error: flavorsError },
+  ] = await Promise.all([
+    supabase.from("inventory_consumption_rules").select().eq("is_active", true),
+    supabase
+      .from("flavors")
+      .select("id,inventory_item_id")
+      .is("deleted_at", null),
+  ]);
 
   if (rulesError) {
     throw new Error(rulesError.message);
