@@ -25,6 +25,7 @@ interface AppState extends ReturnType<typeof buildDemoState> {
   initialized: boolean;
   businessDate: string;
   initialize: () => Promise<void>;
+  refreshCatalog: () => Promise<void>;
   addOrder: (order: Order) => void;
   markOrdersSynced: (orderIds: string[]) => void;
   setFlavorTank: (
@@ -40,6 +41,26 @@ interface AppState extends ReturnType<typeof buildDemoState> {
 }
 
 const demo = buildDemoState();
+
+function applyRemoteCatalog(
+  state: ReturnType<typeof buildDemoState>,
+  catalog: Awaited<ReturnType<typeof loadRemoteCatalog>>,
+) {
+  return {
+    sizes: catalog.sizes?.length ? catalog.sizes : state.sizes,
+    productTypes: catalog.productTypes?.length
+      ? catalog.productTypes
+      : state.productTypes,
+    extras: catalog.extras?.length ? catalog.extras : state.extras,
+    flavors: catalog.flavors?.length ? catalog.flavors : state.flavors,
+    activeFlavors: catalog.activeFlavors?.length
+      ? catalog.activeFlavors
+      : state.activeFlavors,
+    inventoryItems: catalog.inventoryItems?.length
+      ? catalog.inventoryItems
+      : state.inventoryItems,
+  };
+}
 
 async function loadRemoteCatalog() {
   const [
@@ -76,6 +97,18 @@ export const useAppStore = create<AppState>()(
       ...demo,
       initialized: false,
       businessDate: getBusinessDate(),
+      refreshCatalog: async () => {
+        if (typeof window === "undefined" || !window.navigator.onLine) {
+          return;
+        }
+
+        try {
+          const catalog = await loadRemoteCatalog();
+          set((state) => applyRemoteCatalog(state, catalog));
+        } catch (error) {
+          console.error("Failed to refresh remote catalog", error);
+        }
+      },
       initialize: async () => {
         if (get().initialized) {
           return;
@@ -90,20 +123,7 @@ export const useAppStore = create<AppState>()(
 
           const catalog = await loadRemoteCatalog();
 
-          set((state) => ({
-            sizes: catalog.sizes?.length ? catalog.sizes : state.sizes,
-            productTypes: catalog.productTypes?.length
-              ? catalog.productTypes
-              : state.productTypes,
-            extras: catalog.extras?.length ? catalog.extras : state.extras,
-            flavors: catalog.flavors?.length ? catalog.flavors : state.flavors,
-            activeFlavors: catalog.activeFlavors?.length
-              ? catalog.activeFlavors
-              : state.activeFlavors,
-            inventoryItems: catalog.inventoryItems?.length
-              ? catalog.inventoryItems
-              : state.inventoryItems,
-          }));
+          set((state) => applyRemoteCatalog(state, catalog));
         } catch (error) {
           console.error("Failed to hydrate remote catalog", error);
         }

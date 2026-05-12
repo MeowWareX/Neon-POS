@@ -8,6 +8,7 @@ import {
   CreditCard,
   CupSoda,
   LogOut,
+  Menu,
   Package,
   ReceiptText,
   Settings2,
@@ -17,9 +18,17 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 import { useAuthStore } from "@/stores/auth-store";
+import { useState } from "react";
 
 const navItems: Array<{
   href: Route;
@@ -47,6 +56,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const isOnline = useNetworkStatus();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const visibleItems = navItems.filter((item) =>
     item.adminOnly ? user?.role === "admin" : true,
@@ -121,6 +131,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                className="md:hidden"
+                size="icon"
+                variant="ghost"
+                onClick={() => setMobileMenuOpen(true)}
+                aria-label="Abrir menú"
+              >
+                <Menu className="size-5" />
+              </Button>
               <Badge variant={isOnline ? "success" : "warning"}>
                 {isOnline ? (
                   <>
@@ -138,34 +157,61 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-5 pb-24 md:px-8 md:pb-8">
+        <main className="flex-1 px-4 py-5 pb-6 md:px-8 md:pb-8">
           {children}
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/8 bg-[#090014]/92 p-3 backdrop-blur-xl md:hidden">
-          <div className="grid grid-cols-4 gap-2">
-            {visibleItems.slice(0, 4).map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href;
+        <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <DialogContent className="max-w-sm md:hidden">
+            <DialogHeader>
+              <DialogTitle>Menu</DialogTitle>
+              <DialogDescription>
+                Accesos rapidos para operacion en punto de venta.
+              </DialogDescription>
+            </DialogHeader>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex min-h-16 flex-col items-center justify-center rounded-[1.3rem] border text-xs font-semibold transition-all",
-                    active
-                      ? "border-primary/30 bg-primary/12 text-white"
-                      : "text-muted border-white/8 bg-white/4",
-                  )}
-                >
-                  <Icon className="mb-1 size-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
+            <div className="mt-4 grid gap-2">
+              {visibleItems.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.href;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-[1.1rem] border px-4 py-3 text-sm font-semibold transition-all",
+                      active
+                        ? "border-primary/30 bg-primary/12 text-white"
+                        : "text-muted border-white/10 bg-white/5",
+                    )}
+                  >
+                    <Icon className="size-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 rounded-[1.2rem] border border-white/10 bg-white/4 p-3">
+              <p className="text-sm font-semibold">{user?.name}</p>
+              <p className="text-muted mt-1 text-xs">{user?.email}</p>
+              <Button
+                className="mt-3 w-full"
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+              >
+                <LogOut className="size-4" />
+                Cerrar sesion
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

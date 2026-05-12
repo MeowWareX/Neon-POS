@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { getBusinessDate } from "@/lib/business";
+import { CATALOG_UPDATE_KEY } from "@/lib/constants";
 import type { ActiveFlavor, Flavor } from "@/types/domain";
 
 export function ActiveFlavorManager() {
@@ -117,6 +118,8 @@ export function ActiveFlavorManager() {
       ]);
 
       fetchData();
+      localStorage.setItem(CATALOG_UPDATE_KEY, Date.now().toString());
+      window.dispatchEvent(new Event("catalog-updated"));
     } catch (error) {
       console.error("Error saving flavors:", error);
     } finally {

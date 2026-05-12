@@ -15,7 +15,7 @@ export const orderItemSchema = z.object({
 export const orderSyncSchema = z.object({
   id: z.string(),
   orderNumber: z.string(),
-  paymentMethod: z.enum(["cash", "nequi", "daviplata", "transfer"]),
+  paymentMethod: z.enum(["cash", "nequi"]),
   subtotal: z.number().min(0),
   total: z.number().min(0),
   estimatedCost: z.number().min(0),

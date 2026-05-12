@@ -17,6 +17,12 @@ export function createOrderNumber(sequence: number) {
   return `N-${String(sequence + 1).padStart(4, "0")}`;
 }
 
+const CREMOSO_PRICE_BY_SIZE_CODE: Record<string, number> = {
+  "8oz": 10000,
+  "12oz": 14000,
+  "16oz": 17000,
+};
+
 export function calculateOrderItem({
   draft,
   sizes,
@@ -42,10 +48,13 @@ export function calculateOrderItem({
     return null;
   }
 
+  const baseUnitPrice =
+    productType.code === "cremoso"
+      ? (CREMOSO_PRICE_BY_SIZE_CODE[size.code] ??
+        size.price + productType.priceModifier)
+      : size.price + productType.priceModifier;
   const unitPrice =
-    size.price +
-    productType.priceModifier +
-    selectedExtras.reduce((sum, item) => sum + item.price, 0);
+    baseUnitPrice + selectedExtras.reduce((sum, item) => sum + item.price, 0);
   const unitCost =
     size.baseCost +
     productType.costModifier +

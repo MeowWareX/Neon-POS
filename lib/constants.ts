@@ -1,13 +1,12 @@
 export const APP_NAME = "NEON OS";
 export const STORAGE_KEY = "neon-os-store";
 export const AUTH_KEY = "neon-os-auth";
+export const CATALOG_UPDATE_KEY = "neon-os-catalog-updated";
 export const DEMO_PASSWORD = "123456";
 
 export const PAYMENT_METHODS = [
   "cash",
   "nequi",
-  "daviplata",
-  "transfer",
 ] as const;
 
 export const PRODUCT_TYPES = [

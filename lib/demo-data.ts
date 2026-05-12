@@ -371,7 +371,7 @@ export function buildDemoState(): DemoState {
     {
       id: "88888888-3333-3333-3333-333333333333",
       orderNumber: "N-0003",
-      paymentMethod: "transfer",
+      paymentMethod: "cash",
       subtotal: 20500,
       total: 20500,
       estimatedCost: 6650,
