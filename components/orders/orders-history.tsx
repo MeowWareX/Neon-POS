@@ -9,7 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { currency, formatDateTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
-import type { Extra, Flavor, OrderItem, ProductSize, ProductType } from "@/types/domain";
+import type {
+  Extra,
+  Flavor,
+  OrderItem,
+  ProductSize,
+  ProductType,
+} from "@/types/domain";
 
 const paymentLabel: Record<string, string> = {
   cash: "Efectivo",
@@ -117,7 +123,8 @@ export function OrdersHistory() {
                     <div className="text-muted mt-2 flex items-center gap-2 text-xs">
                       <Badge variant="muted">{order.items.length} prod.</Badge>
                       <Badge variant="muted">
-                        {paymentLabel[order.paymentMethod] ?? order.paymentMethod}
+                        {paymentLabel[order.paymentMethod] ??
+                          order.paymentMethod}
                       </Badge>
                     </div>
                   </div>
@@ -133,9 +140,12 @@ export function OrdersHistory() {
                   <summary className="cursor-pointer list-none">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold">Ver detalle de productos</p>
+                        <p className="text-sm font-semibold">
+                          Ver detalle de productos
+                        </p>
                         <p className="text-muted text-xs">
-                          {order.items.length} línea(s) con tamaños, sabores y extras
+                          {order.items.length} línea(s) con tamaños, sabores y
+                          extras
                         </p>
                       </div>
                       <Badge variant="muted">Detalle</Badge>
@@ -159,7 +169,8 @@ export function OrdersHistory() {
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-sm font-semibold">
-                                {item.quantity}x {summary.sizeLabel} {summary.typeLabel}
+                                {item.quantity}x {summary.sizeLabel}{" "}
+                                {summary.typeLabel}
                               </p>
                               <p className="text-muted text-xs">
                                 {summary.flavorLabel}
