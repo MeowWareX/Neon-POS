@@ -2,9 +2,9 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { SIZE_TO_INVENTORY_ITEM_ID } from "@/lib/catalog-ids";
 import { buildDemoState } from "@/lib/demo-data";
 import { getBusinessDate } from "@/lib/business";
+import { calculateInventoryConsumptionDeltas } from "@/lib/inventory-consumption";
 import { STORAGE_KEY } from "@/lib/constants";
 import type {
   ActiveFlavor,
@@ -59,6 +59,9 @@ function applyRemoteCatalog(
     inventoryItems: catalog.inventoryItems?.length
       ? catalog.inventoryItems
       : state.inventoryItems,
+    inventoryConsumptionRules: catalog.inventoryConsumptionRules?.length
+      ? catalog.inventoryConsumptionRules
+      : state.inventoryConsumptionRules,
   };
 }
 
@@ -70,6 +73,7 @@ async function loadRemoteCatalog() {
     flavorsRes,
     activeFlavorsRes,
     inventoryItemsRes,
+    inventoryRulesRes,
   ] = await Promise.all([
     fetch("/api/configuration/sizes"),
     fetch("/api/configuration/product-types"),
@@ -77,6 +81,7 @@ async function loadRemoteCatalog() {
     fetch("/api/configuration/flavors"),
     fetch("/api/active-flavors"),
     fetch("/api/inventory/items"),
+    fetch("/api/inventory/consumption-rules"),
   ]);
 
   return {
@@ -87,6 +92,9 @@ async function loadRemoteCatalog() {
     activeFlavors: activeFlavorsRes.ok ? await activeFlavorsRes.json() : null,
     inventoryItems: inventoryItemsRes.ok
       ? await inventoryItemsRes.json()
+      : null,
+    inventoryConsumptionRules: inventoryRulesRes.ok
+      ? await inventoryRulesRes.json()
       : null,
   };
 }
@@ -157,24 +165,17 @@ export const useAppStore = create<AppState>()(
           };
 
           order.items.forEach((item) => {
-            const cupInventoryId = SIZE_TO_INVENTORY_ITEM_ID[item.sizeId];
-            if (cupInventoryId) {
-              decrementInventory(
-                cupInventoryId,
-                item.quantity,
-                `Pedido ${order.orderNumber}`,
-              );
-            }
+            const deltas = calculateInventoryConsumptionDeltas(item, {
+              flavors: state.flavors,
+              rules: state.inventoryConsumptionRules,
+            });
 
-            item.extraIds.forEach((extraId) => {
-              const extra = state.extras.find((entry) => entry.id === extraId);
-              if (extra?.inventoryItemId) {
-                decrementInventory(
-                  extra.inventoryItemId,
-                  item.quantity,
-                  `Pedido ${order.orderNumber}`,
-                );
-              }
+            deltas.forEach((delta) => {
+              decrementInventory(
+                delta.inventoryItemId,
+                Math.abs(delta.quantity),
+                delta.note || `Pedido ${order.orderNumber}`,
+              );
             });
           });
 
@@ -388,6 +389,7 @@ export const useAppStore = create<AppState>()(
         activeFlavors: state.activeFlavors,
         extras: state.extras,
         inventoryItems: state.inventoryItems,
+        inventoryConsumptionRules: state.inventoryConsumptionRules,
         inventoryMovements: state.inventoryMovements,
         purchases: state.purchases,
         orders: state.orders,

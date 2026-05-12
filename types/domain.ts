@@ -45,6 +45,19 @@ export interface Flavor {
   name: string;
   color: string;
   isActive: boolean;
+  inventoryItemId?: string | null;
+}
+
+export interface InventoryConsumptionRule {
+  id: string;
+  productTypeId?: string | null;
+  productSizeId?: string | null;
+  extraId?: string | null;
+  consumesSelectedFlavor: boolean;
+  inventoryItemId?: string | null;
+  quantity: number;
+  note?: string | null;
+  isActive: boolean;
 }
 
 export interface ActiveFlavor {

@@ -52,6 +52,7 @@ create table if not exists public.flavors (
   name text not null unique,
   color text,
   is_active boolean not null default true,
+  inventory_item_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -77,6 +78,21 @@ create table if not exists public.extras (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
+);
+
+create table if not exists public.inventory_consumption_rules (
+  id uuid primary key default gen_random_uuid(),
+  product_type_id uuid references public.product_types(id),
+  product_size_id uuid references public.product_sizes(id),
+  extra_id uuid references public.extras(id),
+  consumes_selected_flavor boolean not null default false,
+  inventory_item_id uuid references public.inventory_items(id),
+  quantity numeric(12,2) not null default 1,
+  note text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (product_type_id, product_size_id, extra_id, inventory_item_id, consumes_selected_flavor)
 );
 
 create table if not exists public.orders (
@@ -201,6 +217,21 @@ begin
 end
 $$;
 
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'flavors_inventory_item_fk'
+      and conrelid = 'public.flavors'::regclass
+  ) then
+    alter table public.flavors
+      add constraint flavors_inventory_item_fk
+      foreign key (inventory_item_id) references public.inventory_items(id);
+  end if;
+end
+$$;
+
 create index if not exists idx_orders_created_at on public.orders(created_at desc);
 create index if not exists idx_orders_payment_method on public.orders(payment_method);
 create index if not exists idx_order_items_order_id on public.order_items(order_id);
@@ -215,6 +246,7 @@ alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.order_item_extras enable row level security;
 alter table public.inventory_items enable row level security;
+alter table public.inventory_consumption_rules enable row level security;
 alter table public.inventory_movements enable row level security;
 alter table public.purchases enable row level security;
 alter table public.cash_sessions enable row level security;
@@ -236,6 +268,8 @@ create policy "authenticated can insert order item extras" on public.order_item_
 
 create policy "authenticated can read support tables" on public.inventory_items for select to authenticated using (true);
 create policy "authenticated can manage support tables" on public.inventory_items for all to authenticated using (true) with check (true);
+create policy "authenticated can read inventory consumption rules" on public.inventory_consumption_rules for select to authenticated using (true);
+create policy "authenticated can manage inventory consumption rules" on public.inventory_consumption_rules for all to authenticated using (true) with check (true);
 create policy "authenticated can manage inventory movements" on public.inventory_movements for all to authenticated using (true) with check (true);
 create policy "authenticated can manage purchases" on public.purchases for all to authenticated using (true) with check (true);
 create policy "authenticated can manage cash sessions" on public.cash_sessions for all to authenticated using (true) with check (true);

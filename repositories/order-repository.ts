@@ -1,8 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import {
-  EXTRA_TO_INVENTORY_ITEM_ID,
-  SIZE_TO_INVENTORY_ITEM_ID,
-} from "@/lib/catalog-ids";
+import { calculateInventoryConsumptionDeltas } from "@/lib/inventory-consumption";
+import { mapInventoryConsumptionRuleRow } from "@/lib/catalog-mappers";
 import type { OrderSyncInput } from "@/schemas/order";
 import type { Database } from "@/types/database";
 
@@ -127,25 +125,45 @@ export async function insertOrderWithSupabase(
     }
   }
 
+  const [{ data: rulesData, error: rulesError }, { data: flavorsData, error: flavorsError }] =
+    await Promise.all([
+      supabase
+        .from("inventory_consumption_rules")
+        .select()
+        .eq("is_active", true),
+      supabase.from("flavors").select("id,inventory_item_id").is("deleted_at", null),
+    ]);
+
+  if (rulesError) {
+    throw new Error(rulesError.message);
+  }
+
+  if (flavorsError) {
+    throw new Error(flavorsError.message);
+  }
+
   const stockDeltas = new Map<string, number>();
+  const inventoryConsumptionRules = (rulesData ?? []).map(
+    mapInventoryConsumptionRuleRow,
+  );
 
   order.items.forEach((item) => {
-    const cupInventoryId = SIZE_TO_INVENTORY_ITEM_ID[item.sizeId];
-    if (cupInventoryId) {
-      stockDeltas.set(
-        cupInventoryId,
-        (stockDeltas.get(cupInventoryId) ?? 0) - item.quantity,
-      );
-    }
+    const deltas = calculateInventoryConsumptionDeltas(item, {
+      flavors: (flavorsData ?? []).map((flavor) => ({
+        id: flavor.id,
+        name: "",
+        color: "",
+        isActive: true,
+        inventoryItemId: flavor.inventory_item_id ?? null,
+      })),
+      rules: inventoryConsumptionRules,
+    });
 
-    item.extraIds.forEach((extraId) => {
-      const extraInventoryId = EXTRA_TO_INVENTORY_ITEM_ID[extraId];
-      if (extraInventoryId) {
-        stockDeltas.set(
-          extraInventoryId,
-          (stockDeltas.get(extraInventoryId) ?? 0) - item.quantity,
-        );
-      }
+    deltas.forEach((delta) => {
+      stockDeltas.set(
+        delta.inventoryItemId,
+        (stockDeltas.get(delta.inventoryItemId) ?? 0) + delta.quantity,
+      );
     });
   });
 

@@ -21,11 +21,11 @@ export async function loginUser(
     }
 
     const resolvedEmail = (data.user.email ?? email).toLowerCase();
-    const { data: profile } = await supabase
+    const { data: profile } = (await supabase
       .from("users")
       .select("id,full_name,role")
       .eq("email", resolvedEmail)
-      .maybeSingle();
+      .maybeSingle());
 
     return {
       id: profile?.id ?? data.user.id,
@@ -35,7 +35,13 @@ export async function loginUser(
         data.user.user_metadata.full_name ??
         data.user.email?.split("@")[0] ??
         "Usuario",
-      role: profile?.role ?? (email.includes("admin") ? "admin" : "operator"),
+      role: (
+        profile?.role === "admin" || profile?.role === "operator"
+          ? profile.role
+          : email.includes("admin")
+            ? "admin"
+            : "operator"
+      ) as AppUser["role"],
     };
   }
 
