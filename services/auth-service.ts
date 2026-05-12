@@ -20,14 +20,24 @@ export async function loginUser(
       throw new Error(error.message);
     }
 
+    const resolvedEmail = (data.user.email ?? email).toLowerCase();
+    const { data: profile } = await supabase
+      .from("users")
+      .select("id,full_name,role")
+      .eq("email", resolvedEmail)
+      .maybeSingle();
+
     return {
-      id: data.user.id,
-      email: data.user.email ?? email,
+      id: profile?.id ?? data.user.id,
+      email: resolvedEmail,
       name:
+        profile?.full_name ??
         data.user.user_metadata.full_name ??
         data.user.email?.split("@")[0] ??
         "Usuario",
-      role: email.includes("admin") ? "admin" : "operator",
+      role:
+        profile?.role ??
+        (email.includes("admin") ? "admin" : "operator"),
     };
   }
 
