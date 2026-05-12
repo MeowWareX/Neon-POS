@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NEON OS
 
-## Getting Started
+NEON OS is a mobile-first POS, inventory, analytics, cash, and accounting web app for **NEON Drinks & Snacks**. It is optimized for weekend peak-hour operation with large touch targets, an offline-first order flow, and a dark neon interface that works outdoors.
 
-First, run the development server:
+## Stack
+
+- Next.js 15 App Router
+- React 19 + TypeScript
+- Tailwind CSS
+- shadcn/ui-style component system
+- Zustand
+- React Hook Form + Zod
+- Recharts
+- Supabase + PostgreSQL
+- Vercel deployment target
+- Progressive Web App with service worker caching
+
+## Features
+
+- Ultra-fast 6-step POS flow
+- Multi-item and combined orders
+- Offline-safe order capture with local persistence
+- Automatic inventory deduction from sales
+- Daily/weekly/monthly analytics
+- Active flavor and tank assignment
+- Cash opening and closing
+- Expense and loan payment tracking
+- Demo mode that runs locally without Supabase
+- Supabase sync routes for orders, inventory, flavors, cash, expenses, and loan payments
+
+## Local setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy env variables:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Demo credentials:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `operator@neon.local` / `123456`
+- `admin@neon.local` / `123456`
 
-## Learn More
+## Supabase setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Create a new Supabase project.
+2. Run the SQL migration in [supabase/migrations/202605080001_init_neon_os.sql](/C:/Users/pibey/Documents/Neon/Aplicacion/supabase/migrations/202605080001_init_neon_os.sql:1).
+3. Run the seed file in [supabase/seed.sql](/C:/Users/pibey/Documents/Neon/Aplicacion/supabase/seed.sql:1).
+4. Add the credentials to `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+### Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Import the repository into Vercel.
+2. Add the same Supabase environment variables.
+3. Deploy with the default Next.js settings.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Supabase
+
+1. Apply the migration and seed SQL.
+2. Enable email/password auth in Supabase Auth if you want live authentication.
+3. Create matching rows in `public.users` for your staff accounts.
+
+## Scripts
+
+- `npm run dev`
+- `npm run build`
+- `npm run start`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run format`
+
+## Notes
+
+- Without Supabase env vars, the app runs in **demo offline mode** using persisted local data.
+- Orders and admin mutations are stored locally first and then synchronized when connectivity is available.
+- The service worker caches the app shell for installable PWA behavior.
