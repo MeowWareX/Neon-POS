@@ -15,15 +15,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function AccountingOverview() {
-  const { orders, expenses, loanPayments, addExpense, addLoanPayment } = useAppStore(
-    useShallow((state) => ({
-      orders: state.orders,
-      expenses: state.expenses,
-      loanPayments: state.loanPayments,
-      addExpense: state.addExpense,
-      addLoanPayment: state.addLoanPayment,
-    })),
-  );
+  const { orders, expenses, loanPayments, addExpense, addLoanPayment } =
+    useAppStore(
+      useShallow((state) => ({
+        orders: state.orders,
+        expenses: state.expenses,
+        loanPayments: state.loanPayments,
+        addExpense: state.addExpense,
+        addLoanPayment: state.addLoanPayment,
+      })),
+    );
 
   const profit = getProfitEstimate({ orders, expenses, loanPayments });
 

@@ -18,14 +18,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function CashRegisterPanel() {
-  const { cashSessions, orders, openCashSession, closeCashSession } = useAppStore(
-    useShallow((state) => ({
-      cashSessions: state.cashSessions,
-      orders: state.orders,
-      openCashSession: state.openCashSession,
-      closeCashSession: state.closeCashSession,
-    })),
-  );
+  const { cashSessions, orders, openCashSession, closeCashSession } =
+    useAppStore(
+      useShallow((state) => ({
+        cashSessions: state.cashSessions,
+        orders: state.orders,
+        openCashSession: state.openCashSession,
+        closeCashSession: state.closeCashSession,
+      })),
+    );
 
   const summary = getCashSummary({ sessions: cashSessions, orders });
 
