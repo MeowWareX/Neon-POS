@@ -1,10 +1,11 @@
 "use client";
 
-import { Search, WifiOff } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { Search, RefreshCw } from "lucide-react";
+import { useDeferredValue, useMemo, useState, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { currency, formatDateTime } from "@/lib/utils";
@@ -12,6 +13,7 @@ import { useAppStore } from "@/stores/app-store";
 import type {
   Extra,
   Flavor,
+  Order,
   OrderItem,
   ProductSize,
   ProductType,
@@ -20,6 +22,8 @@ import type {
 const paymentLabel: Record<string, string> = {
   cash: "Efectivo",
   nequi: "Nequi",
+  daviplata: "Daviplata",
+  transfer: "Transferencia",
 };
 
 function summarizeOrderItem(
@@ -49,17 +53,42 @@ function summarizeOrderItem(
 }
 
 export function OrdersHistory() {
-  const { orders, sizes, productTypes, flavors, extras } = useAppStore(
+  const { sizes, productTypes, flavors, extras } = useAppStore(
     useShallow((state) => ({
-      orders: state.orders,
       sizes: state.sizes,
       productTypes: state.productTypes,
       flavors: state.flavors,
       extras: state.extras,
     })),
   );
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
+
+  const loadOrders = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/orders/list", {
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error("Failed to load orders");
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error loading orders:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOrders();
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(loadOrders, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredOrders = useMemo(() => {
     const query = deferredSearch.toLowerCase().trim();
@@ -78,25 +107,41 @@ export function OrdersHistory() {
 
   return (
     <div className="space-y-4">
-      <Card className="sticky top-20 z-20">
-        <CardContent className="p-4">
-          <div className="relative">
-            <Search className="text-muted absolute top-1/2 left-4 size-4 -translate-y-1/2" />
-            <Input
-              className="h-11 pl-10"
-              placeholder="Buscar por número o método de pago"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-between gap-3">
+        <Card className="flex-1">
+          <CardContent className="p-4">
+            <div className="relative">
+              <Search className="text-muted absolute top-1/2 left-4 size-4 -translate-y-1/2" />
+              <Input
+                className="h-11 pl-10"
+                placeholder="Buscar por número o método de pago"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={loadOrders}
+          disabled={isLoading}
+          className="whitespace-nowrap"
+        >
+          <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
+          Actualizar
+        </Button>
+      </div>
 
-      {filteredOrders.length === 0 ? (
+      {isLoading && orders.length === 0 ? (
+        <div className="text-center py-8 text-muted">Cargando órdenes...</div>
+      ) : filteredOrders.length === 0 ? (
         <EmptyState
-          icon={WifiOff}
+          icon={Search}
           title="No hay pedidos"
-          description="Todavía no existen pedidos que coincidan con tu búsqueda."
+          description={orders.length === 0 
+            ? "Sin órdenes registradas en la BD"
+            : "Todavía no existen pedidos que coincidan con tu búsqueda."}
         />
       ) : (
         <div className="grid gap-3">

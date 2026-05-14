@@ -37,6 +37,27 @@ export const flavorSchema = z.object({
   isActive: z.boolean(),
 });
 
+export const inventoryItemSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1),
+  unit: z.string().min(1),
+  category: z.string().optional().nullable(),
+  reorderPoint: z.number().int().nonnegative().optional().default(0),
+  unitCost: z.number().int().nonnegative().optional().default(0),
+});
+
+export const inventoryConsumptionRuleSchema = z.object({
+  id: z.string().uuid().optional(),
+  productTypeId: z.string().uuid().optional().nullable(),
+  productSizeId: z.string().uuid().optional().nullable(),
+  extraId: z.string().uuid().optional().nullable(),
+  consumesSelectedFlavor: z.boolean().default(false),
+  inventoryItemId: z.string().uuid().optional().nullable(),
+  quantity: z.number().positive(),
+  note: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
 export const configurationUpdateSchema = z.object({
   sizes: z.array(productSizeSchema).optional(),
   productTypes: z.array(productTypeSchema).optional(),
@@ -48,4 +69,8 @@ export type ProductSize = z.infer<typeof productSizeSchema>;
 export type ProductType = z.infer<typeof productTypeSchema>;
 export type Extra = z.infer<typeof extraSchema>;
 export type Flavor = z.infer<typeof flavorSchema>;
+export type InventoryItem = z.infer<typeof inventoryItemSchema>;
+export type InventoryConsumptionRuleInput = z.infer<
+  typeof inventoryConsumptionRuleSchema
+>;
 export type ConfigurationUpdate = z.infer<typeof configurationUpdateSchema>;

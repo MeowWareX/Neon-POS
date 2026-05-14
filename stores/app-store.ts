@@ -40,7 +40,23 @@ interface AppState extends ReturnType<typeof buildDemoState> {
   addLoanPayment: (input: LoanPaymentInput) => LoanPayment;
 }
 
-const demo = buildDemoState();
+// Empty initial state - will be populated from BD
+const emptyState = {
+  users: [],
+  sizes: [],
+  productTypes: [],
+  flavors: [],
+  activeFlavors: [],
+  extras: [],
+  inventoryItems: [],
+  inventoryConsumptionRules: [],
+  inventoryMovements: [],
+  purchases: [],
+  orders: [],
+  cashSessions: [],
+  expenses: [],
+  loanPayments: [],
+};
 
 function applyRemoteCatalog(
   state: ReturnType<typeof buildDemoState>,
@@ -102,7 +118,8 @@ async function loadRemoteCatalog() {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      ...demo,
+      ...emptyState,
+      users: [],
       initialized: false,
       businessDate: getBusinessDate(),
       refreshCatalog: async () => {
@@ -112,8 +129,8 @@ export const useAppStore = create<AppState>()(
 
         try {
           const catalog = await loadRemoteCatalog();
-          set((state) => applyRemoteCatalog(state, catalog));
-        } catch (error) {
+          set((state) => applyRemoteCatalog(state as ReturnType<typeof buildDemoState>, catalog));
+        } catch (error: unknown) {
           console.error("Failed to refresh remote catalog", error);
         }
       },
@@ -126,14 +143,21 @@ export const useAppStore = create<AppState>()(
 
         try {
           if (typeof window === "undefined" || !window.navigator.onLine) {
-            return;
+            throw new Error("Network not available - cannot initialize from database");
           }
 
           const catalog = await loadRemoteCatalog();
 
-          set((state) => applyRemoteCatalog(state, catalog));
-        } catch (error) {
-          console.error("Failed to hydrate remote catalog", error);
+          // Validate that we got critical data from BD
+          if (!catalog.sizes || catalog.sizes.length === 0) {
+            throw new Error("No catalog data loaded from database");
+          }
+
+          set((state) => applyRemoteCatalog(state as ReturnType<typeof buildDemoState>, catalog));
+        } catch (error: unknown) {
+          console.error("Failed to initialize from database", error);
+          set({ initialized: false });
+          throw error;
         }
       },
       addOrder: (order) =>
@@ -166,6 +190,8 @@ export const useAppStore = create<AppState>()(
 
           order.items.forEach((item) => {
             const deltas = calculateInventoryConsumptionDeltas(item, {
+              sizes: state.sizes,
+              extras: state.extras,
               flavors: state.flavors,
               rules: state.inventoryConsumptionRules,
             });
@@ -373,9 +399,10 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 3,
+      version: 4,
       migrate: () => ({
-        ...buildDemoState(),
+        ...emptyState,
+        users: [],
         initialized: false,
         businessDate: getBusinessDate(),
       }),
@@ -383,19 +410,21 @@ export const useAppStore = create<AppState>()(
         initialized: state.initialized,
         businessDate: state.businessDate,
         users: state.users,
+        // CATALOG ONLY - persisted across sessions
         sizes: state.sizes,
         productTypes: state.productTypes,
         flavors: state.flavors,
         activeFlavors: state.activeFlavors,
         extras: state.extras,
-        inventoryItems: state.inventoryItems,
         inventoryConsumptionRules: state.inventoryConsumptionRules,
-        inventoryMovements: state.inventoryMovements,
-        purchases: state.purchases,
-        orders: state.orders,
-        cashSessions: state.cashSessions,
-        expenses: state.expenses,
-        loanPayments: state.loanPayments,
+        // LOCAL TRANSACTIONAL - cleared on reload (read from BD)
+        inventoryItems: [],
+        inventoryMovements: [],
+        purchases: [],
+        orders: [],
+        cashSessions: [],
+        expenses: [],
+        loanPayments: [],
       }),
     },
   ),

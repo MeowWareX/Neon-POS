@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, ReceiptText, ShoppingBag, Trash2 } from "lucide-react";
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { EmptyState } from "@/components/common/empty-state";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { calculateOrderItem, createOrderRecord } from "@/lib/business";
+import { calculateInventoryShortages } from "@/lib/inventory-consumption";
+import { syncPendingOrders } from "@/services/sync-service";
 import { currency, formatTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 import type { OrderItem, OrderItemDraft, PaymentMethod } from "@/types/domain";
@@ -38,8 +40,11 @@ export function PosTerminal() {
     flavors,
     activeFlavors,
     extras,
+    inventoryItems,
+    inventoryConsumptionRules,
     orders,
     addOrder,
+    markOrdersSynced,
   } = useAppStore(
     useShallow((state) => ({
       businessDate: state.businessDate,
@@ -48,8 +53,11 @@ export function PosTerminal() {
       flavors: state.flavors,
       activeFlavors: state.activeFlavors,
       extras: state.extras,
+      inventoryItems: state.inventoryItems,
+      inventoryConsumptionRules: state.inventoryConsumptionRules,
       orders: state.orders,
       addOrder: state.addOrder,
+      markOrdersSynced: state.markOrdersSynced,
     })),
   );
 
@@ -84,12 +92,17 @@ export function PosTerminal() {
     [draft, extras, productTypes, sizes],
   );
 
-  const sameSelection = (left: OrderItem, right: OrderItem) =>
-    left.sizeId === right.sizeId &&
-    left.typeId === right.typeId &&
-    left.flavorId === right.flavorId &&
-    left.extraIds.length === right.extraIds.length &&
-    left.extraIds.every((extraId, index) => extraId === right.extraIds[index]);
+  const sameSelection = useCallback(
+    (left: OrderItem, right: OrderItem) =>
+      left.sizeId === right.sizeId &&
+      left.typeId === right.typeId &&
+      left.flavorId === right.flavorId &&
+      left.extraIds.length === right.extraIds.length &&
+      left.extraIds.every(
+        (extraId, index) => extraId === right.extraIds[index],
+      ),
+    [],
+  );
 
   const cartTotal = cart.reduce((sum, item) => sum + item.lineTotal, 0);
   const draftTotal = cartTotal + (currentItem?.lineTotal ?? 0);
@@ -97,6 +110,41 @@ export function PosTerminal() {
   const showFlavorStep = Boolean(draft.typeId && draft.sizeId);
   const showPostFlavorSteps = Boolean(
     draft.typeId && draft.sizeId && draft.flavorId,
+  );
+
+  const pendingOrderItems = useMemo(() => {
+    const items = [...cart];
+
+    if (
+      currentItem &&
+      !cart.some((item) => sameSelection(item, currentItem))
+    ) {
+      items.push(currentItem);
+    }
+
+    return items;
+  }, [cart, currentItem, sameSelection]);
+
+  const inventoryShortages = useMemo(
+    () =>
+      calculateInventoryShortages({
+        items: pendingOrderItems,
+        catalog: {
+          sizes,
+          extras,
+          flavors,
+          rules: inventoryConsumptionRules,
+        },
+        inventoryItems,
+      }),
+    [
+      pendingOrderItems,
+      sizes,
+      extras,
+      flavors,
+      inventoryConsumptionRules,
+      inventoryItems,
+    ],
   );
 
   useEffect(() => {
@@ -216,25 +264,39 @@ export function PosTerminal() {
     setPaymentMethod("cash");
   };
 
-  const saveOrder = () => {
-    const items = [...cart];
-
-    if (currentItem && !cart.some((item) => sameSelection(item, currentItem))) {
-      items.push(currentItem);
-    }
+  const saveOrder = async () => {
+    const items = pendingOrderItems;
 
     if (items.length === 0) {
       toast.error("Agrega al menos un producto antes de guardar.");
       return;
     }
 
+    if (inventoryShortages.length > 0) {
+      const summary = inventoryShortages
+        .slice(0, 3)
+        .map((item) => `${item.itemName} (${item.missing.toFixed(2)})`)
+        .join(", ");
+
+      toast.warning(
+        `Pedido guardado con faltantes de stock: ${summary}. Revisa inventario luego.`,
+      );
+    }
+
     setIsSaving(true);
 
-    startTransition(() => {
+    try {
+      // Get the next sequence from the database to maintain persistent numbering
+      const nextNumberRes = await fetch("/api/orders/next-number", {
+        cache: "no-store",
+      });
+      if (!nextNumberRes.ok) throw new Error("Failed to get next order number");
+      const { sequence } = await nextNumberRes.json();
+
       const order = createOrderRecord({
         items,
         paymentMethod,
-        sequence: orders.length,
+        sequence,
         syncState: "pending",
       });
 
@@ -242,8 +304,24 @@ export function PosTerminal() {
       clearOrder();
       setPaymentMethod("cash");
       toast.success(`Pedido ${order.orderNumber} guardado.`);
+
+      if (navigator.onLine) {
+        try {
+          const syncedIds = await syncPendingOrders([order]);
+
+          if (syncedIds.length > 0) {
+            markOrdersSynced(syncedIds);
+            toast.success(`Pedido ${order.orderNumber} sincronizado en base de datos.`);
+          }
+        } catch {
+          toast.warning(
+            "Pedido guardado localmente. La sincronización remota se reintentará.",
+          );
+        }
+      }
+    } finally {
       setIsSaving(false);
-    });
+    }
   };
 
   const summarizeItem = (item: OrderItem) => {
@@ -569,6 +647,21 @@ export function PosTerminal() {
                   </div>
 
                   <div className="mt-5">
+                    {inventoryShortages.length > 0 ? (
+                      <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
+                        <p className="text-sm font-semibold text-amber-200">
+                          Advertencia: faltan insumos críticos
+                        </p>
+                        <ul className="mt-2 space-y-1 text-xs text-amber-100">
+                          {inventoryShortages.map((item) => (
+                            <li key={item.inventoryItemId}>
+                              {item.itemName}: requiere {item.required.toFixed(2)} y hay {item.available.toFixed(2)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
                     {cart.length === 0 ? (
                       <EmptyState
                         icon={ShoppingBag}
@@ -642,7 +735,7 @@ export function PosTerminal() {
                     <Button
                       className="flex-1"
                       size="lg"
-                      onClick={saveOrder}
+                      onClick={() => void saveOrder()}
                       disabled={isSaving}
                     >
                       <ReceiptText className="size-4" />
@@ -709,7 +802,11 @@ export function PosTerminal() {
               <Plus className="size-4" />
               Agregar a orden
             </Button>
-            <Button size="lg" onClick={saveOrder} disabled={isSaving}>
+            <Button
+              size="lg"
+              onClick={() => void saveOrder()}
+              disabled={isSaving}
+            >
               <ReceiptText className="size-4" />
               {isSaving ? "Guardando..." : "Guardar pedido"}
             </Button>

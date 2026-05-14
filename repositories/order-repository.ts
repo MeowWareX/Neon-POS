@@ -1,14 +1,48 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createOrderNumber } from "@/lib/business";
 import { calculateInventoryConsumptionDeltas } from "@/lib/inventory-consumption";
-import { mapInventoryConsumptionRuleRow } from "@/lib/catalog-mappers";
+import {
+  mapExtraRow,
+  mapInventoryConsumptionRuleRow,
+  mapProductSizeRow,
+} from "@/lib/catalog-mappers";
 import type { OrderSyncInput } from "@/schemas/order";
 import type { Database } from "@/types/database";
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+type InventoryConsumptionRuleRow =
+  Database["public"]["Tables"]["inventory_consumption_rules"]["Row"];
+type ProductSizeRow = Database["public"]["Tables"]["product_sizes"]["Row"];
+type ExtraRow = Database["public"]["Tables"]["extras"]["Row"];
+type FlavorRow = Database["public"]["Tables"]["flavors"]["Row"];
+
 function normalizeUuid(value: string) {
   return UUID_PATTERN.test(value) ? value : crypto.randomUUID();
+}
+
+function parseOrderSequence(orderNumber: string) {
+  const sequence = Number.parseInt(orderNumber.replace(/^N-/, ""), 10);
+
+  return Number.isFinite(sequence) ? sequence : 0;
+}
+
+export async function getLatestOrderSequence(
+  supabase: SupabaseClient<Database>,
+) {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("order_number")
+    .order("order_number", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data?.order_number ? parseOrderSequence(data.order_number) : 0;
 }
 
 export async function syncOrderRemote(order: OrderSyncInput) {
@@ -27,6 +61,8 @@ export async function syncOrderRemote(order: OrderSyncInput) {
   return (await response.json()) as {
     synced: boolean;
     mode: "supabase" | "demo";
+    message?: string;
+    orderNumber?: string;
   };
 }
 
@@ -48,40 +84,38 @@ export async function insertOrderWithSupabase(
   }
 
   if (existingById) {
-    return;
+    return { orderNumber: order.orderNumber };
   }
 
-  const { data: existingByNumber, error: existingByNumberError } =
-    await supabase
+  let resolvedOrderNumber = order.orderNumber;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const latestSequence = await getLatestOrderSequence(supabase);
+    resolvedOrderNumber = createOrderNumber(latestSequence);
+
+    const orderPayload = {
+      id: normalizedOrderId,
+      order_number: resolvedOrderNumber,
+      payment_method: order.paymentMethod,
+      subtotal: order.subtotal,
+      total: order.total,
+      estimated_cost: order.estimatedCost,
+      sync_state: "synced",
+      created_at: order.createdAt,
+    };
+
+    const { error: orderError } = await supabase
       .from("orders")
-      .select("id")
-      .eq("order_number", order.orderNumber)
-      .maybeSingle();
+      .insert(orderPayload);
 
-  if (existingByNumberError) {
-    throw new Error(existingByNumberError.message);
-  }
+    if (!orderError) {
+      break;
+    }
 
-  if (existingByNumber) {
-    return;
-  }
+    if (orderError.code === "23505" && attempt < 2) {
+      continue;
+    }
 
-  const orderPayload = {
-    id: normalizedOrderId,
-    order_number: order.orderNumber,
-    payment_method: order.paymentMethod,
-    subtotal: order.subtotal,
-    total: order.total,
-    estimated_cost: order.estimatedCost,
-    sync_state: "synced",
-    created_at: order.createdAt,
-  };
-
-  const { error: orderError } = await supabase
-    .from("orders")
-    .insert(orderPayload);
-
-  if (orderError) {
     throw new Error(orderError.message);
   }
 
@@ -125,39 +159,90 @@ export async function insertOrderWithSupabase(
     }
   }
 
-  const [
-    { data: rulesData, error: rulesError },
-    { data: flavorsData, error: flavorsError },
-  ] = await Promise.all([
-    supabase.from("inventory_consumption_rules").select().eq("is_active", true),
-    supabase
-      .from("flavors")
-      .select("id,inventory_item_id")
-      .is("deleted_at", null),
-  ]);
+  // Load consumption rules and flavors, but handle missing tables gracefully
+  let rulesData: InventoryConsumptionRuleRow[] = [];
+  let flavorsData: Partial<FlavorRow>[] = [];
+  let sizesData: Partial<ProductSizeRow>[] = [];
+  let extrasData: Partial<ExtraRow>[] = [];
 
-  if (rulesError) {
-    throw new Error(rulesError.message);
+  try {
+    const { data: rules, error: rulesError } = await supabase
+      .from("inventory_consumption_rules")
+      .select()
+      .eq("is_active", true);
+
+    if (rulesError) {
+      console.warn("Could not load consumption rules:", rulesError.message);
+    } else {
+      rulesData = rules ?? [];
+    }
+  } catch (e) {
+    console.warn("Error loading consumption rules:", e);
   }
 
-  if (flavorsError) {
-    throw new Error(flavorsError.message);
+  try {
+    const { data: sizes, error: sizesError } = await supabase
+      .from("product_sizes")
+      .select("id,inventory_item_id")
+      .is("deleted_at", null);
+
+    if (sizesError) {
+      console.warn("Could not load product sizes:", sizesError.message);
+    } else {
+      sizesData = sizes ?? [];
+    }
+  } catch (e) {
+    console.warn("Error loading product sizes:", e);
+  }
+
+  try {
+    const { data: extras, error: extrasError } = await supabase
+      .from("extras")
+      .select("id,inventory_item_id")
+      .is("deleted_at", null);
+
+    if (extrasError) {
+      console.warn("Could not load extras:", extrasError.message);
+    } else {
+      extrasData = extras ?? [];
+    }
+  } catch (e) {
+    console.warn("Error loading extras:", e);
+  }
+
+  try {
+    const { data: flavors, error: flavorsError } = await supabase
+      .from("flavors")
+      .select("id,inventory_item_id")
+      .is("deleted_at", null);
+
+    if (flavorsError) {
+      console.warn("Could not load flavors:", flavorsError.message);
+    } else {
+      flavorsData = flavors ?? [];
+    }
+  } catch (e) {
+    console.warn("Error loading flavors:", e);
   }
 
   const stockDeltas = new Map<string, number>();
-  const inventoryConsumptionRules = (rulesData ?? []).map(
+  const inventoryConsumptionRules = rulesData.map(
     mapInventoryConsumptionRuleRow,
   );
 
   order.items.forEach((item) => {
     const deltas = calculateInventoryConsumptionDeltas(item, {
-      flavors: (flavorsData ?? []).map((flavor) => ({
-        id: flavor.id,
-        name: "",
-        color: "",
-        isActive: true,
-        inventoryItemId: flavor.inventory_item_id ?? null,
-      })),
+      sizes: sizesData.map(mapProductSizeRow),
+      extras: extrasData.map(mapExtraRow),
+      flavors: (flavorsData ?? [])
+        .filter((flavor): flavor is Partial<FlavorRow> & { id: string } => Boolean(flavor && flavor.id))
+        .map((flavor) => ({
+          id: flavor.id,
+          name: "",
+          color: "",
+          isActive: true,
+          inventoryItemId: flavor.inventory_item_id ?? null,
+        })),
       rules: inventoryConsumptionRules,
     });
 
@@ -175,7 +260,7 @@ export async function insertOrderWithSupabase(
       inventory_item_id: inventoryItemId,
       movement_type: "sale",
       quantity,
-      note: `Pedido ${order.orderNumber}`,
+      note: `Pedido ${resolvedOrderNumber}`,
       created_at: order.createdAt,
     }),
   );
@@ -186,30 +271,43 @@ export async function insertOrderWithSupabase(
       .insert(movements);
 
     if (movementError) {
-      throw new Error(movementError.message);
+      console.warn("Could not create inventory movements:", movementError.message);
     }
 
+    // Try to update inventory, but don't fail the order if it fails
     for (const [inventoryItemId, quantity] of stockDeltas.entries()) {
-      const { data, error } = await supabase
-        .from("inventory_items")
-        .select("current_stock")
-        .eq("id", inventoryItemId)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("inventory_items")
+          .select("current_stock")
+          .eq("id", inventoryItemId)
+          .single();
 
-      if (error) {
-        throw new Error(error.message);
-      }
+        if (error) {
+          console.warn(`Could not find inventory item ${inventoryItemId}:`, error.message);
+          continue;
+        }
 
-      const { error: updateError } = await supabase
-        .from("inventory_items")
-        .update({
-          current_stock: Math.max(0, (data?.current_stock ?? 0) + quantity),
-        })
-        .eq("id", inventoryItemId);
+        if (!data) {
+          console.warn(`Inventory item ${inventoryItemId} not found`);
+          continue;
+        }
 
-      if (updateError) {
-        throw new Error(updateError.message);
+        const { error: updateError } = await supabase
+          .from("inventory_items")
+          .update({
+            current_stock: Math.max(0, (data.current_stock ?? 0) + quantity),
+          })
+          .eq("id", inventoryItemId);
+
+        if (updateError) {
+          console.warn(`Could not update inventory item ${inventoryItemId}:`, updateError.message);
+        }
+      } catch (e) {
+        console.warn(`Error updating inventory ${inventoryItemId}:`, e);
       }
     }
   }
+
+  return { orderNumber: resolvedOrderNumber };
 }
