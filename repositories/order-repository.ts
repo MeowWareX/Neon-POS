@@ -235,7 +235,9 @@ export async function insertOrderWithSupabase(
       sizes: sizesData.map(mapProductSizeRow),
       extras: extrasData.map(mapExtraRow),
       flavors: (flavorsData ?? [])
-        .filter((flavor): flavor is Partial<FlavorRow> & { id: string } => Boolean(flavor && flavor.id))
+        .filter((flavor): flavor is Partial<FlavorRow> & { id: string } =>
+          Boolean(flavor && flavor.id),
+        )
         .map((flavor) => ({
           id: flavor.id,
           name: "",
@@ -271,7 +273,10 @@ export async function insertOrderWithSupabase(
       .insert(movements);
 
     if (movementError) {
-      console.warn("Could not create inventory movements:", movementError.message);
+      console.warn(
+        "Could not create inventory movements:",
+        movementError.message,
+      );
     }
 
     // Try to update inventory, but don't fail the order if it fails
@@ -284,7 +289,10 @@ export async function insertOrderWithSupabase(
           .single();
 
         if (error) {
-          console.warn(`Could not find inventory item ${inventoryItemId}:`, error.message);
+          console.warn(
+            `Could not find inventory item ${inventoryItemId}:`,
+            error.message,
+          );
           continue;
         }
 
@@ -301,7 +309,10 @@ export async function insertOrderWithSupabase(
           .eq("id", inventoryItemId);
 
         if (updateError) {
-          console.warn(`Could not update inventory item ${inventoryItemId}:`, updateError.message);
+          console.warn(
+            `Could not update inventory item ${inventoryItemId}:`,
+            updateError.message,
+          );
         }
       } catch (e) {
         console.warn(`Error updating inventory ${inventoryItemId}:`, e);

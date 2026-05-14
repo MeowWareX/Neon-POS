@@ -15,7 +15,7 @@ export async function GET() {
   if (!supabase) {
     return NextResponse.json(
       { message: "Database not configured" },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -26,8 +26,13 @@ export async function GET() {
   } catch (error) {
     console.error("Error getting next order number:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Error getting next order number" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Error getting next order number",
+      },
+      { status: 500 },
     );
   }
 }

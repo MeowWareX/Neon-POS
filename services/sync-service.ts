@@ -41,7 +41,8 @@ export async function syncPendingOrders(orders: Order[]) {
         });
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       console.error(`Error syncing order ${order.id}:`, errorMessage);
       errors.push({
         orderId: order.id,

@@ -10,13 +10,15 @@ export async function GET(request: NextRequest) {
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     const searchParams = request.nextUrl.searchParams;
     const withMovements = searchParams.get("withMovements") === "true";
-    const limit = searchParams.get("limit") ? Number(searchParams.get("limit")) : 100;
+    const limit = searchParams.get("limit")
+      ? Number(searchParams.get("limit"))
+      : 100;
 
     const { data, error } = await supabase
       .from("inventory_items")
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest) {
     const itemsWithMovements = items.map((item) => ({
       ...item,
       recentMovements: (movementsData ?? []).filter(
-        (m) => m.inventory_item_id === item.id
+        (m) => m.inventory_item_id === item.id,
       ),
     }));
 
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -68,7 +70,7 @@ export async function POST(request: NextRequest) {
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -92,10 +94,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating inventory item:", error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     const item = data?.[0];
@@ -103,12 +102,12 @@ export async function POST(request: NextRequest) {
       status: 201,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to create inventory item";
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to create inventory item";
     console.error("Error in POST /api/inventory/items:", error);
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -119,7 +118,7 @@ export async function PUT(request: NextRequest) {
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -128,10 +127,7 @@ export async function PUT(request: NextRequest) {
     const { id, ...updateData } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: "ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
     // Validate input
@@ -151,21 +147,18 @@ export async function PUT(request: NextRequest) {
 
     if (error) {
       console.error("Error updating inventory item:", error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     const item = data?.[0];
     return NextResponse.json(item ? mapInventoryItemRow(item) : null);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to update inventory item";
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to update inventory item";
     console.error("Error in PUT /api/inventory/items:", error);
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -176,7 +169,7 @@ export async function DELETE(request: NextRequest) {
     if (!supabase) {
       return NextResponse.json(
         { error: "Database not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -184,10 +177,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
     // Check if item is used in any consumption rules
@@ -198,18 +188,16 @@ export async function DELETE(request: NextRequest) {
 
     if (rulesError) {
       console.error("Error checking consumption rules:", rulesError);
-      return NextResponse.json(
-        { error: rulesError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: rulesError.message }, { status: 500 });
     }
 
     if (rulesUsing && rulesUsing.length > 0) {
       return NextResponse.json(
         {
-          error: "Este ítem está siendo usado en recetas de consumo. No se puede eliminar.",
+          error:
+            "Este ítem está siendo usado en recetas de consumo. No se puede eliminar.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -220,19 +208,16 @@ export async function DELETE(request: NextRequest) {
 
     if (error) {
       console.error("Error deleting inventory item:", error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to delete inventory item";
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to delete inventory item";
     console.error("Error in DELETE /api/inventory/items:", error);
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

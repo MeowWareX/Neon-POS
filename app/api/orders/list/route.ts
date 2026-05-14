@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   if (!supabase) {
     return NextResponse.json(
       { message: "Supabase not configured" },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
             extra_id
           )
         )
-      `
+      `,
       )
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -79,17 +79,22 @@ export async function GET(request: Request) {
         estimatedCost: orderRow.estimated_cost,
         syncState: orderRow.sync_state as "local" | "pending" | "synced",
         createdAt: orderRow.created_at,
-        items: (orderRow.order_items ?? []).map((item) => ({
-          id: item.id,
-          sizeId: item.product_size_id,
-          typeId: item.product_type_id,
-          flavorId: item.flavor_id,
-          quantity: item.quantity,
-          unitPrice: item.unit_price,
-          unitCost: item.unit_cost,
-          lineTotal: item.line_total,
-          extraIds: (item.order_item_extras ?? []).map((extra) => extra.extra_id),
-        } as OrderItem)),
+        items: (orderRow.order_items ?? []).map(
+          (item) =>
+            ({
+              id: item.id,
+              sizeId: item.product_size_id,
+              typeId: item.product_type_id,
+              flavorId: item.flavor_id,
+              quantity: item.quantity,
+              unitPrice: item.unit_price,
+              unitCost: item.unit_cost,
+              lineTotal: item.line_total,
+              extraIds: (item.order_item_extras ?? []).map(
+                (extra) => extra.extra_id,
+              ),
+            }) as OrderItem,
+        ),
       };
     });
 
@@ -97,8 +102,11 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Error fetching orders" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error ? error.message : "Error fetching orders",
+      },
+      { status: 500 },
     );
   }
 }

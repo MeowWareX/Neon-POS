@@ -115,10 +115,7 @@ export function PosTerminal() {
   const pendingOrderItems = useMemo(() => {
     const items = [...cart];
 
-    if (
-      currentItem &&
-      !cart.some((item) => sameSelection(item, currentItem))
-    ) {
+    if (currentItem && !cart.some((item) => sameSelection(item, currentItem))) {
       items.push(currentItem);
     }
 
@@ -311,7 +308,9 @@ export function PosTerminal() {
 
           if (syncedIds.length > 0) {
             markOrdersSynced(syncedIds);
-            toast.success(`Pedido ${order.orderNumber} sincronizado en base de datos.`);
+            toast.success(
+              `Pedido ${order.orderNumber} sincronizado en base de datos.`,
+            );
           }
         } catch {
           toast.warning(
@@ -655,7 +654,9 @@ export function PosTerminal() {
                         <ul className="mt-2 space-y-1 text-xs text-amber-100">
                           {inventoryShortages.map((item) => (
                             <li key={item.inventoryItemId}>
-                              {item.itemName}: requiere {item.required.toFixed(2)} y hay {item.available.toFixed(2)}
+                              {item.itemName}: requiere{" "}
+                              {item.required.toFixed(2)} y hay{" "}
+                              {item.available.toFixed(2)}
                             </li>
                           ))}
                         </ul>

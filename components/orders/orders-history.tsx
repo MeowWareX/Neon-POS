@@ -128,20 +128,24 @@ export function OrdersHistory() {
           disabled={isLoading}
           className="whitespace-nowrap"
         >
-          <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+          />
           Actualizar
         </Button>
       </div>
 
       {isLoading && orders.length === 0 ? (
-        <div className="text-center py-8 text-muted">Cargando órdenes...</div>
+        <div className="text-muted py-8 text-center">Cargando órdenes...</div>
       ) : filteredOrders.length === 0 ? (
         <EmptyState
           icon={Search}
           title="No hay pedidos"
-          description={orders.length === 0 
-            ? "Sin órdenes registradas en la BD"
-            : "Todavía no existen pedidos que coincidan con tu búsqueda."}
+          description={
+            orders.length === 0
+              ? "Sin órdenes registradas en la BD"
+              : "Todavía no existen pedidos que coincidan con tu búsqueda."
+          }
         />
       ) : (
         <div className="grid gap-3">

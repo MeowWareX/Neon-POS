@@ -30,13 +30,15 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error syncing order:", error);
 
-    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-    
+    const errorMessage =
+      error instanceof Error ? error.message : "Error desconocido";
+
     return NextResponse.json(
       {
         synced: false,
         message: errorMessage,
-        details: process.env.NODE_ENV === "development" ? String(error) : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? String(error) : undefined,
       },
       { status: 400 },
     );

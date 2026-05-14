@@ -15,7 +15,13 @@ import type {
   InventoryConsumptionRule,
 } from "@/types/domain";
 
-type TabType = "sizes" | "types" | "extras" | "flavors" | "recipes" | "inventory";
+type TabType =
+  | "sizes"
+  | "types"
+  | "extras"
+  | "flavors"
+  | "recipes"
+  | "inventory";
 
 const initialRuleForm = {
   productTypeId: "",
@@ -95,7 +101,8 @@ export function ConfigurationManager() {
       if (typesRes.ok) setTypes(await typesRes.json());
       if (extrasRes.ok) setExtras(await extrasRes.json());
       if (flavorsRes.ok) setFlavors(await flavorsRes.json());
-      if (inventoryItemsRes.ok) setInventoryItems(await inventoryItemsRes.json());
+      if (inventoryItemsRes.ok)
+        setInventoryItems(await inventoryItemsRes.json());
       if (rulesRes.ok) setRules(await rulesRes.json());
     } catch (error) {
       console.error("Error fetching configuration:", error);
@@ -244,7 +251,11 @@ export function ConfigurationManager() {
   }
 
   async function handleDeleteInventoryItem(id: string) {
-    if (confirm("¿Estás seguro? Si este ítem está siendo usado en recetas, no podrá eliminarse.")) {
+    if (
+      confirm(
+        "¿Estás seguro? Si este ítem está siendo usado en recetas, no podrá eliminarse.",
+      )
+    ) {
       const response = await fetch(`/api/inventory/items?id=${id}`, {
         method: "DELETE",
       });
@@ -368,8 +379,8 @@ export function ConfigurationManager() {
       : "Sin extra";
     const inventoryLabel = rule.consumesSelectedFlavor
       ? "Usa sabor seleccionado"
-      : inventoryItems.find((item) => item.id === rule.inventoryItemId)?.name ??
-        "Sin ítem";
+      : (inventoryItems.find((item) => item.id === rule.inventoryItemId)
+          ?.name ?? "Sin ítem");
 
     return {
       typeLabel,
@@ -923,7 +934,10 @@ export function ConfigurationManager() {
                   className="w-full rounded border bg-transparent px-3 py-2"
                   value={ruleForm.inventoryItemId}
                   onChange={(e) =>
-                    setRuleForm({ ...ruleForm, inventoryItemId: e.target.value })
+                    setRuleForm({
+                      ...ruleForm,
+                      inventoryItemId: e.target.value,
+                    })
                   }
                   disabled={ruleForm.consumesSelectedFlavor}
                 >
@@ -1002,11 +1016,12 @@ export function ConfigurationManager() {
                       {description.typeLabel} · {description.sizeLabel}
                     </p>
                     <p className="text-sm text-gray-600">
-                      Extra: {description.extraLabel} | Consumo: {rule.quantity} |{" "}
-                      {description.inventoryLabel}
+                      Extra: {description.extraLabel} | Consumo: {rule.quantity}{" "}
+                      | {description.inventoryLabel}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {rule.note || "Sin nota"} · {rule.isActive ? "Activa" : "Inactiva"}
+                      {rule.note || "Sin nota"} ·{" "}
+                      {rule.isActive ? "Activa" : "Inactiva"}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -1141,10 +1156,12 @@ export function ConfigurationManager() {
                 <div>
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm text-gray-600">
-                    Unidad: {item.unit} | Categoría: {item.category || "Sin categoría"}
+                    Unidad: {item.unit} | Categoría:{" "}
+                    {item.category || "Sin categoría"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Reorden: {item.reorderPoint} | Costo: ${item.unitCost?.toLocaleString() || "0"}
+                    Reorden: {item.reorderPoint} | Costo: $
+                    {item.unitCost?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div className="flex gap-2">

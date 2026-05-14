@@ -208,7 +208,9 @@ export function calculateInventoryShortages({
 
   return Array.from(requiredByItem.entries())
     .map(([inventoryItemId, required]) => {
-      const current = inventoryItems.find((item) => item.id === inventoryItemId);
+      const current = inventoryItems.find(
+        (item) => item.id === inventoryItemId,
+      );
       const available = current?.currentStock ?? 0;
       return {
         inventoryItemId,

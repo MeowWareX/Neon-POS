@@ -11,10 +11,7 @@ export async function GET() {
 
   if (!supabase) {
     checks.supabase.message = "No configurado";
-    return NextResponse.json(
-      { healthy: false, checks },
-      { status: 503 }
-    );
+    return NextResponse.json({ healthy: false, checks }, { status: 503 });
   }
 
   checks.supabase.ok = true;
@@ -63,6 +60,6 @@ export async function GET() {
 
   return NextResponse.json(
     { healthy, checks, timestamp: new Date().toISOString() },
-    { status: healthy ? 200 : 503 }
+    { status: healthy ? 200 : 503 },
   );
 }

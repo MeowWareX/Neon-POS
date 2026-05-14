@@ -77,7 +77,7 @@ export function InventoryOverview() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Inventario en tiempo real</h2>
         <Button
           size="sm"
@@ -85,7 +85,9 @@ export function InventoryOverview() {
           onClick={loadInventoryFromBD}
           disabled={isLoading}
         >
-          <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+          />
           Actualizar
         </Button>
       </div>
@@ -145,7 +147,7 @@ export function InventoryOverview() {
 
         <TabsContent className="mt-5" value="stock">
           {isLoading ? (
-            <div className="text-center py-8 text-muted">Cargando...</div>
+            <div className="text-muted py-8 text-center">Cargando...</div>
           ) : inventoryItems.length === 0 ? (
             <EmptyState
               icon={Boxes}
@@ -187,7 +189,7 @@ export function InventoryOverview() {
           <Card>
             <CardHeader>
               <CardTitle>Registrar ajuste</CardTitle>
-              <p className="text-muted text-sm mt-1">
+              <p className="text-muted mt-1 text-sm">
                 Los movimientos se guardan directamente en la BD
               </p>
             </CardHeader>
@@ -201,7 +203,8 @@ export function InventoryOverview() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(values),
                     });
-                    if (!response.ok) throw new Error("Failed to save movement");
+                    if (!response.ok)
+                      throw new Error("Failed to save movement");
                     toast.success("Movimiento registrado en BD");
                     movementForm.reset();
                     await loadInventoryFromBD();
@@ -262,17 +265,22 @@ export function InventoryOverview() {
                     <Input
                       type="number"
                       placeholder="0"
-                      {...movementForm.register("quantity", { valueAsNumber: true })}
+                      {...movementForm.register("quantity", {
+                        valueAsNumber: true,
+                      })}
                     />
                   </div>
 
                   <div>
                     <Label>Nota</Label>
-                    <Input placeholder="Motivo del ajuste" {...movementForm.register("note")} />
+                    <Input
+                      placeholder="Motivo del ajuste"
+                      {...movementForm.register("note")}
+                    />
                   </div>
                 </div>
 
-                <Button className="w-full mt-4" type="submit">
+                <Button className="mt-4 w-full" type="submit">
                   Guardar movimiento
                 </Button>
               </form>
@@ -284,7 +292,7 @@ export function InventoryOverview() {
           <Card>
             <CardHeader>
               <CardTitle>Registrar compra</CardTitle>
-              <p className="text-muted text-sm mt-1">
+              <p className="text-muted mt-1 text-sm">
                 Las compras se guardan directamente en la BD
               </p>
             </CardHeader>
@@ -298,7 +306,8 @@ export function InventoryOverview() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(values),
                     });
-                    if (!response.ok) throw new Error("Failed to save purchase");
+                    if (!response.ok)
+                      throw new Error("Failed to save purchase");
                     toast.success("Compra registrada en BD");
                     purchaseForm.reset();
                     await loadInventoryFromBD();
@@ -331,7 +340,10 @@ export function InventoryOverview() {
                   </div>
                   <div>
                     <Label>Proveedor</Label>
-                    <Input placeholder="Nombre proveedor" {...purchaseForm.register("vendor")} />
+                    <Input
+                      placeholder="Nombre proveedor"
+                      {...purchaseForm.register("vendor")}
+                    />
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
@@ -339,7 +351,9 @@ export function InventoryOverview() {
                       <Input
                         type="number"
                         placeholder="0"
-                        {...purchaseForm.register("quantity", { valueAsNumber: true })}
+                        {...purchaseForm.register("quantity", {
+                          valueAsNumber: true,
+                        })}
                       />
                     </div>
                     <div>
@@ -347,17 +361,22 @@ export function InventoryOverview() {
                       <Input
                         type="number"
                         placeholder="0.00"
-                        {...purchaseForm.register("total", { valueAsNumber: true })}
+                        {...purchaseForm.register("total", {
+                          valueAsNumber: true,
+                        })}
                       />
                     </div>
                   </div>
                   <div>
                     <Label>Nota</Label>
-                    <Input placeholder="Notas adicionales" {...purchaseForm.register("note")} />
+                    <Input
+                      placeholder="Notas adicionales"
+                      {...purchaseForm.register("note")}
+                    />
                   </div>
                 </div>
 
-                <Button className="w-full mt-4" type="submit">
+                <Button className="mt-4 w-full" type="submit">
                   Guardar compra
                 </Button>
               </form>

@@ -129,7 +129,12 @@ export const useAppStore = create<AppState>()(
 
         try {
           const catalog = await loadRemoteCatalog();
-          set((state) => applyRemoteCatalog(state as ReturnType<typeof buildDemoState>, catalog));
+          set((state) =>
+            applyRemoteCatalog(
+              state as ReturnType<typeof buildDemoState>,
+              catalog,
+            ),
+          );
         } catch (error: unknown) {
           console.error("Failed to refresh remote catalog", error);
         }
@@ -143,7 +148,9 @@ export const useAppStore = create<AppState>()(
 
         try {
           if (typeof window === "undefined" || !window.navigator.onLine) {
-            throw new Error("Network not available - cannot initialize from database");
+            throw new Error(
+              "Network not available - cannot initialize from database",
+            );
           }
 
           const catalog = await loadRemoteCatalog();
@@ -153,7 +160,12 @@ export const useAppStore = create<AppState>()(
             throw new Error("No catalog data loaded from database");
           }
 
-          set((state) => applyRemoteCatalog(state as ReturnType<typeof buildDemoState>, catalog));
+          set((state) =>
+            applyRemoteCatalog(
+              state as ReturnType<typeof buildDemoState>,
+              catalog,
+            ),
+          );
         } catch (error: unknown) {
           console.error("Failed to initialize from database", error);
           set({ initialized: false });
