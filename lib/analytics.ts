@@ -44,6 +44,17 @@ export function summarizeOrders(orders: Order[]) {
   };
 }
 
+export function summarizeOrderSlice(orders: Order[]) {
+  return {
+    count: orders.length,
+    sales: orders.reduce((sum, order) => sum + order.total, 0),
+    averageTicket:
+      orders.length > 0
+        ? orders.reduce((sum, order) => sum + order.total, 0) / orders.length
+        : 0,
+  };
+}
+
 export function getSalesTrend(orders: Order[]) {
   return Array.from({ length: 7 }, (_, index) => {
     const date = subDays(new Date(), 6 - index);

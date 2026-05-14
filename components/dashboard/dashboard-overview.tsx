@@ -1,9 +1,11 @@
 "use client";
 
+import { format, isSameDay } from "date-fns";
 import { EmptyState } from "@/components/common/empty-state";
 import { SalesTrendChart } from "@/components/charts/sales-trend-chart";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -14,6 +16,7 @@ import {
   getSalesTrend,
   getTopEntities,
   summarizeOrders,
+  summarizeOrderSlice,
   getCountsBreakdown,
 } from "@/lib/analytics";
 import { compactNumber, currency } from "@/lib/utils";
@@ -31,6 +34,9 @@ export function DashboardOverview() {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(() =>
+    format(new Date(), "yyyy-MM-dd"),
+  );
 
   const loadOrders = async () => {
     try {
@@ -69,10 +75,26 @@ export function DashboardOverview() {
   }
 
   const summary = summarizeOrders(orders);
+  const selectedDateValue = new Date(`${selectedDate}T00:00:00`);
+  const selectedDayOrders = orders.filter((order) =>
+    isSameDay(new Date(order.createdAt), selectedDateValue),
+  );
+  const selectedDaySummary = summarizeOrderSlice(selectedDayOrders);
   const trend = getSalesTrend(orders);
   const tops = getTopEntities({ orders, sizes, productTypes, flavors, extras });
   const paymentBreakdown = getPaymentsBreakdown(orders);
+  const selectedDayPayments = getPaymentsBreakdown(selectedDayOrders);
   const counts = getCountsBreakdown({ orders, sizes, productTypes, flavors });
+  const selectedDayCounts = getCountsBreakdown({
+    orders: selectedDayOrders,
+    sizes,
+    productTypes,
+    flavors,
+  });
+  const selectedDayLabel = format(selectedDateValue, "PPP");
+
+  const paymentValue = (method: string, entries: Array<{ name: string; value: number }>) =>
+    entries.find((entry) => entry.name === method)?.value ?? 0;
 
   return (
     <div className="space-y-5">
@@ -98,6 +120,87 @@ export function DashboardOverview() {
           hint="Promedio de orden"
         />
       </div>
+
+      <Card>
+        <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle>Métricas por día</CardTitle>
+            <p className="text-muted mt-1 text-sm">
+              Revisa el día de hoy o un día específico para decisiones y cierre.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedDate(format(new Date(), "yyyy-MM-dd"))}
+            >
+              Hoy
+            </Button>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(event) => setSelectedDate(event.target.value)}
+              className="h-10 rounded-full border border-white/10 bg-white/5 px-4 text-sm outline-none"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <KpiCard
+              label={`Ventas ${selectedDayLabel}`}
+              value={currency(selectedDaySummary.sales)}
+              hint={`${selectedDaySummary.count} pedidos`}
+            />
+            <KpiCard
+              label="Unidades vendidas"
+              value={compactNumber(
+                selectedDayOrders.reduce(
+                  (sum, order) =>
+                    sum +
+                    order.items.reduce(
+                      (itemSum, item) => itemSum + item.quantity,
+                      0,
+                    ),
+                  0,
+                ),
+              )}
+              hint="Total de unidades"
+            />
+            <KpiCard
+              label="Efectivo"
+              value={currency(paymentValue("cash", selectedDayPayments))}
+              hint="Pagos en caja"
+            />
+            <KpiCard
+              label="Nequi"
+              value={currency(paymentValue("nequi", selectedDayPayments))}
+              hint="Pagos por Nequi"
+            />
+            <KpiCard
+              label="Ticket promedio"
+              value={currency(selectedDaySummary.averageTicket)}
+              hint="Promedio del día"
+            />
+          </div>
+
+          <div className="mt-5 grid gap-5 xl:grid-cols-3">
+            <BreakdownCard
+              title={`Tamaños ${selectedDayLabel}`}
+              data={selectedDayCounts.sizes}
+            />
+            <BreakdownCard
+              title={`Variaciones ${selectedDayLabel}`}
+              data={selectedDayCounts.productTypes}
+            />
+            <BreakdownCard
+              title={`Sabores ${selectedDayLabel}`}
+              data={selectedDayCounts.flavors}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Card>
