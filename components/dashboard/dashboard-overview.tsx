@@ -135,7 +135,10 @@ export function DashboardOverview() {
 
       <div className="grid gap-5 xl:grid-cols-3">
         <BreakdownCard title="Unidades por tamaño" data={counts.sizes} />
-        <BreakdownCard title="Unidades por variación" data={counts.productTypes} />
+        <BreakdownCard
+          title="Unidades por variación"
+          data={counts.productTypes}
+        />
         <BreakdownCard title="Unidades por sabor" data={counts.flavors} />
       </div>
     </div>

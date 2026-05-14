@@ -141,7 +141,8 @@ export function getCountsBreakdown({
       typeCounts[typeLabel] = (typeCounts[typeLabel] ?? 0) + item.quantity;
 
       const flavorLabel = flavorMap.get(item.flavorId) ?? "Desconocido";
-      flavorCounts[flavorLabel] = (flavorCounts[flavorLabel] ?? 0) + item.quantity;
+      flavorCounts[flavorLabel] =
+        (flavorCounts[flavorLabel] ?? 0) + item.quantity;
     });
   });
 
