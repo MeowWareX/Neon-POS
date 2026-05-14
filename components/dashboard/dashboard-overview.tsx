@@ -93,8 +93,10 @@ export function DashboardOverview() {
   });
   const selectedDayLabel = format(selectedDateValue, "PPP");
 
-  const paymentValue = (method: string, entries: Array<{ name: string; value: number }>) =>
-    entries.find((entry) => entry.name === method)?.value ?? 0;
+  const paymentValue = (
+    method: string,
+    entries: Array<{ name: string; value: number }>,
+  ) => entries.find((entry) => entry.name === method)?.value ?? 0;
 
   return (
     <div className="space-y-5">
