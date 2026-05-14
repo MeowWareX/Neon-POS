@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogIn, Sparkles } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DEMO_PASSWORD } from "@/lib/constants";
 import { loginSchema, type LoginInput } from "@/schemas/auth";
 import { loginUser } from "@/services/auth-service";
 import { useAuthStore } from "@/stores/auth-store";
@@ -28,15 +27,10 @@ export function LoginForm() {
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "operator@neon.local",
-      password: DEMO_PASSWORD,
+      email: "",
+      password: "",
     },
   });
-
-  const handleQuickAccess = (email: string) => {
-    form.setValue("email", email);
-    form.setValue("password", DEMO_PASSWORD);
-  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -90,33 +84,7 @@ export function LoginForm() {
           </div>
 
           <div className="grid gap-2">
-            <p className="text-muted text-xs font-semibold tracking-[0.18em] uppercase">
-              Acceso demo
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleQuickAccess("operator@neon.local")}
-              >
-                <Sparkles className="size-4" />
-                Operador
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleQuickAccess("admin@neon.local")}
-              >
-                <Sparkles className="size-4" />
-                Admin
-              </Button>
-            </div>
-            <p className="text-muted text-xs">
-              Contraseña demo:{" "}
-              <span className="text-foreground">{DEMO_PASSWORD}</span>
-            </p>
+            {/* Demo quick-access removed to require real credentials */}
           </div>
 
           <Button

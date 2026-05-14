@@ -39,7 +39,6 @@ const navItems: Array<{
   { href: "/pos", label: "POS", icon: CupSoda },
   { href: "/orders", label: "Pedidos", icon: ReceiptText },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3, adminOnly: true },
-  { href: "/inventory", label: "Inventario", icon: Package, adminOnly: true },
   { href: "/flavors", label: "Sabores", icon: Settings2, adminOnly: true },
   {
     href: "/configuration",
@@ -48,7 +47,7 @@ const navItems: Array<{
     adminOnly: true,
   },
   { href: "/cash", label: "Caja", icon: Wallet },
-  { href: "/accounting", label: "Finanzas", icon: CreditCard, adminOnly: true },
+  // Finanzas and Inventario temporarily hidden for weekend operation
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

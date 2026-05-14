@@ -7,19 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+import { useEffect, useState } from "react";
+import type { Order } from "@/types/domain";
 import {
   getPaymentsBreakdown,
   getSalesTrend,
   getTopEntities,
   summarizeOrders,
+  getCountsBreakdown,
 } from "@/lib/analytics";
 import { compactNumber, currency } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 
 export function DashboardOverview() {
-  const { orders, sizes, productTypes, flavors, extras } = useAppStore(
+  const { sizes, productTypes, flavors, extras } = useAppStore(
     useShallow((state) => ({
-      orders: state.orders,
       sizes: state.sizes,
       productTypes: state.productTypes,
       flavors: state.flavors,
@@ -27,7 +29,36 @@ export function DashboardOverview() {
     })),
   );
 
-  if (orders.length === 0) {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadOrders = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/orders/list", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to load orders");
+      const data = await res.json();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error loading orders for dashboard:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOrders();
+    const interval = setInterval(loadOrders, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading && orders.length === 0) {
+    return (
+      <div className="text-muted py-8 text-center">Cargando métricas...</div>
+    );
+  }
+
+  if (!isLoading && orders.length === 0) {
     return (
       <EmptyState
         icon={BarChart3}
@@ -41,6 +72,7 @@ export function DashboardOverview() {
   const trend = getSalesTrend(orders);
   const tops = getTopEntities({ orders, sizes, productTypes, flavors, extras });
   const paymentBreakdown = getPaymentsBreakdown(orders);
+  const counts = getCountsBreakdown({ orders, sizes, productTypes, flavors });
 
   return (
     <div className="space-y-5">
@@ -100,6 +132,12 @@ export function DashboardOverview() {
         <TopCard title="Top sabores" data={tops.flavors} />
         <TopCard title="Top extras" data={tops.extras} />
       </div>
+
+      <div className="grid gap-5 xl:grid-cols-3">
+        <BreakdownCard title="Unidades por tamaño" data={counts.sizes} />
+        <BreakdownCard title="Unidades por variación" data={counts.productTypes} />
+        <BreakdownCard title="Unidades por sabor" data={counts.flavors} />
+      </div>
     </div>
   );
 }
@@ -126,6 +164,39 @@ function TopCard({
             <Badge variant="secondary">{compactNumber(item.total)}</Badge>
           </div>
         ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function BreakdownCard({
+  title,
+  data,
+}: {
+  title: string;
+  data: Record<string, number>;
+}) {
+  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {entries.length === 0 ? (
+          <p className="text-muted text-sm">No hay datos</p>
+        ) : (
+          entries.map(([label, total]) => (
+            <div
+              key={label}
+              className="flex items-center justify-between rounded-[1.2rem] border border-white/10 bg-white/4 px-4 py-3"
+            >
+              <p className="text-sm">{label}</p>
+              <Badge variant="secondary">{total}</Badge>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

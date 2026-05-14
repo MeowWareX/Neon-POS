@@ -113,6 +113,45 @@ export function getTopEntities({
   };
 }
 
+export function getCountsBreakdown({
+  orders,
+  sizes,
+  productTypes,
+  flavors,
+}: {
+  orders: Order[];
+  sizes: ProductSize[];
+  productTypes: ProductType[];
+  flavors: Flavor[];
+}) {
+  const sizeMap = new Map(sizes.map((s) => [s.id, s.label]));
+  const typeMap = new Map(productTypes.map((t) => [t.id, t.label]));
+  const flavorMap = new Map(flavors.map((f) => [f.id, f.name]));
+
+  const sizeCounts: Record<string, number> = {};
+  const typeCounts: Record<string, number> = {};
+  const flavorCounts: Record<string, number> = {};
+
+  orders.forEach((order) => {
+    order.items.forEach((item) => {
+      const sizeLabel = sizeMap.get(item.sizeId) ?? "Desconocido";
+      sizeCounts[sizeLabel] = (sizeCounts[sizeLabel] ?? 0) + item.quantity;
+
+      const typeLabel = typeMap.get(item.typeId) ?? "Desconocido";
+      typeCounts[typeLabel] = (typeCounts[typeLabel] ?? 0) + item.quantity;
+
+      const flavorLabel = flavorMap.get(item.flavorId) ?? "Desconocido";
+      flavorCounts[flavorLabel] = (flavorCounts[flavorLabel] ?? 0) + item.quantity;
+    });
+  });
+
+  return {
+    sizes: sizeCounts,
+    productTypes: typeCounts,
+    flavors: flavorCounts,
+  };
+}
+
 export function getPaymentsBreakdown(orders: Order[]) {
   const totals = orders.reduce<Record<string, number>>((acc, order) => {
     acc[order.paymentMethod] = (acc[order.paymentMethod] ?? 0) + order.total;
