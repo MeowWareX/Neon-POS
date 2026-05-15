@@ -48,7 +48,7 @@ export function CashRegisterPanel() {
     try {
       setOpeningLoading(true);
       const session = openCashSession(values.openingCash);
-      
+
       if (!session) {
         toast.error("No se pudo crear la sesión de caja.");
         return;
@@ -62,7 +62,7 @@ export function CashRegisterPanel() {
           toast.success("Caja abierta y sincronizada.");
         } catch (syncError) {
           toast.warning(
-            "Caja abierta localmente. La sincronización con el servidor falló, pero los datos se recuperarán en la próxima conexión."
+            "Caja abierta localmente. La sincronización con el servidor falló, pero los datos se recuperarán en la próxima conexión.",
           );
           console.error("Sync error:", syncError);
         }
@@ -78,7 +78,7 @@ export function CashRegisterPanel() {
     try {
       setClosingLoading(true);
       const session = closeCashSession(values.closingCash);
-      
+
       if (!session) {
         toast.error("No se pudo cerrar la sesión de caja.");
         return;
@@ -92,7 +92,7 @@ export function CashRegisterPanel() {
           toast.success("Caja cerrada y sincronizada.");
         } catch (syncError) {
           toast.warning(
-            "Caja cerrada localmente. La sincronización con el servidor falló, pero los datos se recuperarán en la próxima conexión."
+            "Caja cerrada localmente. La sincronización con el servidor falló, pero los datos se recuperarán en la próxima conexión.",
           );
           console.error("Sync error:", syncError);
         }
@@ -142,8 +142,8 @@ export function CashRegisterPanel() {
                   <Label>Cierre real</Label>
                   <Input type="number" {...closeForm.register("closingCash")} />
                 </div>
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   type="submit"
                   disabled={closingLoading}
                 >
@@ -160,8 +160,8 @@ export function CashRegisterPanel() {
                 <Label>Efectivo inicial</Label>
                 <Input type="number" {...openForm.register("openingCash")} />
               </div>
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 type="submit"
                 disabled={openingLoading}
               >

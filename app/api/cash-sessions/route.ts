@@ -20,16 +20,18 @@ export async function GET() {
     }
 
     // Transform database format to domain format
-    const sessions: CashSession[] = (data || []).map((row: Record<string, unknown>) => ({
-      id: row.id,
-      openingCash: row.opening_cash,
-      openedAt: row.opened_at,
-      closingCash: row.closing_cash || undefined,
-      closedAt: row.closed_at || undefined,
-      expectedCash: row.expected_cash || undefined,
-      difference: row.difference || undefined,
-      status: row.status,
-    }));
+    const sessions: CashSession[] = (data || []).map(
+      (row: Record<string, unknown>) => ({
+        id: row.id,
+        openingCash: row.opening_cash,
+        openedAt: row.opened_at,
+        closingCash: row.closing_cash || undefined,
+        closedAt: row.closed_at || undefined,
+        expectedCash: row.expected_cash || undefined,
+        difference: row.difference || undefined,
+        status: row.status,
+      }),
+    );
 
     return NextResponse.json({ sessions, mode: "supabase" });
   } catch (error) {

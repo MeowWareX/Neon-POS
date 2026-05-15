@@ -20,7 +20,7 @@ export function useCashSessionSync(intervalMs: number = 30000) {
         if (!response.ok) return;
 
         const { sessions } = await response.json();
-        
+
         // Solo actualizar si hay sesiones nuevas o cambios
         if (sessions && sessions.length > 0) {
           useAppStore.setState({ cashSessions: sessions });
