@@ -78,6 +78,9 @@ function applyRemoteCatalog(
     inventoryConsumptionRules: catalog.inventoryConsumptionRules?.length
       ? catalog.inventoryConsumptionRules
       : state.inventoryConsumptionRules,
+    cashSessions: catalog.cashSessions?.length
+      ? catalog.cashSessions
+      : state.cashSessions,
   };
 }
 
@@ -90,6 +93,7 @@ async function loadRemoteCatalog() {
     activeFlavorsRes,
     inventoryItemsRes,
     inventoryRulesRes,
+    cashSessionsRes,
   ] = await Promise.all([
     fetch("/api/configuration/sizes"),
     fetch("/api/configuration/product-types"),
@@ -98,6 +102,7 @@ async function loadRemoteCatalog() {
     fetch("/api/active-flavors"),
     fetch("/api/inventory/items"),
     fetch("/api/inventory/consumption-rules"),
+    fetch("/api/cash-sessions"),
   ]);
 
   return {
@@ -111,6 +116,9 @@ async function loadRemoteCatalog() {
       : null,
     inventoryConsumptionRules: inventoryRulesRes.ok
       ? await inventoryRulesRes.json()
+      : null,
+    cashSessions: cashSessionsRes.ok
+      ? (await cashSessionsRes.json()).sessions
       : null,
   };
 }
@@ -411,7 +419,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 4,
+      version: 5,
       migrate: () => ({
         ...emptyState,
         users: [],
@@ -422,21 +430,22 @@ export const useAppStore = create<AppState>()(
         initialized: state.initialized,
         businessDate: state.businessDate,
         users: state.users,
-        // CATALOG ONLY - persisted across sessions
+        // CATALOG - persisted across sessions
         sizes: state.sizes,
         productTypes: state.productTypes,
         flavors: state.flavors,
         activeFlavors: state.activeFlavors,
         extras: state.extras,
         inventoryConsumptionRules: state.inventoryConsumptionRules,
-        // LOCAL TRANSACTIONAL - cleared on reload (read from BD)
+        // BUSINESS DAY DATA - persisted for consistency across sessions and devices
+        cashSessions: state.cashSessions,
+        expenses: state.expenses,
+        loanPayments: state.loanPayments,
+        // LOCAL TRANSACTIONAL - cleared on reload (read from BD on next sync)
         inventoryItems: [],
         inventoryMovements: [],
         purchases: [],
         orders: [],
-        cashSessions: [],
-        expenses: [],
-        loanPayments: [],
       }),
     },
   ),

@@ -5,6 +5,7 @@ import { AppToaster } from "@/components/ui/toaster";
 import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-registration";
 import { useOfflineSync } from "@/hooks/use-offline-sync";
 import { useRealtimeBridge } from "@/hooks/use-realtime-bridge";
+import { useCashSessionSync } from "@/hooks/use-cash-session-sync";
 import { useAppStore } from "@/stores/app-store";
 
 function Bootstrap() {
@@ -16,6 +17,7 @@ function Bootstrap() {
 
   useOfflineSync();
   useRealtimeBridge();
+  useCashSessionSync();
 
   return null;
 }
