@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAppStore } from "@/stores/app-store";
 
 /**
- * Hook para sincronizar periódicamente las sesiones de caja desde la base de datos
+ * Hook para sincronizar periódicamente las sesiones de caja y órdenes desde la base de datos
  * Esto asegura que los datos estén siempre actualizados y consistentes entre dispositivos
  */
 export function useCashSessionSync(intervalMs: number = 30000) {
@@ -16,17 +16,33 @@ export function useCashSessionSync(intervalMs: number = 30000) {
       if (!navigator.onLine) return;
 
       try {
-        const response = await fetch("/api/cash-sessions");
-        if (!response.ok) return;
+        const [sessionsRes, ordersRes] = await Promise.all([
+          fetch("/api/cash-sessions"),
+          fetch("/api/orders/list"),
+        ]);
 
-        const { sessions } = await response.json();
+        if (!sessionsRes.ok || !ordersRes.ok) {
+          console.warn("Failed to fetch sync data");
+          return;
+        }
 
-        // Solo actualizar si hay sesiones nuevas o cambios
-        if (sessions && sessions.length > 0) {
-          useAppStore.setState({ cashSessions: sessions });
+        const { sessions } = await sessionsRes.json();
+        const orders = await ordersRes.json();
+
+        if (sessions || orders) {
+          const updateData: Record<string, unknown> = {};
+          if (sessions?.length > 0) {
+            updateData.cashSessions = sessions;
+          }
+          if (orders?.length > 0) {
+            updateData.orders = orders;
+          }
+          if (Object.keys(updateData).length > 0) {
+            useAppStore.setState(updateData);
+          }
         }
       } catch (error) {
-        console.error("Failed to sync cash sessions:", error);
+        console.error("Failed to sync data:", error);
       }
     };
 

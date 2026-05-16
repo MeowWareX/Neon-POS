@@ -81,6 +81,7 @@ function applyRemoteCatalog(
     cashSessions: catalog.cashSessions?.length
       ? catalog.cashSessions
       : state.cashSessions,
+    orders: catalog.orders?.length ? catalog.orders : state.orders,
   };
 }
 
@@ -94,6 +95,7 @@ async function loadRemoteCatalog() {
     inventoryItemsRes,
     inventoryRulesRes,
     cashSessionsRes,
+    ordersRes,
   ] = await Promise.all([
     fetch("/api/configuration/sizes"),
     fetch("/api/configuration/product-types"),
@@ -103,6 +105,7 @@ async function loadRemoteCatalog() {
     fetch("/api/inventory/items"),
     fetch("/api/inventory/consumption-rules"),
     fetch("/api/cash-sessions"),
+    fetch("/api/orders/list"),
   ]);
 
   return {
@@ -120,6 +123,7 @@ async function loadRemoteCatalog() {
     cashSessions: cashSessionsRes.ok
       ? (await cashSessionsRes.json()).sessions
       : null,
+    orders: ordersRes.ok ? await ordersRes.json() : null,
   };
 }
 
@@ -419,7 +423,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 5,
+      version: 6,
       migrate: () => ({
         ...emptyState,
         users: [],
@@ -439,13 +443,13 @@ export const useAppStore = create<AppState>()(
         inventoryConsumptionRules: state.inventoryConsumptionRules,
         // BUSINESS DAY DATA - persisted for consistency across sessions and devices
         cashSessions: state.cashSessions,
+        orders: state.orders,
         expenses: state.expenses,
         loanPayments: state.loanPayments,
         // LOCAL TRANSACTIONAL - cleared on reload (read from BD on next sync)
         inventoryItems: [],
         inventoryMovements: [],
         purchases: [],
-        orders: [],
       }),
     },
   ),
