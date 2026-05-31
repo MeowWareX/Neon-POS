@@ -3,6 +3,8 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { mapInventoryItemRow } from "@/lib/catalog-mappers";
 import { inventoryItemSchema } from "@/schemas/configuration";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseAdminClient();

@@ -4,6 +4,8 @@ import { mapActiveFlavorRow } from "@/lib/catalog-mappers";
 import { syncActiveFlavorWithSupabase } from "@/repositories/admin-repository";
 import { activeFlavorSyncSchema } from "@/schemas/flavors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const supabase = getSupabaseAdminClient();

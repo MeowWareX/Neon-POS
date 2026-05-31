@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   try {
     const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get("limit") ?? "100");
+    const limit = parseInt(url.searchParams.get("limit") ?? "1000");
 
     // Get orders with related data
     const { data: ordersData, error: ordersError } = await supabase

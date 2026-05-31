@@ -8,6 +8,8 @@ import {
 import { flavorSchema } from "@/schemas/configuration";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const supabase = getSupabaseAdminClient();

@@ -115,8 +115,22 @@ export function PosTerminal() {
   const pendingOrderItems = useMemo(() => {
     const items = [...cart];
 
-    if (currentItem && !cart.some((item) => sameSelection(item, currentItem))) {
-      items.push(currentItem);
+    if (currentItem) {
+      const existingIndex = items.findIndex((item) =>
+        sameSelection(item, currentItem),
+      );
+
+      if (existingIndex >= 0) {
+        const existing = items[existingIndex];
+        items[existingIndex] = {
+          ...existing,
+          quantity: existing.quantity + currentItem.quantity,
+          lineTotal:
+            existing.unitPrice * (existing.quantity + currentItem.quantity),
+        };
+      } else {
+        items.push(currentItem);
+      }
     }
 
     return items;
