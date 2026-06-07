@@ -9,7 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { calculateOrderItem, createOrderRecord, PRICE_MATRIX } from "@/lib/business";
+import {
+  calculateOrderItem,
+  createOrderRecord,
+  PRICE_MATRIX,
+} from "@/lib/business";
 import { calculateInventoryShortages } from "@/lib/inventory-consumption";
 import { syncPendingOrders } from "@/services/sync-service";
 import { currency, formatTime } from "@/lib/utils";
@@ -20,8 +24,6 @@ const paymentLabels: Record<PaymentMethod, string> = {
   cash: "Efectivo",
   nequi: "Nequi",
 };
-
-
 
 const initialDraft: OrderItemDraft = {
   extraIds: [],
@@ -395,7 +397,7 @@ export function PosTerminal() {
     );
 
     if (!selectedType) return "";
-    
+
     const price = PRICE_MATRIX[selectedType.code]?.[sizeCode];
     if (price == null) return "No disponible";
 
@@ -484,10 +486,12 @@ export function PosTerminal() {
                       .filter((size) => {
                         if (!draft.typeId) return true;
                         const selectedType = productTypes.find(
-                          (t) => t.id === draft.typeId
+                          (t) => t.id === draft.typeId,
                         );
                         if (!selectedType) return true;
-                        return PRICE_MATRIX[selectedType.code]?.[size.code] != null;
+                        return (
+                          PRICE_MATRIX[selectedType.code]?.[size.code] != null
+                        );
                       })
                       .map((size) => ({
                         id: size.id,
