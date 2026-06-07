@@ -17,10 +17,27 @@ export function createOrderNumber(sequence: number) {
   return `N-${String(sequence + 1).padStart(4, "0")}`;
 }
 
-const CREMOSO_PRICE_BY_SIZE_CODE: Record<string, number> = {
-  "8oz": 10000,
-  "12oz": 14000,
-  "16oz": 17000,
+export const PRICE_MATRIX: Record<string, Record<string, number | null>> = {
+  basico: {
+    "8oz": 5000,
+    "12oz": 8000,
+    "16oz": 10000,
+  },
+  "con-licor": {
+    "8oz": 7000,
+    "12oz": 10000,
+    "16oz": 15000,
+  },
+  cremoso: {
+    "8oz": 8000,
+    "12oz": 13000,
+    "16oz": 17000,
+  },
+  picoso: {
+    "8oz": null,
+    "12oz": 13000,
+    "16oz": 15000,
+  },
 };
 
 export function calculateOrderItem({
@@ -48,11 +65,12 @@ export function calculateOrderItem({
     return null;
   }
 
-  const baseUnitPrice =
-    productType.code === "cremoso"
-      ? (CREMOSO_PRICE_BY_SIZE_CODE[size.code] ??
-        size.price + productType.priceModifier)
-      : size.price + productType.priceModifier;
+  const matrixPrice = PRICE_MATRIX[productType.code]?.[size.code];
+  if (matrixPrice === undefined || matrixPrice === null) {
+    return null; // Invalid combination
+  }
+
+  const baseUnitPrice = matrixPrice;
   const unitPrice =
     baseUnitPrice + selectedExtras.reduce((sum, item) => sum + item.price, 0);
   const unitCost =

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { calculateOrderItem, createOrderRecord } from "@/lib/business";
+import { calculateOrderItem, createOrderRecord, PRICE_MATRIX } from "@/lib/business";
 import { calculateInventoryShortages } from "@/lib/inventory-consumption";
 import { syncPendingOrders } from "@/services/sync-service";
 import { currency, formatTime } from "@/lib/utils";
@@ -21,11 +21,7 @@ const paymentLabels: Record<PaymentMethod, string> = {
   nequi: "Nequi",
 };
 
-const CREMOSO_PRICE_BY_SIZE_CODE: Record<string, number> = {
-  "8oz": 10000,
-  "12oz": 14000,
-  "16oz": 17000,
-};
+
 
 const initialDraft: OrderItemDraft = {
   extraIds: [],
@@ -393,20 +389,21 @@ export function PosTerminal() {
     lineTotal: item.lineTotal,
   }));
 
-  const getSizeCaption = (sizeCode: string, basePrice: number) => {
+  const getSizeCaption = (sizeCode: string) => {
     const selectedType = productTypes.find(
       (entry) => entry.id === draft.typeId,
     );
 
-    if (selectedType?.code === "cremoso") {
-      return `Precio especial ${currency(CREMOSO_PRICE_BY_SIZE_CODE[sizeCode] ?? basePrice)}`;
+    if (!selectedType) return "";
+    
+    const price = PRICE_MATRIX[selectedType.code]?.[sizeCode];
+    if (price == null) return "No disponible";
+
+    if (selectedType.code !== "basico") {
+      return `Precio especial ${currency(price)}`;
     }
 
-    if (selectedType?.code === "picoso") {
-      return `Precio especial ${currency(basePrice + selectedType.priceModifier)}`;
-    }
-
-    return currency(basePrice);
+    return currency(price);
   };
 
   return (
@@ -483,15 +480,24 @@ export function PosTerminal() {
                   <StepBlock
                     step="2"
                     title="Tamaño"
-                    items={sizes.map((size) => ({
-                      id: size.id,
-                      label: size.label,
-                      caption: draft.typeId
-                        ? getSizeCaption(size.code, size.price)
-                        : currency(size.price),
-                      active: draft.sizeId === size.id,
-                      onClick: () => selectSize(size.id),
-                    }))}
+                    items={sizes
+                      .filter((size) => {
+                        if (!draft.typeId) return true;
+                        const selectedType = productTypes.find(
+                          (t) => t.id === draft.typeId
+                        );
+                        if (!selectedType) return true;
+                        return PRICE_MATRIX[selectedType.code]?.[size.code] != null;
+                      })
+                      .map((size) => ({
+                        id: size.id,
+                        label: size.label,
+                        caption: draft.typeId
+                          ? getSizeCaption(size.code)
+                          : currency(size.price),
+                        active: draft.sizeId === size.id,
+                        onClick: () => selectSize(size.id),
+                      }))}
                   />
                 </div>
               ) : null}
