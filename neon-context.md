@@ -9,6 +9,7 @@ Este documento sirve como un manual de contexto completo para Gemini u otros age
 **NEON Drinks & Snacks** es un negocio de venta de raspados (granizados), bebidas y snacks, diseñado para operar en puntos físicos de alta afluencia (especialmente los fines de semana).
 
 **NEON OS** es el sistema operativo del negocio. Se trata de una aplicación web **mobile-first, offline-first** optimizada para el flujo rápido de venta en horas pico. Sus características operativas clave son:
+
 - **Flujo POS ágil**: Un proceso táctil de 6 pasos para registrar pedidos en menos de 10 segundos.
 - **Interfaz nocturna / exterior**: Diseño oscuro con acentos de color neón contrastantes, con targets táctiles grandes para fácil uso al aire libre o bajo luz cambiante.
 - **Operación Offline**: Permite registrar ventas, consumos e inventarios localmente (Zustand + LocalStorage) si la señal de red falla, y sincroniza automáticamente las transacciones con **Supabase** al detectar conexión.
@@ -19,6 +20,7 @@ Este documento sirve como un manual de contexto completo para Gemini u otros age
 ## 2. Stack Tecnológico
 
 La aplicación está construida sobre las siguientes tecnologías:
+
 - **Framework**: Next.js 15 (App Router) + React 19 + TypeScript.
 - **Base de Datos**: Supabase (PostgreSQL) con políticas de seguridad de nivel de fila (RLS).
 - **Estilos**: Tailwind CSS + Shadcn/ui.
@@ -33,32 +35,39 @@ La aplicación está construida sobre las siguientes tecnologías:
 La oferta comercial se centra principalmente en **Raspados Base** que se personalizan según el tamaño, tipo de preparación y ingredientes adicionales (extras).
 
 ### A. Tipos de Raspado (Modificadores de Tipo)
+
 Representados por la tabla `public.product_types`. Los tipos de raspado básicos y sus modificadores de precio/costo en la base de datos (según semilla) son:
+
 1. **Básico (`basico`)**: Raspado estándar. Modificador precio: $0, Modificador costo: $0.
 2. **Premium (`premium`)**: Ingredientes especiales. Modificador precio: +$2,500, Modificador costo: +$700.
 3. **Cremoso (`cremoso`)**: Base cremosa especial de leche/crema. Modificador precio: +$7,000, Modificador costo: +$2,000.
 4. **Picoso (`picoso`)**: Preparación picante (michelado). Modificador precio: +$5,000, Modificador costo: +$1,000.
 
 ### B. Tamaños del Producto
+
 Representados por la tabla `public.product_sizes`.
+
 1. **8 oz (`8oz`)**: Base de 8 onzas.
 2. **12 oz (`12oz`)**: Base de 12 onzas.
 3. **16 oz (`16oz`)**: Base de 16 onzas.
 
 ### C. Matriz de Precios Fija (`PRICE_MATRIX`)
+
 A nivel de código en el POS (`lib/business.ts`), la lógica de facturación utiliza una matriz de precios fija (`PRICE_MATRIX`) que cruza el **Tipo de Raspado** con el **Tamaño**, sobreescribiendo los modificadores base si es necesario. La matriz configurada es la siguiente:
 
-| Tipo (`product_types`) | 8 oz (`8oz`) | 12 oz (`12oz`) | 16 oz (`16oz`) |
-| :--- | :---: | :---: | :---: |
-| **Básico (`basico`)** | $5.000 | $8.000 | $10.000 |
-| **Con Licor (`con-licor`)** | $7.000 | $10.000 | $15.000 |
-| **Cremoso (`cremoso`)** | $8.000 | $13.000 | $17.000 |
-| **Picoso (`picoso`)** | *No se vende* (null) | $13.000 | $15.000 |
+| Tipo (`product_types`)      |     8 oz (`8oz`)     | 12 oz (`12oz`) | 16 oz (`16oz`) |
+| :-------------------------- | :------------------: | :------------: | :------------: |
+| **Básico (`basico`)**       |        $5.000        |     $8.000     |    $10.000     |
+| **Con Licor (`con-licor`)** |        $7.000        |    $10.000     |    $15.000     |
+| **Cremoso (`cremoso`)**     |        $8.000        |    $13.000     |    $17.000     |
+| **Picoso (`picoso`)**       | _No se vende_ (null) |    $13.000     |    $15.000     |
 
-*Nota: La combinación Picoso de 8 oz es inválida y el sistema no permite agregarla al carrito.*
+_Nota: La combinación Picoso de 8 oz es inválida y el sistema no permite agregarla al carrito._
 
 ### D. Adicionales (Extras)
+
 Ingredientes extra que el cliente puede añadir al raspado base. Representados por la tabla `public.extras`.
+
 - **Chamoy**: Precio venta $2.000 | Costo $500 (Deduce del inventario `Chamoy`)
 - **Lengua** (Gomita de lengua): Precio venta $1.000 | Costo $300 (Deduce del inventario `Lengua`)
 - **Perlas explosivas**: Precio venta $2.000 | Costo $600 (Deduce del inventario `Perlas explosivas`)
@@ -68,7 +77,9 @@ Ingredientes extra que el cliente puede añadir al raspado base. Representados p
 - **Chupeta**: Precio venta $1.000 | Costo $200 (Deduce del inventario `Chupeta`)
 
 ### E. Sabores (Flavors) y Sistema de Tanques
+
 Cada raspado requiere seleccionar un sabor base. Los sabores son físicos y se despachan desde tanques:
+
 1. **Chicle** (Color rosa `#ff73e3`, ligado a `Líquido Chicle`)
 2. **Sandía** (Color turquesa `#3de8c2`, ligado a `Líquido Sandía`)
 3. **Maracumango / Maracuyá** (Color amarillo `#ffd24d`, ligado a `Líquido Maracumango`)
@@ -82,6 +93,7 @@ Durante cada día comercial, el administrador mapea qué sabor está cargado en 
 ## 4. Gestión de Inventarios y Deducción por Recetas
 
 El inventario de insumos está clasificado en la tabla `public.inventory_items` con las siguientes categorías principales:
+
 - `envases` (Vasos, pitillos, tapas)
 - `extras` (Chamoy, perlas, gomitas adicionales, licores)
 - `sabores` (Jarabes líquidos medidos en `ml` consumidos por los sabores)
@@ -89,6 +101,7 @@ El inventario de insumos está clasificado en la tabla `public.inventory_items` 
 - `produccion` (Bases preparadas)
 
 ### Reglas de Consumo de Inventario (`public.inventory_consumption_rules`)
+
 El sistema no deduce inventario de manera arbitraria; sigue una tabla de recetas ligadas a la composición del ítem pedido.
 
 Cuando se crea un ítem de pedido (`OrderItem`), el sistema determina qué insumos se restan basándose en la siguiente jerarquía:
@@ -114,7 +127,9 @@ Cuando se crea un ítem de pedido (`OrderItem`), el sistema determina qué insum
    - Para cada ingrediente extra seleccionado en el pedido, se descuenta 1 unidad del insumo ligado a dicho extra (`Extra.inventoryItemId`).
 
 ### Movimientos de Inventario (`public.inventory_movements`)
+
 Cada cambio en el stock físico se registra como un movimiento asociado a un tipo:
+
 - `sale` (Deducción automática al registrar un pedido).
 - `purchase` (Aumento de stock por compra a proveedor).
 - `adjustment` (Corrección manual del administrador).
@@ -127,33 +142,40 @@ Cada cambio en el stock físico se registra como un movimiento asociado a un tip
 El flujo financiero es fundamental para la toma de decisiones. El sistema realiza la consolidación diaria basada en tres elementos de flujo de caja y rentabilidad:
 
 ### A. Control de Caja (Sesiones de Caja / Arqueos)
+
 Permite a los operadores abrir y cerrar turnos físicos asegurando que el dinero real coincida con el registrado.
+
 - **Apertura**: El operador inicia sesión registrando el dinero base en efectivo (`openingCash`).
 - **Cálculo de Ventas en Efectivo**: El sistema calcula la suma de todos los pedidos pagados con el método `cash` (efectivo) creados **después** de la fecha de apertura de la sesión activa:
   $$\text{Ventas en Efectivo} = \sum \text{Total de Pedidos en Efectivo despues de la Apertura}$$
-- **Dinero Esperado**: 
+- **Dinero Esperado**:
   $$\text{Expected Cash} = \text{openingCash} + \text{Ventas en Efectivo}$$
 - **Cierre / Diferencia**: Al cerrar el turno, el operador cuenta el efectivo real en caja e ingresa el monto total (`closingCash`). El sistema calcula el descuadre (diferencia):
   $$\text{Diferencia} = \text{closingCash} - \text{Expected Cash}$$
   - Si la diferencia es menor a 0, hay un faltante de caja.
   - Si es mayor a 0, hay un sobrante de caja.
 
-*Nota: Los pagos electrónicos (como `nequi` u otros pagos digitales) no se suman para el arqueo de efectivo físico de la caja, pero sí se consolidan en las ventas generales del negocio.*
+_Nota: Los pagos electrónicos (como `nequi` u otros pagos digitales) no se suman para el arqueo de efectivo físico de la caja, pero sí se consolidan en las ventas generales del negocio._
 
 ### B. Costo de Ventas (COGS) y Rentabilidad Comercial
+
 Cada ítem en el pedido calcula y almacena el costo unitario de su preparación:
+
 - **Costo Unitario del Raspado**:
   $$\text{Unit Cost} = \text{Costo Base del Tamaño} + \text{Costo Modificador del Tipo} + \sum \text{Costo de Extras Seleccionados}$$
-  - *Ejemplo*: Raspado básico de 12 oz (Costo Base $1.600) + Extra Perlas (Costo Extra $600) = Costo Unitario $2.200.
+  - _Ejemplo_: Raspado básico de 12 oz (Costo Base $1.600) + Extra Perlas (Costo Extra $600) = Costo Unitario $2.200.
 - **Costo de Ventas Total (COGS)**: Sumatoria de los costos estimados por la cantidad de cada raspado vendido.
 
 ### C. Gastos Operativos (`public.expenses`)
+
 Salidas directas de caja para mantener operando el negocio. Registran un concepto (ej. "Hielo extra", "Fruta del mercado"), monto (`amount`) y categoría (ej. "operación", "servicios").
 
 ### D. Abonos a Préstamos (`public.loan_payments`)
+
 Representa amortizaciones de deudas del negocio a prestamistas o socios. Almacena el nombre del prestamista/socio (`lender`), el monto pagado (`amount`) y el saldo restante de la deuda tras el abono (`balanceAfterPayment`).
 
 ### E. Cálculo de Utilidad Mensual
+
 En la sección de analíticas (`lib/analytics.ts`), el sistema calcula la salud financiera mensual del negocio bajo dos márgenes utilizando la siguiente lógica:
 
 1. **Ingresos (Revenue)**: Ventas brutas totales del mes (sin importar el método de pago).
@@ -163,7 +185,7 @@ En la sección de analíticas (`lib/analytics.ts`), el sistema calcula la salud 
 5. **Utilidad Bruta (Gross Profit)**:
    $$\text{Gross Profit} = \text{Revenue} - \text{COGS}$$
 6. **Utilidad Neta (Net Profit)**:
-   *Nota importante: Operativamente el negocio resta los abonos de préstamos directamente del flujo de caja del mes para obtener la utilidad neta líquida.*
+   _Nota importante: Operativamente el negocio resta los abonos de préstamos directamente del flujo de caja del mes para obtener la utilidad neta líquida._
    $$\text{Net Profit} = \text{Revenue} - \text{COGS} - \text{Gastos} - \text{Abonos a Préstamos}$$
 
 ---
@@ -209,6 +231,7 @@ erDiagram
 ```
 
 ### Constraints Críticos de Integridad:
+
 - **`active_flavors`**: Llave única compuesta por `(business_date, tank_number)` y `(business_date, flavor_id)`. Asegura que no haya dos sabores en el mismo tanque el mismo día, ni el mismo sabor asignado a múltiples tanques.
 - **`payment_method`**: Limitado a `('cash', 'nequi', 'daviplata', 'transfer')` en base de datos.
 - **`cash_sessions`**: Restringida a estados `('open', 'closed')`. Solo una sesión puede estar abierta simultáneamente a nivel de UI.
