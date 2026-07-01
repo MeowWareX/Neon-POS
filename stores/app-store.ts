@@ -510,7 +510,8 @@ export const useAppStore = create<AppState>()(
           const digitalRatio =
             totalSales > 0 ? input.totalDigital / totalSales : 1;
           const cashUnits = Math.round(
-            input.unitsSold * (totalSales > 0 ? input.totalCash / totalSales : 1),
+            input.unitsSold *
+              (totalSales > 0 ? input.totalCash / totalSales : 1),
           );
           newOrders.push({
             id: crypto.randomUUID(),
@@ -528,19 +529,20 @@ export const useAppStore = create<AppState>()(
         }
 
         set((state) => {
-          const updatedAccounts = state.treasuryAccounts?.map((acc) => {
-            if (
-              acc.id === "acc-caja-menor" ||
-              acc.name.toLowerCase().includes("caja menor")
-            ) {
-              return {
-                ...acc,
-                balance: input.nextDayBase,
-                updatedAt: new Date().toISOString(),
-              };
-            }
-            return acc;
-          }) ?? [];
+          const updatedAccounts =
+            state.treasuryAccounts?.map((acc) => {
+              if (
+                acc.id === "acc-caja-menor" ||
+                acc.name.toLowerCase().includes("caja menor")
+              ) {
+                return {
+                  ...acc,
+                  balance: input.nextDayBase,
+                  updatedAt: new Date().toISOString(),
+                };
+              }
+              return acc;
+            }) ?? [];
 
           return {
             historicalDays: [historicalDay, ...state.historicalDays],

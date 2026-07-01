@@ -17,7 +17,10 @@ import {
   Wallet,
 } from "lucide-react";
 import { formatDateTime, currency } from "@/lib/utils";
-import { historicalDaySchema, treasuryTransferSchema } from "@/schemas/accounting";
+import {
+  historicalDaySchema,
+  treasuryTransferSchema,
+} from "@/schemas/accounting";
 import { useAppStore } from "@/stores/app-store";
 import { AccountingOverview } from "@/components/dashboard/accounting-overview";
 import { Badge } from "@/components/ui/badge";
@@ -46,12 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { TreasuryAccountType } from "@/types/domain";
 
 export function FinancialControl() {
@@ -90,14 +88,17 @@ export function FinancialControl() {
 }
 
 function TreasuryPanel() {
-  const { treasuryAccounts = [], treasuryTransfers = [], addTreasuryTransfer } =
-    useAppStore(
-      useShallow((state) => ({
-        treasuryAccounts: state.treasuryAccounts || [],
-        treasuryTransfers: state.treasuryTransfers || [],
-        addTreasuryTransfer: state.addTreasuryTransfer,
-      })),
-    );
+  const {
+    treasuryAccounts = [],
+    treasuryTransfers = [],
+    addTreasuryTransfer,
+  } = useAppStore(
+    useShallow((state) => ({
+      treasuryAccounts: state.treasuryAccounts || [],
+      treasuryTransfers: state.treasuryTransfers || [],
+      addTreasuryTransfer: state.addTreasuryTransfer,
+    })),
+  );
 
   const [transferModalOpen, setTransferModalOpen] = useState(false);
 
@@ -214,7 +215,9 @@ function TreasuryPanel() {
               </div>
 
               <div>
-                <Label className="mb-1.5 block text-sm">Cuenta de Destino</Label>
+                <Label className="mb-1.5 block text-sm">
+                  Cuenta de Destino
+                </Label>
                 <Select
                   onValueChange={(val) =>
                     transferForm.setValue("toAccountId", val, {
@@ -241,7 +244,9 @@ function TreasuryPanel() {
               </div>
 
               <div>
-                <Label className="mb-1.5 block text-sm">Monto a Trasladar</Label>
+                <Label className="mb-1.5 block text-sm">
+                  Monto a Trasladar
+                </Label>
                 <Input
                   type="number"
                   placeholder="Ej: 1000000"
@@ -281,11 +286,14 @@ function TreasuryPanel() {
         {treasuryAccounts.map((acc) => {
           const Icon = getAccountIcon(acc.type);
           return (
-            <Card key={acc.id} className="overflow-hidden border-white/10 bg-white/4">
+            <Card
+              key={acc.id}
+              className="overflow-hidden border-white/10 bg-white/4"
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+                    <div className="border-primary/20 bg-primary/10 text-primary flex size-11 items-center justify-center rounded-2xl border">
                       <Icon className="size-5" />
                     </div>
                     <div>
@@ -315,7 +323,7 @@ function TreasuryPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <History className="size-5 text-primary" />
+            <History className="text-primary size-5" />
             Traslados Recientes
           </CardTitle>
           <CardDescription>
@@ -391,17 +399,17 @@ function HistoricalDaysPanel() {
     <div className="space-y-6">
       <Card className="border-primary/30 bg-primary/8">
         <CardContent className="flex items-start gap-4 p-5">
-          <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-primary" />
+          <CheckCircle2 className="text-primary mt-0.5 size-6 shrink-0" />
           <div className="space-y-1">
             <p className="font-semibold text-white">
               Bypass Inteligente para Dashboard Dinámico
             </p>
             <p className="text-muted text-sm leading-relaxed">
               Al guardar un cierre manual pasado, el sistema genera registros
-              agregados que alimentan directamente el <strong>Dashboard</strong> y las
-              métricas de rentabilidad, sin requerir la creación individual de ítems
-              de pedido. Además, actualiza automáticamente la base de Caja Menor
-              para el día siguiente.
+              agregados que alimentan directamente el <strong>Dashboard</strong>{" "}
+              y las métricas de rentabilidad, sin requerir la creación
+              individual de ítems de pedido. Además, actualiza automáticamente
+              la base de Caja Menor para el día siguiente.
             </p>
           </div>
         </CardContent>
@@ -411,7 +419,7 @@ function HistoricalDaysPanel() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="size-5 text-primary" />
+              <Calendar className="text-primary size-5" />
               Registrar Día Histórico
             </CardTitle>
             <CardDescription>
@@ -462,7 +470,9 @@ function HistoricalDaysPanel() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-sm">Total Efectivo ($)</Label>
+                  <Label className="mb-1.5 block text-sm">
+                    Total Efectivo ($)
+                  </Label>
                   <Input
                     type="number"
                     placeholder="Ej: 350000"
@@ -536,7 +546,7 @@ function HistoricalDaysPanel() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <History className="size-5 text-primary" />
+              <History className="text-primary size-5" />
               Historial de Cierres Cargados
             </CardTitle>
             <CardDescription>
@@ -563,7 +573,7 @@ function HistoricalDaysPanel() {
                         {day.unitsSold} unds
                       </Badge>
                     </div>
-                    <span className="text-lg font-bold text-primary">
+                    <span className="text-primary text-lg font-bold">
                       {currency(day.totalSales)}
                     </span>
                   </div>

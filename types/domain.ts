@@ -197,4 +197,3 @@ export interface HistoricalDay {
   estimatedCost?: number;
   createdAt: string;
 }
-

@@ -42,4 +42,3 @@ export const historicalDaySchema = z.object({
   nextDayBase: z.coerce.number().min(0, "La base no puede ser negativa"),
   estimatedCost: z.coerce.number().min(0).optional(),
 });
-

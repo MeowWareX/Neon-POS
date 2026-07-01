@@ -51,14 +51,14 @@ export function LoginForm() {
   return (
     <Card className="neon-ring mx-auto w-full max-w-md">
       <CardHeader>
-        <div className="flex items-center gap-3.5 mb-2 lg:hidden">
+        <div className="mb-2 flex items-center gap-3.5 lg:hidden">
           <img
             src="/logo.jpg"
             alt="Neon Logo"
             className="size-11 rounded-xl border border-white/20 object-cover shadow-[0_0_16px_rgba(255,79,216,0.4)]"
           />
           <div>
-            <p className="font-display text-primary text-lg tracking-[0.2em] font-bold uppercase">
+            <p className="font-display text-primary text-lg font-bold tracking-[0.2em] uppercase">
               NEON
             </p>
             <p className="text-muted text-[10px] tracking-wider uppercase">

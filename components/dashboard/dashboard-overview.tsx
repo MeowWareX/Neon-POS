@@ -62,7 +62,8 @@ export function DashboardOverview() {
   const effectiveOrders = useMemo(() => {
     const fetchedIds = new Set(orders.map((o) => o.id));
     const localOrHistorical = (storeOrders || []).filter(
-      (o) => o.isHistorical || o.syncState !== "synced" || !fetchedIds.has(o.id),
+      (o) =>
+        o.isHistorical || o.syncState !== "synced" || !fetchedIds.has(o.id),
     );
     return [...localOrHistorical, ...orders];
   }, [orders, storeOrders]);

@@ -79,7 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <p className="font-display text-primary text-2xl tracking-[0.25em]">
                 NEON
               </p>
-              <p className="text-muted text-[11px] uppercase tracking-wider">
+              <p className="text-muted text-[11px] tracking-wider uppercase">
                 Drinks & Snacks
               </p>
             </div>
