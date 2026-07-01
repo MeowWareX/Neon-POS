@@ -9,7 +9,6 @@ import {
   CupSoda,
   LogOut,
   Menu,
-  Package,
   ReceiptText,
   Settings2,
   Wallet,
@@ -47,7 +46,12 @@ const navItems: Array<{
     adminOnly: true,
   },
   { href: "/cash", label: "Caja", icon: Wallet },
-  // Finanzas and Inventario temporarily hidden for weekend operation
+  {
+    href: "/accounting",
+    label: "Finanzas",
+    icon: CreditCard,
+    adminOnly: true,
+  },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -65,10 +69,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="grid min-h-screen md:grid-cols-[280px_1fr]">
       <aside className="hidden border-r border-white/10 bg-black/18 p-5 md:flex md:flex-col">
         <div className="glass-panel rounded-4xl border border-white/10 p-5">
-          <p className="font-display text-primary text-2xl tracking-[0.3em]">
-            NEON
-          </p>
-          <p className="text-muted mt-2 text-sm">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.jpg"
+              alt="Neon Logo"
+              className="size-12 shrink-0 rounded-2xl border border-white/20 object-cover shadow-[0_0_18px_rgba(255,79,216,0.4)]"
+            />
+            <div>
+              <p className="font-display text-primary text-2xl tracking-[0.25em]">
+                NEON
+              </p>
+              <p className="text-muted text-[11px] uppercase tracking-wider">
+                Drinks & Snacks
+              </p>
+            </div>
+          </div>
+          <p className="text-muted mt-3 text-sm">
             Fast POS para operación de fin de semana.
           </p>
           <div className="mt-4 flex items-center gap-2">
@@ -121,13 +137,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-30 border-b border-white/8 bg-[#090014]/80 px-4 py-4 backdrop-blur-xl md:px-8">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="font-display text-primary text-lg tracking-[0.24em] uppercase md:hidden">
-                NEON OS
-              </p>
-              <p className="text-muted text-sm">
-                {isOnline ? "Sincronización activa" : "Modo offline activo"}
-              </p>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logo.jpg"
+                alt="Neon Logo"
+                className="size-9 rounded-xl border border-white/20 object-cover shadow-[0_0_12px_rgba(255,79,216,0.3)] md:hidden"
+              />
+              <div>
+                <p className="font-display text-primary text-base tracking-[0.2em] uppercase md:hidden">
+                  NEON OS
+                </p>
+                <p className="text-muted text-xs md:text-sm">
+                  {isOnline ? "Sincronización activa" : "Modo offline activo"}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Button

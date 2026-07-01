@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Order } from "@/types/domain";
 import {
   getPaymentsBreakdown,
@@ -23,12 +23,13 @@ import { compactNumber, currency } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 
 export function DashboardOverview() {
-  const { sizes, productTypes, flavors, extras } = useAppStore(
+  const { sizes, productTypes, flavors, extras, storeOrders } = useAppStore(
     useShallow((state) => ({
       sizes: state.sizes,
       productTypes: state.productTypes,
       flavors: state.flavors,
       extras: state.extras,
+      storeOrders: state.orders,
     })),
   );
 
@@ -58,13 +59,21 @@ export function DashboardOverview() {
     return () => clearInterval(interval);
   }, []);
 
-  if (isLoading && orders.length === 0) {
+  const effectiveOrders = useMemo(() => {
+    const fetchedIds = new Set(orders.map((o) => o.id));
+    const localOrHistorical = (storeOrders || []).filter(
+      (o) => o.isHistorical || o.syncState !== "synced" || !fetchedIds.has(o.id),
+    );
+    return [...localOrHistorical, ...orders];
+  }, [orders, storeOrders]);
+
+  if (isLoading && effectiveOrders.length === 0) {
     return (
       <div className="text-muted py-8 text-center">Cargando métricas...</div>
     );
   }
 
-  if (!isLoading && orders.length === 0) {
+  if (!isLoading && effectiveOrders.length === 0) {
     return (
       <EmptyState
         icon={BarChart3}
@@ -74,17 +83,28 @@ export function DashboardOverview() {
     );
   }
 
-  const summary = summarizeOrders(orders);
+  const summary = summarizeOrders(effectiveOrders);
   const selectedDateValue = new Date(`${selectedDate}T00:00:00`);
-  const selectedDayOrders = orders.filter((order) =>
+  const selectedDayOrders = effectiveOrders.filter((order) =>
     isSameDay(new Date(order.createdAt), selectedDateValue),
   );
   const selectedDaySummary = summarizeOrderSlice(selectedDayOrders);
-  const trend = getSalesTrend(orders);
-  const tops = getTopEntities({ orders, sizes, productTypes, flavors, extras });
-  const paymentBreakdown = getPaymentsBreakdown(orders);
+  const trend = getSalesTrend(effectiveOrders);
+  const tops = getTopEntities({
+    orders: effectiveOrders,
+    sizes,
+    productTypes,
+    flavors,
+    extras,
+  });
+  const paymentBreakdown = getPaymentsBreakdown(effectiveOrders);
   const selectedDayPayments = getPaymentsBreakdown(selectedDayOrders);
-  const counts = getCountsBreakdown({ orders, sizes, productTypes, flavors });
+  const counts = getCountsBreakdown({
+    orders: effectiveOrders,
+    sizes,
+    productTypes,
+    flavors,
+  });
   const selectedDayCounts = getCountsBreakdown({
     orders: selectedDayOrders,
     sizes,
@@ -161,10 +181,11 @@ export function DashboardOverview() {
                 selectedDayOrders.reduce(
                   (sum, order) =>
                     sum +
-                    order.items.reduce(
-                      (itemSum, item) => itemSum + item.quantity,
-                      0,
-                    ),
+                    (order.totalUnits ??
+                      order.items.reduce(
+                        (itemSum, item) => itemSum + item.quantity,
+                        0,
+                      )),
                   0,
                 ),
               )}

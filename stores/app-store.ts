@@ -10,10 +10,12 @@ import type {
   ActiveFlavor,
   CashSession,
   Expense,
+  HistoricalDay,
   InventoryMovement,
   LoanPayment,
   Order,
   Purchase,
+  TreasuryTransfer,
 } from "@/types/domain";
 
 type InventoryMovementInput = Omit<InventoryMovement, "id" | "createdAt">;
@@ -38,6 +40,20 @@ interface AppState extends ReturnType<typeof buildDemoState> {
   closeCashSession: (closingCash: number) => CashSession | null;
   addExpense: (input: ExpenseInput) => Expense;
   addLoanPayment: (input: LoanPaymentInput) => LoanPayment;
+  addTreasuryTransfer: (input: {
+    fromAccountId: string;
+    toAccountId: string;
+    amount: number;
+    note: string;
+  }) => TreasuryTransfer;
+  addHistoricalDay: (input: {
+    date: string;
+    unitsSold: number;
+    totalCash: number;
+    totalDigital: number;
+    nextDayBase: number;
+    estimatedCost?: number;
+  }) => HistoricalDay;
 }
 
 // Empty initial state - will be populated from BD
@@ -56,6 +72,9 @@ const emptyState = {
   cashSessions: [],
   expenses: [],
   loanPayments: [],
+  treasuryAccounts: [],
+  treasuryTransfers: [],
+  historicalDays: [],
 };
 
 function applyRemoteCatalog(
@@ -420,16 +439,138 @@ export const useAppStore = create<AppState>()(
 
         return payment;
       },
+      addTreasuryTransfer: (input) => {
+        const transfer: TreasuryTransfer = {
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          ...input,
+        };
+
+        set((state) => ({
+          treasuryAccounts: state.treasuryAccounts.map((acc) => {
+            if (acc.id === input.fromAccountId) {
+              return {
+                ...acc,
+                balance: acc.balance - input.amount,
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            if (acc.id === input.toAccountId) {
+              return {
+                ...acc,
+                balance: acc.balance + input.amount,
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            return acc;
+          }),
+          treasuryTransfers: [transfer, ...state.treasuryTransfers],
+        }));
+
+        return transfer;
+      },
+      addHistoricalDay: (input) => {
+        const totalSales = input.totalCash + input.totalDigital;
+        const estimatedCost =
+          input.estimatedCost ?? Math.round(totalSales * 0.3);
+
+        const historicalDay: HistoricalDay = {
+          id: crypto.randomUUID(),
+          date: input.date,
+          unitsSold: input.unitsSold,
+          totalCash: input.totalCash,
+          totalDigital: input.totalDigital,
+          totalSales,
+          nextDayBase: input.nextDayBase,
+          estimatedCost,
+          createdAt: new Date().toISOString(),
+        };
+
+        const newOrders: Order[] = [];
+        const isoDate = `${input.date}T12:00:00.000Z`;
+
+        if (input.totalCash > 0) {
+          const cashRatio = totalSales > 0 ? input.totalCash / totalSales : 1;
+          newOrders.push({
+            id: crypto.randomUUID(),
+            orderNumber: `HIST-CASH-${input.date}`,
+            paymentMethod: "cash",
+            subtotal: input.totalCash,
+            total: input.totalCash,
+            estimatedCost: Math.round(estimatedCost * cashRatio),
+            totalUnits: Math.round(input.unitsSold * cashRatio),
+            items: [],
+            syncState: "local",
+            isHistorical: true,
+            createdAt: isoDate,
+          });
+        }
+
+        if (input.totalDigital > 0) {
+          const digitalRatio =
+            totalSales > 0 ? input.totalDigital / totalSales : 1;
+          const cashUnits = Math.round(
+            input.unitsSold * (totalSales > 0 ? input.totalCash / totalSales : 1),
+          );
+          newOrders.push({
+            id: crypto.randomUUID(),
+            orderNumber: `HIST-DIG-${input.date}`,
+            paymentMethod: "nequi",
+            subtotal: input.totalDigital,
+            total: input.totalDigital,
+            estimatedCost: Math.round(estimatedCost * digitalRatio),
+            totalUnits: input.unitsSold - cashUnits,
+            items: [],
+            syncState: "local",
+            isHistorical: true,
+            createdAt: `${input.date}T13:00:00.000Z`,
+          });
+        }
+
+        set((state) => {
+          const updatedAccounts = state.treasuryAccounts?.map((acc) => {
+            if (
+              acc.id === "acc-caja-menor" ||
+              acc.name.toLowerCase().includes("caja menor")
+            ) {
+              return {
+                ...acc,
+                balance: input.nextDayBase,
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            return acc;
+          }) ?? [];
+
+          return {
+            historicalDays: [historicalDay, ...state.historicalDays],
+            orders: [...newOrders, ...state.orders],
+            treasuryAccounts: updatedAccounts,
+          };
+        });
+
+        return historicalDay;
+      },
     }),
     {
       name: STORAGE_KEY,
-      version: 6,
-      migrate: () => ({
-        ...emptyState,
-        users: [],
-        initialized: false,
-        businessDate: getBusinessDate(),
-      }),
+      version: 7,
+      migrate: (persistedState: unknown) => {
+        const demo = buildDemoState();
+        const prev = (persistedState as Partial<AppState>) || {};
+        return {
+          ...demo,
+          ...prev,
+          treasuryAccounts: prev.treasuryAccounts?.length
+            ? prev.treasuryAccounts
+            : demo.treasuryAccounts,
+          treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
+          historicalDays: prev.historicalDays || demo.historicalDays,
+          users: prev.users || [],
+          initialized: prev.initialized || false,
+          businessDate: prev.businessDate || getBusinessDate(),
+        };
+      },
       partialize: (state) => ({
         initialized: state.initialized,
         businessDate: state.businessDate,
@@ -441,11 +582,14 @@ export const useAppStore = create<AppState>()(
         activeFlavors: state.activeFlavors,
         extras: state.extras,
         inventoryConsumptionRules: state.inventoryConsumptionRules,
-        // BUSINESS DAY DATA - persisted for consistency across sessions and devices
+        // BUSINESS DAY DATA & TREASURY - persisted for consistency
         cashSessions: state.cashSessions,
         orders: state.orders,
         expenses: state.expenses,
         loanPayments: state.loanPayments,
+        treasuryAccounts: state.treasuryAccounts,
+        treasuryTransfers: state.treasuryTransfers,
+        historicalDays: state.historicalDays,
         // LOCAL TRANSACTIONAL - cleared on reload (read from BD on next sync)
         inventoryItems: [],
         inventoryMovements: [],

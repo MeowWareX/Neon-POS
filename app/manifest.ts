@@ -14,14 +14,21 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "es-CO",
     icons: [
       {
-        src: "/icon",
-        sizes: "192x192",
-        type: "image/png",
+        src: "/logo.jpg",
+        sizes: "512x512",
+        type: "image/jpeg",
+        purpose: "any",
       },
       {
-        src: "/icon",
+        src: "/logo.jpg",
         sizes: "512x512",
-        type: "image/png",
+        type: "image/jpeg",
+        purpose: "maskable",
+      },
+      {
+        src: "/icon.jpg",
+        sizes: "512x512",
+        type: "image/jpeg",
       },
     ],
   };

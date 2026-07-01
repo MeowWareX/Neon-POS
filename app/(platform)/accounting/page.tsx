@@ -1,16 +1,16 @@
 import { SectionHeader } from "@/components/common/section-header";
-import { AccountingOverview } from "@/components/dashboard/accounting-overview";
+import { FinancialControl } from "@/components/financial/financial-control";
 
 export default function AccountingPage() {
   return (
     <div className="space-y-6">
       <SectionHeader
-        eyebrow="Accounting"
-        title="Finanzas"
-        description="Registra gastos, pagos de préstamos y estimación diaria de utilidad."
-        badge="Profit view"
+        eyebrow="Financial Control"
+        title="Finanzas & Tesorería"
+        description="Gestión de gastos, bolsillos de tesorería y carga de cierres históricos."
+        badge="Control 360°"
       />
-      <AccountingOverview />
+      <FinancialControl />
     </div>
   );
 }

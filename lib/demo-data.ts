@@ -7,6 +7,7 @@ import type {
   Expense,
   Extra,
   Flavor,
+  HistoricalDay,
   InventoryConsumptionRule,
   InventoryItem,
   InventoryMovement,
@@ -15,6 +16,8 @@ import type {
   ProductSize,
   ProductType,
   Purchase,
+  TreasuryAccount,
+  TreasuryTransfer,
 } from "@/types/domain";
 
 export interface DemoState {
@@ -32,6 +35,9 @@ export interface DemoState {
   cashSessions: CashSession[];
   expenses: Expense[];
   loanPayments: LoanPayment[];
+  treasuryAccounts: TreasuryAccount[];
+  treasuryTransfers: TreasuryTransfer[];
+  historicalDays: HistoricalDay[];
 }
 
 export function buildDemoState(): DemoState {
@@ -833,6 +839,62 @@ export function buildDemoState(): DemoState {
     },
   ];
 
+  const treasuryAccounts: TreasuryAccount[] = [
+    {
+      id: "acc-caja-menor",
+      name: "Caja Menor (Base POS)",
+      type: "cash",
+      balance: 150000,
+      description: "Efectivo para operación diaria en punto de venta",
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "acc-caja-mayor",
+      name: "Caja Mayor (Caja Fuerte)",
+      type: "vault",
+      balance: 2450000,
+      description: "Reserva física en efectivo y resguardo",
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "acc-nequi-eliana",
+      name: "Nequi Eliana",
+      type: "digital",
+      balance: 1820000,
+      description: "Cuenta digital principal para cobros QR en punto",
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "acc-nu-oscar",
+      name: "Cuenta Nu Oscar",
+      type: "bank",
+      balance: 3200000,
+      description: "Cuenta bancaria de ahorros de liquidez y reserva",
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "acc-banco-principal",
+      name: "Bancolombia Principal",
+      type: "bank",
+      balance: 4500000,
+      description: "Cuenta corriente empresarial",
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  const treasuryTransfers: TreasuryTransfer[] = [
+    {
+      id: "trf-demo-1",
+      fromAccountId: "acc-caja-mayor",
+      toAccountId: "acc-nu-oscar",
+      amount: 500000,
+      note: "Traslado de excedentes físicos a cuenta digital",
+      createdAt: subDays(new Date(), 1).toISOString(),
+    },
+  ];
+
+  const historicalDays: HistoricalDay[] = [];
+
   return {
     users,
     sizes,
@@ -848,5 +910,8 @@ export function buildDemoState(): DemoState {
     cashSessions,
     expenses,
     loanPayments,
+    treasuryAccounts,
+    treasuryTransfers,
+    historicalDays,
   };
 }

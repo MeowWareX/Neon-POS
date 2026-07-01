@@ -135,6 +135,8 @@ export interface Order {
   estimatedCost: number;
   syncState: SyncState;
   createdAt: string;
+  totalUnits?: number;
+  isHistorical?: boolean;
 }
 
 export interface CashSession {
@@ -163,3 +165,36 @@ export interface LoanPayment {
   balanceAfterPayment: number;
   createdAt: string;
 }
+
+export type TreasuryAccountType = "cash" | "vault" | "digital" | "bank";
+
+export interface TreasuryAccount {
+  id: string;
+  name: string;
+  type: TreasuryAccountType;
+  balance: number;
+  description?: string;
+  updatedAt: string;
+}
+
+export interface TreasuryTransfer {
+  id: string;
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+  note: string;
+  createdAt: string;
+}
+
+export interface HistoricalDay {
+  id: string;
+  date: string;
+  unitsSold: number;
+  totalCash: number;
+  totalDigital: number;
+  totalSales: number;
+  nextDayBase: number;
+  estimatedCost?: number;
+  createdAt: string;
+}
+
