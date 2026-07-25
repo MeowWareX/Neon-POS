@@ -15,18 +15,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function AccountingOverview() {
-  const { orders, expenses, loanPayments, addExpense, addLoanPayment } =
+  const { orders, expenses, loanPayments, liquidSales, addExpense, addLoanPayment } =
     useAppStore(
       useShallow((state) => ({
         orders: state.orders,
         expenses: state.expenses,
         loanPayments: state.loanPayments,
+        liquidSales: state.liquidSales,
         addExpense: state.addExpense,
         addLoanPayment: state.addLoanPayment,
       })),
     );
 
-  const profit = getProfitEstimate({ orders, expenses, loanPayments });
+  const profit = getProfitEstimate({ orders, expenses, loanPayments, liquidSales });
 
   const expenseForm = useForm({
     resolver: zodResolver(expenseSchema),

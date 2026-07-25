@@ -7,6 +7,7 @@ import {
   BarChart3,
   CreditCard,
   CupSoda,
+  FlaskConical,
   LogOut,
   Menu,
   ReceiptText,
@@ -38,6 +39,12 @@ const navItems: Array<{
   { href: "/pos", label: "POS", icon: CupSoda },
   { href: "/orders", label: "Pedidos", icon: ReceiptText },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3, adminOnly: true },
+  {
+    href: "/liquid-sales" as Route,
+    label: "Ventas Líquidos",
+    icon: FlaskConical,
+    adminOnly: true,
+  },
   { href: "/flavors", label: "Sabores", icon: Settings2, adminOnly: true },
   {
     href: "/configuration",

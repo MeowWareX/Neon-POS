@@ -5,13 +5,15 @@ import { persist } from "zustand/middleware";
 import { buildDemoState } from "@/lib/demo-data";
 import { getBusinessDate } from "@/lib/business";
 import { calculateInventoryConsumptionDeltas } from "@/lib/inventory-consumption";
-import { STORAGE_KEY } from "@/lib/constants";
+import { LIQUID_VARIANT_CONFIG, STORAGE_KEY } from "@/lib/constants";
 import type {
   ActiveFlavor,
   CashSession,
   Expense,
   HistoricalDay,
   InventoryMovement,
+  LiquidSale,
+  LiquidSaleInput,
   LoanPayment,
   Order,
   Purchase,
@@ -54,6 +56,8 @@ interface AppState extends ReturnType<typeof buildDemoState> {
     nextDayBase: number;
     estimatedCost?: number;
   }) => HistoricalDay;
+  addLiquidSale: (input: LiquidSaleInput) => LiquidSale;
+  deleteLiquidSale: (id: string) => Promise<void>;
 }
 
 // Empty initial state - will be populated from BD
@@ -75,6 +79,7 @@ const emptyState = {
   treasuryAccounts: [],
   treasuryTransfers: [],
   historicalDays: [],
+  liquidSales: [],
 };
 
 function applyRemoteCatalog(
@@ -101,6 +106,9 @@ function applyRemoteCatalog(
       ? catalog.cashSessions
       : state.cashSessions,
     orders: catalog.orders?.length ? catalog.orders : state.orders,
+    liquidSales: catalog.liquidSales?.length
+      ? catalog.liquidSales
+      : state.liquidSales,
   };
 }
 
@@ -115,6 +123,7 @@ async function loadRemoteCatalog() {
     inventoryRulesRes,
     cashSessionsRes,
     ordersRes,
+    liquidSalesRes,
   ] = await Promise.all([
     fetch("/api/configuration/sizes"),
     fetch("/api/configuration/product-types"),
@@ -125,6 +134,7 @@ async function loadRemoteCatalog() {
     fetch("/api/inventory/consumption-rules"),
     fetch("/api/cash-sessions"),
     fetch("/api/orders/list"),
+    fetch("/api/liquid-sales"),
   ]);
 
   return {
@@ -143,6 +153,7 @@ async function loadRemoteCatalog() {
       ? (await cashSessionsRes.json()).sessions
       : null,
     orders: ordersRes.ok ? await ordersRes.json() : null,
+    liquidSales: liquidSalesRes.ok ? await liquidSalesRes.json() : null,
   };
 }
 
@@ -553,10 +564,68 @@ export const useAppStore = create<AppState>()(
 
         return historicalDay;
       },
+      addLiquidSale: (input: LiquidSaleInput) => {
+        const config = LIQUID_VARIANT_CONFIG[input.variant];
+        const unitPrice = config?.price ?? 0;
+        const total = unitPrice * input.quantity;
+
+        const newSale: LiquidSale = {
+          id: crypto.randomUUID(),
+          saleDate: input.saleDate,
+          variant: input.variant,
+          flavorId: input.flavorId || null,
+          flavorName: input.flavorName || null,
+          quantity: input.quantity,
+          unitPrice,
+          total,
+          paymentMethod: input.paymentMethod,
+          customerName: input.customerName || null,
+          notes: input.notes || null,
+          syncState: "pending",
+          createdAt: new Date().toISOString(),
+        };
+
+        set((state) => ({
+          liquidSales: [newSale, ...(state.liquidSales || [])],
+        }));
+
+        if (typeof window !== "undefined" && window.navigator.onLine) {
+          fetch("/api/liquid-sales", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newSale),
+          })
+            .then((res) => {
+              if (res.ok) {
+                set((state) => ({
+                  liquidSales: state.liquidSales.map((s) =>
+                    s.id === newSale.id ? { ...s, syncState: "synced" } : s,
+                  ),
+                }));
+              }
+            })
+            .catch((err) => console.error("Error syncing liquid sale:", err));
+        }
+
+        return newSale;
+      },
+      deleteLiquidSale: async (id: string) => {
+        set((state) => ({
+          liquidSales: state.liquidSales.filter((s) => s.id !== id),
+        }));
+
+        if (typeof window !== "undefined" && window.navigator.onLine) {
+          try {
+            await fetch(`/api/liquid-sales?id=${id}`, { method: "DELETE" });
+          } catch (err) {
+            console.error("Error deleting remote liquid sale:", err);
+          }
+        }
+      },
     }),
     {
       name: STORAGE_KEY,
-      version: 7,
+      version: 8,
       migrate: (persistedState: unknown) => {
         const demo = buildDemoState();
         const prev = (persistedState as Partial<AppState>) || {};
@@ -568,6 +637,7 @@ export const useAppStore = create<AppState>()(
             : demo.treasuryAccounts,
           treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
           historicalDays: prev.historicalDays || demo.historicalDays,
+          liquidSales: prev.liquidSales || demo.liquidSales,
           users: prev.users || [],
           initialized: prev.initialized || false,
           businessDate: prev.businessDate || getBusinessDate(),
@@ -592,6 +662,7 @@ export const useAppStore = create<AppState>()(
         treasuryAccounts: state.treasuryAccounts,
         treasuryTransfers: state.treasuryTransfers,
         historicalDays: state.historicalDays,
+        liquidSales: state.liquidSales,
         // LOCAL TRANSACTIONAL - cleared on reload (read from BD on next sync)
         inventoryItems: [],
         inventoryMovements: [],

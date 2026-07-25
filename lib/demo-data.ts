@@ -11,6 +11,7 @@ import type {
   InventoryConsumptionRule,
   InventoryItem,
   InventoryMovement,
+  LiquidSale,
   LoanPayment,
   Order,
   ProductSize,
@@ -38,6 +39,7 @@ export interface DemoState {
   treasuryAccounts: TreasuryAccount[];
   treasuryTransfers: TreasuryTransfer[];
   historicalDays: HistoricalDay[];
+  liquidSales: LiquidSale[];
 }
 
 export function buildDemoState(): DemoState {
@@ -895,6 +897,39 @@ export function buildDemoState(): DemoState {
 
   const historicalDays: HistoricalDay[] = [];
 
+  const liquidSales: LiquidSale[] = [
+    {
+      id: "ls-demo-1",
+      saleDate: businessDate,
+      variant: "base_sin_licor",
+      flavorId: "fl-chicle",
+      flavorName: "Chicle",
+      quantity: 2,
+      unitPrice: 30000,
+      total: 60000,
+      paymentMethod: "nequi",
+      customerName: "Distribuidora El Parque",
+      notes: "Venta directa de 2 botellas concentradas (12 Litros)",
+      syncState: "synced",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: "ls-demo-2",
+      saleDate: businessDate,
+      variant: "cremoso_con_licor",
+      flavorId: "fl-maracumango",
+      flavorName: "Maracumango",
+      quantity: 1,
+      unitPrice: 50000,
+      total: 50000,
+      paymentMethod: "cash",
+      customerName: "Evento Eventos S.A.S",
+      notes: "1 Concentrado Cremoso con licor para granizadora",
+      syncState: "synced",
+      createdAt: subHours(new Date(), 2).toISOString(),
+    },
+  ];
+
   return {
     users,
     sizes,
@@ -913,5 +948,7 @@ export function buildDemoState(): DemoState {
     treasuryAccounts,
     treasuryTransfers,
     historicalDays,
+    liquidSales,
   };
 }
+

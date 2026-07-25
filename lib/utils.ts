@@ -37,3 +37,10 @@ export function formatTime(value: string | Date) {
     minute: "2-digit",
   }).format(new Date(value));
 }
+
+export function formatDate(value: string | Date) {
+  return new Intl.DateTimeFormat("es-CO", {
+    dateStyle: "medium",
+  }).format(new Date(value));
+}
+

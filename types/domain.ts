@@ -1,4 +1,5 @@
 import type {
+  LiquidVariantCode,
   PAYMENT_METHODS,
   PRODUCT_SIZES,
   PRODUCT_TYPES,
@@ -9,6 +10,8 @@ export type UserRole = (typeof USER_ROLES)[number];
 export type ProductSizeCode = (typeof PRODUCT_SIZES)[number];
 export type ProductTypeCode = (typeof PRODUCT_TYPES)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+export type { LiquidVariantCode };
+
 
 export type SyncState = "local" | "pending" | "synced";
 
@@ -197,3 +200,31 @@ export interface HistoricalDay {
   estimatedCost?: number;
   createdAt: string;
 }
+
+export interface LiquidSale {
+  id: string;
+  saleDate: string;
+  variant: LiquidVariantCode;
+  flavorId?: string | null;
+  flavorName?: string | null;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  paymentMethod: PaymentMethod;
+  customerName?: string | null;
+  notes?: string | null;
+  syncState?: SyncState;
+  createdAt: string;
+}
+
+export interface LiquidSaleInput {
+  saleDate: string;
+  variant: LiquidVariantCode;
+  flavorId?: string | null;
+  flavorName?: string | null;
+  quantity: number;
+  paymentMethod: PaymentMethod;
+  customerName?: string | null;
+  notes?: string | null;
+}
+

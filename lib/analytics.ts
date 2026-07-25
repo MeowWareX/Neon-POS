@@ -12,6 +12,7 @@ import type {
   Extra,
   Flavor,
   InventoryItem,
+  LiquidSale,
   LoanPayment,
   Order,
   ProductSize,
@@ -183,10 +184,12 @@ export function getProfitEstimate({
   orders,
   expenses,
   loanPayments,
+  liquidSales = [],
 }: {
   orders: Order[];
   expenses: Expense[];
   loanPayments: LoanPayment[];
+  liquidSales?: LiquidSale[];
 }) {
   const monthStart = startOfMonth(new Date());
 
@@ -199,8 +202,17 @@ export function getProfitEstimate({
   const monthLoans = loanPayments.filter(
     (loan) => new Date(loan.createdAt) >= monthStart,
   );
+  const monthLiquidSales = liquidSales.filter(
+    (sale) => new Date(sale.saleDate) >= monthStart,
+  );
 
-  const revenue = monthOrders.reduce((sum, order) => sum + order.total, 0);
+  const posRevenue = monthOrders.reduce((sum, order) => sum + order.total, 0);
+  const liquidRevenue = monthLiquidSales.reduce(
+    (sum, sale) => sum + sale.total,
+    0,
+  );
+  const revenue = posRevenue + liquidRevenue;
+
   const cogs = monthOrders.reduce((sum, order) => sum + order.estimatedCost, 0);
   const expensesTotal = monthExpenses.reduce(
     (sum, expense) => sum + expense.amount,
@@ -213,6 +225,8 @@ export function getProfitEstimate({
 
   return {
     revenue,
+    posRevenue,
+    liquidRevenue,
     cogs,
     expenses: expensesTotal,
     loans: loansTotal,
@@ -220,6 +234,34 @@ export function getProfitEstimate({
     netProfit: revenue - cogs - expensesTotal - loansTotal,
   };
 }
+
+export function summarizeLiquidSales(liquidSales: LiquidSale[]) {
+  const now = new Date();
+  const todaySales = liquidSales.filter((sale) =>
+    isSameDay(new Date(sale.saleDate), now),
+  );
+  const monthlySales = liquidSales.filter((sale) =>
+    isSameMonth(new Date(sale.saleDate), now),
+  );
+
+  const totalSales = liquidSales.reduce((sum, sale) => sum + sale.total, 0);
+  const todayTotal = todaySales.reduce((sum, sale) => sum + sale.total, 0);
+  const monthTotal = monthlySales.reduce((sum, sale) => sum + sale.total, 0);
+
+  const totalUnits = liquidSales.reduce((sum, sale) => sum + sale.quantity, 0);
+  const todayUnits = todaySales.reduce((sum, sale) => sum + sale.quantity, 0);
+  const monthUnits = monthlySales.reduce((sum, sale) => sum + sale.quantity, 0);
+
+  return {
+    totalSales,
+    todayTotal,
+    monthTotal,
+    totalUnits,
+    todayUnits,
+    monthUnits,
+  };
+}
+
 
 export function getCashSummary({
   sessions,

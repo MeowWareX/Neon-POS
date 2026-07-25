@@ -4,7 +4,10 @@ import type {
   CashSession,
   Expense,
   InventoryMovement,
+  LiquidSale,
+  LiquidVariantCode,
   LoanPayment,
+  PaymentMethod,
   Purchase,
 } from "@/types/domain";
 import type { Database } from "@/types/database";
@@ -551,3 +554,69 @@ export async function syncActiveFlavorWithSupabase(
     }
   }
 }
+
+export async function insertLiquidSaleWithSupabase(
+  supabase: SupabaseClient<Database>,
+  sale: LiquidSale,
+) {
+  const { error } = await supabase.from("liquid_sales").insert({
+    id: sale.id,
+    sale_date: sale.saleDate,
+    variant: sale.variant,
+    flavor_id: sale.flavorId ?? null,
+    flavor_name: sale.flavorName ?? null,
+    quantity: sale.quantity,
+    unit_price: sale.unitPrice,
+    total: sale.total,
+    payment_method: sale.paymentMethod,
+    customer_name: sale.customerName ?? null,
+    notes: sale.notes ?? null,
+    created_at: sale.createdAt,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function getLiquidSalesWithSupabase(
+  supabase: SupabaseClient<Database>,
+): Promise<LiquidSale[]> {
+  const { data, error } = await supabase
+    .from("liquid_sales")
+    .select("*")
+    .is("deleted_at", null)
+    .order("sale_date", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data || []).map((row) => ({
+    id: row.id,
+    saleDate: row.sale_date,
+    variant: row.variant as LiquidVariantCode,
+    flavorId: row.flavor_id,
+    flavorName: row.flavor_name,
+    quantity: Number(row.quantity),
+    unitPrice: Number(row.unit_price),
+    total: Number(row.total),
+    paymentMethod: row.payment_method as PaymentMethod,
+    customerName: row.customer_name,
+    notes: row.notes,
+    syncState: "synced",
+    createdAt: row.created_at,
+  }));
+}
+
+export async function deleteLiquidSaleWithSupabase(
+  supabase: SupabaseClient<Database>,
+  id: string,
+) {
+  const { error } = await supabase.from("liquid_sales").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+

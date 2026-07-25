@@ -34,6 +34,60 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      liquid_sales: {
+        Row: {
+          id: string;
+          sale_date: string;
+          variant: string;
+          flavor_id: string | null;
+          flavor_name: string | null;
+          quantity: number;
+          unit_price: number;
+          total: number;
+          payment_method: string;
+          customer_name: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          sale_date: string;
+          variant: string;
+          flavor_id?: string | null;
+          flavor_name?: string | null;
+          quantity?: number;
+          unit_price: number;
+          total: number;
+          payment_method: string;
+          customer_name?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: Partial<{
+          id: string;
+          sale_date: string;
+          variant: string;
+          flavor_id: string | null;
+          flavor_name: string | null;
+          quantity: number;
+          unit_price: number;
+          total: number;
+          payment_method: string;
+          customer_name: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        }>;
+        Relationships: [];
+      };
       order_items: {
         Row: {
           id: string;
