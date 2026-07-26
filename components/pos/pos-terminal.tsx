@@ -19,7 +19,12 @@ import { calculateInventoryShortages } from "@/lib/inventory-consumption";
 import { syncPendingOrders } from "@/services/sync-service";
 import { currency, formatTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
-import type { ActiveFlavor, OrderItem, OrderItemDraft, PaymentMethod } from "@/types/domain";
+import type {
+  ActiveFlavor,
+  OrderItem,
+  OrderItemDraft,
+  PaymentMethod,
+} from "@/types/domain";
 
 const paymentLabels: Record<PaymentMethod, string> = {
   cash: "Efectivo",
