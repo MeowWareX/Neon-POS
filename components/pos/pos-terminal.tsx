@@ -63,6 +63,7 @@ export function PosTerminal() {
   const [cart, setCart] = useState<OrderItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [isSaving, setIsSaving] = useState(false);
+  const [category, setCategory] = useState<"granizados" | "gomitas-enchilada">("granizados");
   const topPageRef = useRef<HTMLDivElement>(null);
   const sizeStepRef = useRef<HTMLDivElement>(null);
   const flavorStepRef = useRef<HTMLDivElement>(null);
@@ -231,7 +232,18 @@ export function PosTerminal() {
       );
     });
 
-    setDraft(initialDraft);
+    if (category === "gomitas-enchilada") {
+      const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
+      const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+      setDraft({
+        typeId: ptGomitas?.id,
+        flavorId: neutralFlavor?.id,
+        extraIds: [],
+        quantity: 1,
+      });
+    } else {
+      setDraft(initialDraft);
+    }
     setPaymentMethod("cash");
 
     window.setTimeout(() => {
@@ -269,7 +281,18 @@ export function PosTerminal() {
 
   const clearOrder = () => {
     setCart([]);
-    setDraft(initialDraft);
+    if (category === "gomitas-enchilada") {
+      const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
+      const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+      setDraft({
+        typeId: ptGomitas?.id,
+        flavorId: neutralFlavor?.id,
+        extraIds: [],
+        quantity: 1,
+      });
+    } else {
+      setDraft(initialDraft);
+    }
     setPaymentMethod("cash");
   };
 
@@ -453,45 +476,78 @@ export function PosTerminal() {
                 </div>
               </CardContent>
             </Card>
-          ) : null}
+) : null}
 
           <Card>
             <CardHeader>
               <CardTitle>Flujo rápido de venta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <StepBlock
-                step="1"
-                title="Producto"
-                items={productTypes.map((type) => ({
-                  id: type.id,
-                  label: type.label,
-                  caption:
-                    type.code === "cremoso" || type.code === "picoso"
-                      ? "Precio por tamaño"
-                      : type.priceModifier > 0
-                        ? `+ ${currency(type.priceModifier)}`
-                        : "Incluido",
-                  active: draft.typeId === type.id,
-                  onClick: () => selectType(type.id),
-                }))}
-              />
+              <div className="flex gap-2 p-1 rounded-2xl bg-white/5 border border-white/10">
+                <Button
+                  variant={category === "granizados" ? "default" : "ghost"}
+                  className="flex-1 rounded-xl text-sm"
+                  onClick={() => {
+                    setCategory("granizados");
+                    setDraft(initialDraft);
+                  }}
+                  type="button"
+                >
+                  🍹 Granizados
+                </Button>
+                <Button
+                  variant={category === "gomitas-enchilada" ? "default" : "ghost"}
+                  className="flex-1 rounded-xl text-sm"
+                  onClick={() => {
+                    setCategory("gomitas-enchilada");
+                    const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
+                    const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+                    setDraft({
+                      typeId: ptGomitas?.id,
+                      flavorId: neutralFlavor?.id,
+                      extraIds: [],
+                      quantity: 1,
+                    });
+                  }}
+                  type="button"
+                >
+                  🌶️ Gomitas Enchiladas
+                </Button>
+              </div>
 
-              {showSizeStep ? (
+              {category === "granizados" ? (
+                <StepBlock
+                  step="1"
+                  title="Producto"
+                  items={productTypes
+                    .filter((type) => type.code !== "gomitas-enchilada")
+                    .map((type) => ({
+                      id: type.id,
+                      label: type.label,
+                      caption:
+                        type.code === "cremoso" || type.code === "picoso"
+                          ? "Precio por tamaño"
+                          : type.priceModifier > 0
+                            ? `+ ${currency(type.priceModifier)}`
+                            : "Incluido",
+                      active: draft.typeId === type.id,
+                      onClick: () => selectType(type.id),
+                    }))}
+                />
+              ) : null}
+
+              {showSizeStep || category === "gomitas-enchilada" ? (
                 <div ref={sizeStepRef} className="scroll-mt-36 md:scroll-mt-28">
                   <StepBlock
-                    step="2"
-                    title="Tamaño"
+                    step={category === "granizados" ? "2" : "1"}
+                    title="Presentación"
                     items={sizes
                       .filter((size) => {
-                        if (!draft.typeId) return true;
-                        const selectedType = productTypes.find(
-                          (t) => t.id === draft.typeId,
-                        );
-                        if (!selectedType) return true;
-                        return (
-                          PRICE_MATRIX[selectedType.code]?.[size.code] != null
-                        );
+                        if (category === "granizados") {
+                          return size.code !== "3k" && size.code !== "6k" && size.code !== "10k";
+                        } else {
+                          return size.code === "3k" || size.code === "6k" || size.code === "10k";
+                        }
                       })
                       .map((size) => ({
                         id: size.id,
@@ -506,7 +562,7 @@ export function PosTerminal() {
                 </div>
               ) : null}
 
-              {showFlavorStep ? (
+              {category === "granizados" && showFlavorStep ? (
                 <div
                   ref={flavorStepRef}
                   className="scroll-mt-36 md:scroll-mt-28"
@@ -531,20 +587,22 @@ export function PosTerminal() {
                   className="scroll-mt-36 md:scroll-mt-28"
                 >
                   <>
-                    <StepBlock
-                      step="4"
-                      title="Extras"
-                      items={extras.map((extra) => ({
-                        id: extra.id,
-                        label: extra.name,
-                        caption: `+ ${currency(extra.price)}`,
-                        active: draft.extraIds.includes(extra.id),
-                        onClick: () => toggleExtra(extra.id),
-                      }))}
-                    />
+                    {category === "granizados" ? (
+                      <StepBlock
+                        step="4"
+                        title="Extras"
+                        items={extras.map((extra) => ({
+                          id: extra.id,
+                          label: extra.name,
+                          caption: `+ ${currency(extra.price)}`,
+                          active: draft.extraIds.includes(extra.id),
+                          onClick: () => toggleExtra(extra.id),
+                        }))}
+                      />
+                    ) : null}
 
                     <StepBlock
-                      step="5"
+                      step={category === "granizados" ? "5" : "2"}
                       title="Pago"
                       items={(
                         Object.keys(paymentLabels) as PaymentMethod[]
@@ -560,12 +618,20 @@ export function PosTerminal() {
                   </>
                 </div>
               ) : (
-                <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
-                  <p className="text-muted text-sm">
-                    Completa tipo, tamaño y sabor para habilitar extras, pago y
-                    el resumen final.
-                  </p>
-                </div>
+                category === "granizados" ? (
+                  <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
+                    <p className="text-muted text-sm">
+                      Completa tipo, tamaño y sabor para habilitar extras, pago y
+                      el resumen final.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
+                    <p className="text-muted text-sm">
+                      Selecciona una presentación de Gomitas Enchiladas para habilitar el pago y agregar al pedido.
+                    </p>
+                  </div>
+                )
               )}
             </CardContent>
           </Card>
@@ -650,7 +716,9 @@ export function PosTerminal() {
                       </div>
                     ) : (
                       <p className="text-muted mt-3 text-sm">
-                        Elige tamaño, tipo y sabor para ver el producto listo.
+                        {category === "granizados"
+                          ? "Elige tamaño, tipo y sabor para ver el producto listo."
+                          : "Elige una presentación para ver el producto listo."}
                       </p>
                     )}
                     <div className="mt-4 hidden gap-2 md:flex">
@@ -771,8 +839,9 @@ export function PosTerminal() {
               ) : (
                 <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
                   <p className="text-muted text-sm">
-                    El resumen y las acciones aparecerán cuando completes tipo,
-                    tamaño y sabor.
+                    {category === "granizados"
+                      ? "El resumen y las acciones aparecerán cuando completes tipo, tamaño y sabor."
+                      : "El resumen y las acciones aparecerán cuando selecciones una presentación."}
                   </p>
                 </div>
               )}

@@ -44,10 +44,12 @@ function summarizeOrderItem(
     .map((extraId) => catalog.extras.find((entry) => entry.id === extraId))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
+  const isGomita = productType?.code === "gomitas-enchilada";
+
   return {
     sizeLabel: size?.label ?? "Tamaño",
     typeLabel: productType?.label ?? "Producto",
-    flavorLabel: flavor?.name ?? "Sabor",
+    flavorLabel: isGomita ? "" : (flavor?.name ?? "Sabor"),
     extras,
   };
 }

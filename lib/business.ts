@@ -38,6 +38,11 @@ export const PRICE_MATRIX: Record<string, Record<string, number | null>> = {
     "12oz": 13000,
     "16oz": 15000,
   },
+  "gomitas-enchilada": {
+    "3k": 3000,
+    "6k": 6000,
+    "10k": 10000,
+  },
 };
 
 export function calculateOrderItem({

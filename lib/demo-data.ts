@@ -85,6 +85,30 @@ export function buildDemoState(): DemoState {
       price: 10000,
       baseCost: 3400,
     },
+    {
+      id: "33333333-3000-3000-3000-333333333333",
+      code: "3k",
+      label: "Vasito 3K",
+      ounces: 3,
+      price: 3000,
+      baseCost: 1000,
+    },
+    {
+      id: "33333333-6000-6000-6000-333333333333",
+      code: "6k",
+      label: "Mediano 6K",
+      ounces: 6,
+      price: 6000,
+      baseCost: 2000,
+    },
+    {
+      id: "33333333-9000-9000-9000-333333333333",
+      code: "10k",
+      label: "Grande 10K",
+      ounces: 10,
+      price: 10000,
+      baseCost: 3500,
+    },
   ];
 
   const productTypes: ProductType[] = [
@@ -116,6 +140,13 @@ export function buildDemoState(): DemoState {
       priceModifier: 5000,
       costModifier: 1000,
     },
+    {
+      id: "44444444-5555-5555-5555-555555555555",
+      code: "gomitas-enchilada",
+      label: "Gomitas Enchiladas",
+      priceModifier: 0,
+      costModifier: 0,
+    },
   ];
 
   const flavors: Flavor[] = [
@@ -146,6 +177,13 @@ export function buildDemoState(): DemoState {
       color: "#7df97f",
       isActive: false,
       inventoryItemId: "66666666-c004-c004-c004-000000000004",
+    },
+    {
+      id: "88888888-8888-8888-8888-888888888888",
+      name: "Enchilado / Directo",
+      color: "#ff4500",
+      isActive: true,
+      inventoryItemId: null,
     },
   ];
 
