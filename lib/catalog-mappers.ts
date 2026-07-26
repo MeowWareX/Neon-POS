@@ -88,11 +88,16 @@ export function mapInventoryConsumptionRuleRow(
 }
 
 export function mapActiveFlavorRow(row: Record<string, unknown>): ActiveFlavor {
+  const rawDate = toString(row.business_date ?? row.businessDate);
+  const formattedDate = rawDate.includes("T")
+    ? rawDate.split("T")[0]
+    : rawDate.slice(0, 10);
+
   return {
     id: toString(row.id),
-    flavorId: toString(row.flavor_id),
-    businessDate: toString(row.business_date),
-    tankNumber: toNumber(row.tank_number) as 1 | 2 | 3,
+    flavorId: toString(row.flavor_id ?? row.flavorId),
+    businessDate: formattedDate,
+    tankNumber: toNumber(row.tank_number ?? row.tankNumber) as 1 | 2 | 3,
   };
 }
 

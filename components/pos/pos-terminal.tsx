@@ -12,13 +12,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   calculateOrderItem,
   createOrderRecord,
+  getBusinessDate,
   PRICE_MATRIX,
 } from "@/lib/business";
 import { calculateInventoryShortages } from "@/lib/inventory-consumption";
 import { syncPendingOrders } from "@/services/sync-service";
 import { currency, formatTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
-import type { OrderItem, OrderItemDraft, PaymentMethod } from "@/types/domain";
+import type { ActiveFlavor, OrderItem, OrderItemDraft, PaymentMethod } from "@/types/domain";
 
 const paymentLabels: Record<PaymentMethod, string> = {
   cash: "Efectivo",
@@ -72,14 +73,34 @@ export function PosTerminal() {
   const postFlavorRef = useRef<HTMLDivElement>(null);
 
   const todaysFlavors = useMemo(() => {
-    return activeFlavors
-      .filter((item) => item.businessDate === businessDate)
+    const targetDate = (businessDate || getBusinessDate()).slice(0, 10);
+    let activeList = activeFlavors.filter(
+      (item) => (item.businessDate || "").slice(0, 10) === targetDate,
+    );
+
+    if (activeList.length === 0 && activeFlavors.length > 0) {
+      const latestByTank = new Map<number, ActiveFlavor>();
+      activeFlavors.forEach((af) => {
+        if (af.tankNumber && !latestByTank.has(af.tankNumber)) {
+          latestByTank.set(af.tankNumber, af);
+        }
+      });
+      activeList = Array.from(latestByTank.values());
+    }
+
+    return activeList
       .sort((a, b) => a.tankNumber - b.tankNumber)
       .map((active) => ({
         ...active,
         flavor: flavors.find((item) => item.id === active.flavorId),
       }))
-      .filter((item): item is typeof item & { flavor: NonNullable<(typeof item)["flavor"]> } => Boolean(item.flavor));
+      .filter(
+        (
+          item,
+        ): item is typeof item & {
+          flavor: NonNullable<(typeof item)["flavor"]>;
+        } => Boolean(item.flavor),
+      );
   }, [activeFlavors, businessDate, flavors]);
 
   const currentItem = useMemo(
@@ -675,7 +696,9 @@ export function PosTerminal() {
                           ⚠️ No hay sabores asignados a los tanques para hoy.
                         </p>
                         <p className="mt-1 text-xs text-amber-100/80">
-                          Por favor asigna los tanques del día en el módulo <strong>Sabores</strong> (Administración) para habilitar las ventas.
+                          Por favor asigna los tanques del día en el módulo{" "}
+                          <strong>Sabores</strong> (Administración) para
+                          habilitar las ventas.
                         </p>
                       </div>
                     </div>

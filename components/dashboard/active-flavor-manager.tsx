@@ -48,16 +48,20 @@ export function ActiveFlavorManager() {
 
       if (activeFlavorsRes.ok) {
         const data: ActiveFlavor[] = await activeFlavorsRes.json();
+        const targetDate = businessDate.slice(0, 10);
         const todayActive = data.filter(
-          (af: ActiveFlavor) => af.businessDate === businessDate,
+          (af: ActiveFlavor) =>
+            (af.businessDate || "").slice(0, 10) === targetDate,
         );
 
+        const activeList = todayActive.length > 0 ? todayActive : data;
+
         const tank1 =
-          todayActive.find((af) => af.tankNumber === 1)?.flavorId || "";
+          activeList.find((af) => af.tankNumber === 1)?.flavorId || "";
         const tank2 =
-          todayActive.find((af) => af.tankNumber === 2)?.flavorId || "";
+          activeList.find((af) => af.tankNumber === 2)?.flavorId || "";
         const tank3 =
-          todayActive.find((af) => af.tankNumber === 3)?.flavorId || "";
+          activeList.find((af) => af.tankNumber === 3)?.flavorId || "";
         setSelectedFlavors({ tank1, tank2, tank3 });
       }
     } catch (error) {
