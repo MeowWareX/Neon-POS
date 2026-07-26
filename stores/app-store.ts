@@ -625,13 +625,44 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 8,
+      version: 9,
       migrate: (persistedState: unknown) => {
         const demo = buildDemoState();
         const prev = (persistedState as Partial<AppState>) || {};
+
+        // Merge any new sizes from demo into prev.sizes if missing
+        const prevSizes = prev.sizes || [];
+        const mergedSizes = [...prevSizes];
+        demo.sizes.forEach((ds) => {
+          if (!mergedSizes.some((s) => s.code === ds.code || s.id === ds.id)) {
+            mergedSizes.push(ds);
+          }
+        });
+
+        // Merge any new productTypes from demo into prev.productTypes if missing
+        const prevTypes = prev.productTypes || [];
+        const mergedProductTypes = [...prevTypes];
+        demo.productTypes.forEach((dpt) => {
+          if (!mergedProductTypes.some((pt) => pt.code === dpt.code || pt.id === dpt.id)) {
+            mergedProductTypes.push(dpt);
+          }
+        });
+
+        // Merge any new flavors from demo into prev.flavors if missing
+        const prevFlavors = prev.flavors || [];
+        const mergedFlavors = [...prevFlavors];
+        demo.flavors.forEach((df) => {
+          if (!mergedFlavors.some((f) => f.name === df.name || f.id === df.id)) {
+            mergedFlavors.push(df);
+          }
+        });
+
         return {
           ...demo,
           ...prev,
+          sizes: mergedSizes.length ? mergedSizes : demo.sizes,
+          productTypes: mergedProductTypes.length ? mergedProductTypes : demo.productTypes,
+          flavors: mergedFlavors.length ? mergedFlavors : demo.flavors,
           treasuryAccounts: prev.treasuryAccounts?.length
             ? prev.treasuryAccounts
             : demo.treasuryAccounts,

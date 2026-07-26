@@ -14,7 +14,14 @@ export const PRODUCT_TYPES = [
   "gomitas-enchilada",
 ] as const;
 
-export const PRODUCT_SIZES = ["8oz", "12oz", "16oz", "3k", "6k", "10k"] as const;
+export const PRODUCT_SIZES = [
+  "8oz",
+  "12oz",
+  "16oz",
+  "3k",
+  "6k",
+  "10k",
+] as const;
 export const USER_ROLES = ["operator", "admin"] as const;
 
 export const LIQUID_VARIANTS = [

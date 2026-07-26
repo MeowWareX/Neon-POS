@@ -63,14 +63,16 @@ export function PosTerminal() {
   const [cart, setCart] = useState<OrderItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [isSaving, setIsSaving] = useState(false);
-  const [category, setCategory] = useState<"granizados" | "gomitas-enchilada">("granizados");
+  const [category, setCategory] = useState<"granizados" | "gomitas-enchilada">(
+    "granizados",
+  );
   const topPageRef = useRef<HTMLDivElement>(null);
   const sizeStepRef = useRef<HTMLDivElement>(null);
   const flavorStepRef = useRef<HTMLDivElement>(null);
   const postFlavorRef = useRef<HTMLDivElement>(null);
 
   const todaysFlavors = useMemo(() => {
-    return activeFlavors
+    const list = activeFlavors
       .filter((item) => item.businessDate === businessDate)
       .sort((a, b) => a.tankNumber - b.tankNumber)
       .map((active) => ({
@@ -78,6 +80,21 @@ export function PosTerminal() {
         flavor: flavors.find((item) => item.id === active.flavorId),
       }))
       .filter((item) => item.flavor);
+
+    if (list.length > 0) {
+      return list;
+    }
+
+    // Fallback: If no tanks are mapped for today, display active catalog flavors so operator is not blocked
+    return flavors
+      .filter((f) => f.isActive && !f.name.includes("Enchilado"))
+      .map((flavor, index) => ({
+        id: flavor.id,
+        flavorId: flavor.id,
+        tankNumber: (((index % 3) + 1) as 1 | 2 | 3),
+        businessDate,
+        flavor,
+      }));
   }, [activeFlavors, businessDate, flavors]);
 
   const currentItem = useMemo(
@@ -233,8 +250,12 @@ export function PosTerminal() {
     });
 
     if (category === "gomitas-enchilada") {
-      const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
-      const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+      const neutralFlavor = flavors.find(
+        (f) => f.name.includes("Enchilado") || f.name.includes("Directo"),
+      );
+      const ptGomitas = productTypes.find(
+        (t) => t.code === "gomitas-enchilada",
+      );
       setDraft({
         typeId: ptGomitas?.id,
         flavorId: neutralFlavor?.id,
@@ -282,8 +303,12 @@ export function PosTerminal() {
   const clearOrder = () => {
     setCart([]);
     if (category === "gomitas-enchilada") {
-      const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
-      const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+      const neutralFlavor = flavors.find(
+        (f) => f.name.includes("Enchilado") || f.name.includes("Directo"),
+      );
+      const ptGomitas = productTypes.find(
+        (t) => t.code === "gomitas-enchilada",
+      );
       setDraft({
         typeId: ptGomitas?.id,
         flavorId: neutralFlavor?.id,
@@ -476,14 +501,14 @@ export function PosTerminal() {
                 </div>
               </CardContent>
             </Card>
-) : null}
+          ) : null}
 
           <Card>
             <CardHeader>
               <CardTitle>Flujo rápido de venta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex gap-2 p-1 rounded-2xl bg-white/5 border border-white/10">
+              <div className="flex gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
                 <Button
                   variant={category === "granizados" ? "default" : "ghost"}
                   className="flex-1 rounded-xl text-sm"
@@ -496,15 +521,23 @@ export function PosTerminal() {
                   🍹 Granizados
                 </Button>
                 <Button
-                  variant={category === "gomitas-enchilada" ? "default" : "ghost"}
+                  variant={
+                    category === "gomitas-enchilada" ? "default" : "ghost"
+                  }
                   className="flex-1 rounded-xl text-sm"
                   onClick={() => {
                     setCategory("gomitas-enchilada");
-                    const neutralFlavor = flavors.find((f) => f.name.includes("Enchilado") || f.name.includes("Directo"));
-                    const ptGomitas = productTypes.find((t) => t.code === "gomitas-enchilada");
+                    const neutralFlavor = flavors.find(
+                      (f) =>
+                        f.name.includes("Enchilado") ||
+                        f.name.includes("Directo"),
+                    );
+                    const ptGomitas = productTypes.find(
+                      (t) => t.code === "gomitas-enchilada",
+                    );
                     setDraft({
-                      typeId: ptGomitas?.id,
-                      flavorId: neutralFlavor?.id,
+                      typeId: ptGomitas?.id || "44444444-5555-5555-5555-555555555555",
+                      flavorId: neutralFlavor?.id || "88888888-8888-8888-8888-888888888888",
                       extraIds: [],
                       quantity: 1,
                     });
@@ -541,23 +574,81 @@ export function PosTerminal() {
                   <StepBlock
                     step={category === "granizados" ? "2" : "1"}
                     title="Presentación"
-                    items={sizes
-                      .filter((size) => {
-                        if (category === "granizados") {
-                          return size.code !== "3k" && size.code !== "6k" && size.code !== "10k";
-                        } else {
-                          return size.code === "3k" || size.code === "6k" || size.code === "10k";
-                        }
-                      })
-                      .map((size) => ({
-                        id: size.id,
-                        label: size.label,
-                        caption: draft.typeId
+                    items={(category === "granizados"
+                      ? sizes.filter(
+                          (size) =>
+                            size.code !== "3k" &&
+                            size.code !== "6k" &&
+                            size.code !== "10k",
+                        )
+                      : sizes.filter(
+                          (size) =>
+                            size.code === "3k" ||
+                            size.code === "6k" ||
+                            size.code === "10k",
+                        ).length > 0
+                      ? sizes.filter(
+                          (size) =>
+                            size.code === "3k" ||
+                            size.code === "6k" ||
+                            size.code === "10k",
+                        )
+                      : [
+                          {
+                            id: "33333333-3000-3000-3000-333333333333",
+                            code: "3k",
+                            label: "Vasito 3K",
+                            ounces: 3,
+                            price: 3000,
+                            baseCost: 1000,
+                          },
+                          {
+                            id: "33333333-6000-6000-6000-333333333333",
+                            code: "6k",
+                            label: "Mediano 6K",
+                            ounces: 6,
+                            price: 6000,
+                            baseCost: 2000,
+                          },
+                          {
+                            id: "33333333-9000-9000-9000-333333333333",
+                            code: "10k",
+                            label: "Grande 10K",
+                            ounces: 10,
+                            price: 10000,
+                            baseCost: 3500,
+                          },
+                        ]
+                    ).map((size) => ({
+                      id: size.id,
+                      label: size.label,
+                      caption:
+                        category === "granizados" && draft.typeId
                           ? getSizeCaption(size.code)
                           : currency(size.price),
-                        active: draft.sizeId === size.id,
-                        onClick: () => selectSize(size.id),
-                      }))}
+                      active: draft.sizeId === size.id,
+                      onClick: () => {
+                        if (category === "gomitas-enchilada") {
+                          const neutralFlavor = flavors.find(
+                            (f) =>
+                              f.name.includes("Enchilado") ||
+                              f.name.includes("Directo"),
+                          );
+                          const ptGomitas = productTypes.find(
+                            (t) => t.code === "gomitas-enchilada",
+                          );
+                          setDraft((current) => ({
+                            ...current,
+                            typeId: ptGomitas?.id || "44444444-5555-5555-5555-555555555555",
+                            flavorId: neutralFlavor?.id || "88888888-8888-8888-8888-888888888888",
+                            sizeId: size.id,
+                            extraIds: [],
+                          }));
+                        } else {
+                          selectSize(size.id);
+                        }
+                      },
+                    }))}
                   />
                 </div>
               ) : null}
@@ -617,21 +708,20 @@ export function PosTerminal() {
                     />
                   </>
                 </div>
+              ) : category === "granizados" ? (
+                <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
+                  <p className="text-muted text-sm">
+                    Completa tipo, tamaño y sabor para habilitar extras, pago y
+                    el resumen final.
+                  </p>
+                </div>
               ) : (
-                category === "granizados" ? (
-                  <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
-                    <p className="text-muted text-sm">
-                      Completa tipo, tamaño y sabor para habilitar extras, pago y
-                      el resumen final.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
-                    <p className="text-muted text-sm">
-                      Selecciona una presentación de Gomitas Enchiladas para habilitar el pago y agregar al pedido.
-                    </p>
-                  </div>
-                )
+                <div className="rounded-3xl border border-white/10 bg-white/4 p-4">
+                  <p className="text-muted text-sm">
+                    Selecciona una presentación de Gomitas Enchiladas para
+                    habilitar el pago y agregar al pedido.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

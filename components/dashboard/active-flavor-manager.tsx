@@ -13,11 +13,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { getBusinessDate } from "@/lib/business";
 import { CATALOG_UPDATE_KEY } from "@/lib/constants";
+import { useAppStore } from "@/stores/app-store";
 import type { ActiveFlavor, Flavor } from "@/types/domain";
+import { toast } from "sonner";
 
 export function ActiveFlavorManager() {
   const [flavors, setFlavors] = useState<Flavor[]>([]);
-  const [activeFlavors, setActiveFlavors] = useState<ActiveFlavor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFlavors, setSelectedFlavors] = useState<{
     tank1: string;
@@ -46,24 +47,18 @@ export function ActiveFlavorManager() {
       }
 
       if (activeFlavorsRes.ok) {
-        const data = await activeFlavorsRes.json();
-        const active = data.find(
+        const data: ActiveFlavor[] = await activeFlavorsRes.json();
+        const todayActive = data.filter(
           (af: ActiveFlavor) => af.businessDate === businessDate,
         );
 
-        if (active) {
-          setActiveFlavors(data);
-          const tank1 =
-            data.find((af: ActiveFlavor) => af.tankNumber === 1)?.flavorId ||
-            "";
-          const tank2 =
-            data.find((af: ActiveFlavor) => af.tankNumber === 2)?.flavorId ||
-            "";
-          const tank3 =
-            data.find((af: ActiveFlavor) => af.tankNumber === 3)?.flavorId ||
-            "";
-          setSelectedFlavors({ tank1, tank2, tank3 });
-        }
+        const tank1 =
+          todayActive.find((af) => af.tankNumber === 1)?.flavorId || "";
+        const tank2 =
+          todayActive.find((af) => af.tankNumber === 2)?.flavorId || "";
+        const tank3 =
+          todayActive.find((af) => af.tankNumber === 3)?.flavorId || "";
+        setSelectedFlavors({ tank1, tank2, tank3 });
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -79,49 +74,65 @@ export function ActiveFlavorManager() {
   async function handleSave() {
     setIsLoading(true);
     try {
-      // Delete old active flavors for today
-      await Promise.all(
-        activeFlavors.map((af) =>
-          fetch(`/api/active-flavors/${af.id}`, { method: "DELETE" }),
-        ),
-      );
+      const promises: Promise<Response>[] = [];
 
-      // Create new active flavors
-      await Promise.all([
-        fetch("/api/active-flavors", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            flavorId: selectedFlavors.tank1,
-            tankNumber: 1,
-            businessDate,
+      if (selectedFlavors.tank1) {
+        promises.push(
+          fetch("/api/active-flavors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              flavorId: selectedFlavors.tank1,
+              tankNumber: 1,
+              businessDate,
+            }),
           }),
-        }),
-        fetch("/api/active-flavors", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            flavorId: selectedFlavors.tank2,
-            tankNumber: 2,
-            businessDate,
-          }),
-        }),
-        fetch("/api/active-flavors", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            flavorId: selectedFlavors.tank3,
-            tankNumber: 3,
-            businessDate,
-          }),
-        }),
-      ]);
+        );
+      }
 
-      fetchData();
+      if (selectedFlavors.tank2) {
+        promises.push(
+          fetch("/api/active-flavors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              flavorId: selectedFlavors.tank2,
+              tankNumber: 2,
+              businessDate,
+            }),
+          }),
+        );
+      }
+
+      if (selectedFlavors.tank3) {
+        promises.push(
+          fetch("/api/active-flavors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              flavorId: selectedFlavors.tank3,
+              tankNumber: 3,
+              businessDate,
+            }),
+          }),
+        );
+      }
+
+      await Promise.all(promises);
+
+      // Update local store activeFlavors
+      const { setFlavorTank } = useAppStore.getState();
+      if (selectedFlavors.tank1) setFlavorTank(selectedFlavors.tank1, 1);
+      if (selectedFlavors.tank2) setFlavorTank(selectedFlavors.tank2, 2);
+      if (selectedFlavors.tank3) setFlavorTank(selectedFlavors.tank3, 3);
+
+      await fetchData();
+      toast.success("Sabores asignados correctamente a los tanques.");
       localStorage.setItem(CATALOG_UPDATE_KEY, Date.now().toString());
       window.dispatchEvent(new Event("catalog-updated"));
     } catch (error) {
       console.error("Error saving flavors:", error);
+      toast.error("Error al guardar sabores activos");
     } finally {
       setIsLoading(false);
     }
