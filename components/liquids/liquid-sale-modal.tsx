@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { FlaskConical, Plus } from "lucide-react";
+import { FlaskConical, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import {
   LIQUID_VARIANT_CONFIG,
   LIQUID_VARIANTS,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -32,60 +33,155 @@ import {
 } from "@/components/ui/select";
 import type { PaymentMethod } from "@/types/domain";
 
+interface LiquidDraftItem {
+  id: string;
+  variant: LiquidVariantCode;
+  variantLabel: string;
+  flavorId: string | null;
+  flavorName: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
 export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const businessDate = useAppStore((state) => state.businessDate);
   const flavors = useAppStore((state) => state.flavors);
   const addLiquidSale = useAppStore((state) => state.addLiquidSale);
 
+  // Common Header State
   const [saleDate, setSaleDate] = useState<string>(businessDate);
-  const [variant, setVariant] = useState<LiquidVariantCode>("base_sin_licor");
-  const [flavorId, setFlavorId] = useState<string>("none");
-  const [quantity, setQuantity] = useState<number>(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [customerName, setCustomerName] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const config = LIQUID_VARIANT_CONFIG[variant];
-  const unitPrice = config?.price ?? 0;
-  const totalAmount = unitPrice * quantity;
-  const totalLiters = quantity * LIQUID_YIELD_LITERS;
+  // Added Items List
+  const [items, setItems] = useState<LiquidDraftItem[]>([]);
+
+  // Item Picker State
+  const [variant, setVariant] = useState<LiquidVariantCode>("base_sin_licor");
+  const [flavorId, setFlavorId] = useState<string>("none");
+  const [customFlavor, setCustomFlavor] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+
+  const currentConfig = LIQUID_VARIANT_CONFIG[variant];
+  const currentUnitPrice = currentConfig?.price ?? 0;
+
+  const handleAddItem = () => {
+    if (quantity <= 0) {
+      toast.error("La cantidad debe ser al menos 1");
+      return;
+    }
+
+    let finalFlavorName = "Sin sabor específico";
+    let finalFlavorId: string | null = null;
+
+    if (flavorId === "custom") {
+      finalFlavorName = customFlavor.trim() || "Sabor Personalizado";
+      finalFlavorId = null;
+    } else if (flavorId !== "none") {
+      const selected = flavors.find((f) => f.id === flavorId);
+      finalFlavorName = selected ? selected.name : "Sabor Específico";
+      finalFlavorId = flavorId;
+    }
+
+    const newItem: LiquidDraftItem = {
+      id: crypto.randomUUID(),
+      variant,
+      variantLabel: currentConfig.label,
+      flavorId: finalFlavorId,
+      flavorName: finalFlavorName,
+      quantity,
+      unitPrice: currentUnitPrice,
+      total: currentUnitPrice * quantity,
+    };
+
+    setItems((prev) => [...prev, newItem]);
+    setQuantity(1);
+    toast.success(`Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName})`);
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const grandTotal = items.reduce((acc, item) => acc + item.total, 0);
+  const totalBottles = items.reduce((acc, item) => acc + item.quantity, 0);
+  const totalLiters = totalBottles * LIQUID_YIELD_LITERS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (quantity <= 0) {
-      toast.error("La cantidad debe ser mayor a 0");
+
+    let finalItems = [...items];
+
+    // If user didn't explicitly tap "Agregar ítem" but selected valid choices, automatically include it
+    if (finalItems.length === 0 && quantity > 0) {
+      let finalFlavorName = "Sin sabor específico";
+      let finalFlavorId: string | null = null;
+
+      if (flavorId === "custom") {
+        finalFlavorName = customFlavor.trim() || "Sabor Personalizado";
+        finalFlavorId = null;
+      } else if (flavorId !== "none") {
+        const selected = flavors.find((f) => f.id === flavorId);
+        finalFlavorName = selected ? selected.name : "Sabor Específico";
+        finalFlavorId = flavorId;
+      }
+
+      finalItems = [
+        {
+          id: crypto.randomUUID(),
+          variant,
+          variantLabel: currentConfig.label,
+          flavorId: finalFlavorId,
+          flavorName: finalFlavorName,
+          quantity,
+          unitPrice: currentUnitPrice,
+          total: currentUnitPrice * quantity,
+        },
+      ];
+    }
+
+    if (finalItems.length === 0) {
+      toast.error("Agrega al menos un líquido a la venta");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const selectedFlavor = flavors.find((f) => f.id === flavorId);
-
-      addLiquidSale({
-        saleDate,
-        variant,
-        flavorId: flavorId !== "none" ? flavorId : null,
-        flavorName: selectedFlavor ? selectedFlavor.name : null,
-        quantity,
-        paymentMethod,
-        customerName: customerName.trim() || null,
-        notes: notes.trim() || null,
+      // Process each item in the multi-item sale
+      finalItems.forEach((item) => {
+        addLiquidSale({
+          saleDate,
+          variant: item.variant,
+          flavorId: item.flavorId,
+          flavorName: item.flavorName,
+          quantity: item.quantity,
+          paymentMethod,
+          customerName: customerName.trim() || null,
+          notes: notes.trim() || null,
+        });
       });
 
+      const totalQty = finalItems.reduce((sum, i) => sum + i.quantity, 0);
+      const totalCost = finalItems.reduce((sum, i) => sum + i.total, 0);
+
       toast.success(
-        `Venta registrada: ${quantity}x ${config.label} (${currency(totalAmount)})`,
+        `Venta registrada exitosamente: ${totalQty} botellas (${currency(totalCost)})`,
       );
 
       // Reset form
+      setItems([]);
       setQuantity(1);
       setCustomerName("");
       setNotes("");
+      setCustomFlavor("");
       setOpen(false);
     } catch (err: unknown) {
       toast.error(
-        err instanceof Error ? err.message : "Error al registrar venta",
+        err instanceof Error ? err.message : "Error al registrar la venta",
       );
     } finally {
       setIsSubmitting(false);
@@ -98,27 +194,27 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
         {trigger || (
           <Button className="gap-2 shadow-[0_0_20px_rgba(255,79,216,0.25)]">
             <Plus className="size-4" />
-            Nueva Venta de Líquido
+            Nueva Venta de Líquidos
           </Button>
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg border-white/10 bg-[#0f071a]/95 backdrop-blur-xl">
+      <DialogContent className="max-w-2xl border-white/10 bg-[#0f071a]/95 backdrop-blur-xl max-h-[92vh] flex flex-col p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <FlaskConical className="text-primary size-5" />
-            Registrar Venta de Líquido Concentrado
+            Registrar Venta de Líquidos Concentrados
           </DialogTitle>
           <DialogDescription>
-            Ingresa la venta de botellas concentradas (Rendimiento: 6 Litros por
-            unidad).
+            Agrega múltiples botellas de distintos sabores en una sola transacción comercial.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="mt-3 space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 gap-4 min-h-0 mt-2">
+          {/* Header Controls: Date & Payment Method */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="saleDate">Fecha de Venta</Label>
+              <Label htmlFor="saleDate">Fecha Comercial</Label>
               <Input
                 id="saleDate"
                 type="date"
@@ -149,132 +245,211 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="variant">Variante de Producto</Label>
+          {/* Selector Card for Adding Items */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Seleccionar Producto y Sabor
+              </span>
+              <Badge variant="secondary" className="text-[11px]">
+                {currency(currentUnitPrice)} / botella
+              </Badge>
+            </div>
+
+            {/* Variant Buttons */}
             <div className="grid grid-cols-2 gap-2">
               {LIQUID_VARIANTS.map((vKey) => {
-                const item = LIQUID_VARIANT_CONFIG[vKey];
+                const itemConfig = LIQUID_VARIANT_CONFIG[vKey];
                 const isSelected = variant === vKey;
                 return (
                   <button
                     key={vKey}
                     type="button"
                     onClick={() => setVariant(vKey)}
-                    className={`flex flex-col items-start rounded-2xl border p-3 text-left transition-all ${
+                    className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
                       isSelected
-                        ? "border-primary bg-primary/15 text-white shadow-[0_0_15px_rgba(255,79,216,0.3)]"
+                        ? "border-primary bg-primary/20 text-white shadow-[0_0_15px_rgba(255,79,216,0.3)]"
                         : "border-white/10 bg-white/5 text-white/80 hover:bg-white/10"
                     }`}
                   >
                     <div className="flex w-full items-center justify-between">
-                      <span className="text-xs font-bold">{item.label}</span>
-                      {item.hasAlcohol && (
-                        <Badge
-                          variant="warning"
-                          className="px-1.5 py-0 text-[10px]"
-                        >
+                      <span className="text-xs font-bold">{itemConfig.label}</span>
+                      {itemConfig.hasAlcohol && (
+                        <Badge variant="warning" className="px-1 py-0 text-[9px]">
                           Licor
                         </Badge>
                       )}
                     </div>
-                    <span className="text-primary mt-1 text-sm font-extrabold">
-                      {currency(item.price)}
+                    <span className="text-primary mt-1 text-xs font-extrabold">
+                      {currency(itemConfig.price)}
                     </span>
                   </button>
                 );
               })}
             </div>
+
+            {/* Flavor & Quantity Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_120px_auto] gap-3 items-end pt-1">
+              <div className="space-y-1.5">
+                <Label htmlFor="flavor">Sabor del Líquido</Label>
+                <Select value={flavorId} onValueChange={setFlavorId}>
+                  <SelectTrigger id="flavor">
+                    <SelectValue placeholder="Seleccionar sabor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sin sabor específico</SelectItem>
+                    {flavors.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="custom">✏️ Escribir otro sabor...</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {flavorId === "custom" ? (
+                <div className="space-y-1.5 md:col-span-3">
+                  <Label htmlFor="customFlavor">Nombre del Sabor Personalizado</Label>
+                  <Input
+                    id="customFlavor"
+                    placeholder="Ej: Fresa, Uva, Maracuyá..."
+                    value={customFlavor}
+                    onChange={(e) => setCustomFlavor(e.target.value)}
+                  />
+                </div>
+              ) : null}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="quantity">Cantidad</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                />
+              </div>
+
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAddItem}
+                className="gap-1.5 bg-primary/20 hover:bg-primary/30 border border-primary/30 text-white font-semibold"
+              >
+                <Plus className="size-4" />
+                Agregar
+              </Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="flavor">Sabor (Opcional)</Label>
-              <Select value={flavorId} onValueChange={setFlavorId}>
-                <SelectTrigger id="flavor">
-                  <SelectValue placeholder="Sabor concentrado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Sin sabor específico</SelectItem>
-                  {flavors.map((f) => (
-                    <SelectItem key={f.id} value={f.id}>
-                      {f.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {/* List of Added Items in Cart */}
+          <div className="flex-1 overflow-hidden flex flex-col rounded-2xl border border-white/10 bg-black/20 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                <ShoppingCart className="size-3.5" />
+                Desglose de la Venta ({items.length} ítems)
+              </span>
+              {items.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 text-xs text-muted hover:text-white"
+                  onClick={() => setItems([])}
+                >
+                  Limpiar lista
+                </Button>
+              )}
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="quantity">Cantidad (Unidades/Botellas)</Label>
+            {items.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center p-6 text-center text-muted text-sm border border-dashed border-white/10 rounded-xl bg-white/2">
+                Agrega botellas con sus respectivos sabores usando el panel superior.
+              </div>
+            ) : (
+              <ScrollArea className="flex-1 max-h-[180px] pr-2">
+                <div className="space-y-2">
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5 text-sm"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white truncate">
+                          {item.quantity}x {item.variantLabel}
+                        </p>
+                        <p className="text-xs text-muted truncate">
+                          Sabor: <span className="text-primary font-medium">{item.flavorName}</span>
+                          {" · "}
+                          {currency(item.unitPrice)} c/u
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-white">
+                          {currency(item.total)}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-7 text-muted hover:text-red-400"
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+
+          {/* Customer & Notes Optional Details */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="customerName" className="text-xs">Cliente / Comprador</Label>
               <Input
-                id="quantity"
-                type="number"
-                min={1}
-                value={quantity}
-                onChange={(e) =>
-                  setQuantity(Math.max(1, Number(e.target.value)))
-                }
-                required
+                id="customerName"
+                placeholder="Ej: Bar Central / Juan"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="h-9 text-xs"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="notes" className="text-xs">Notas / Observaciones</Label>
+              <Input
+                id="notes"
+                placeholder="Ej: Factura #104"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="h-9 text-xs"
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="customerName">Cliente / Comprador (Opcional)</Label>
-            <Input
-              id="customerName"
-              placeholder="Ej: Bar Central / Juan Pérez"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="notes">Notas o Observaciones (Opcional)</Label>
-            <Input
-              id="notes"
-              placeholder="Ej: Entregado con factura #104"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-
-          <div className="glass-panel mt-2 rounded-2xl border border-white/10 p-3">
-            <div className="text-muted flex items-center justify-between text-xs">
-              <span>Precio Unitario:</span>
-              <span className="font-semibold text-white">
-                {currency(unitPrice)}
-              </span>
+          {/* Summary Panel & Submit Button */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">{totalBottles} botellas</Badge>
+                <Badge variant="muted">{totalLiters}L proyectados</Badge>
+              </div>
+              <p className="text-xs text-muted mt-1">
+                Total Venta: <span className="text-base font-extrabold text-white">{currency(grandTotal || (quantity * currentUnitPrice))}</span>
+              </p>
             </div>
-            <div className="text-muted mt-1 flex items-center justify-between text-xs">
-              <span>Rendimiento Proyectado:</span>
-              <span className="text-secondary font-semibold">
-                {totalLiters} Litros
-              </span>
-            </div>
-            <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2 text-sm">
-              <span className="font-bold text-white">Total Venta:</span>
-              <span className="font-display text-primary text-xl font-extrabold tracking-wide">
-                {currency(totalAmount)}
-              </span>
-            </div>
-          </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setOpen(false)}
-              disabled={isSubmitting}
-            >
-              Cancelar
-            </Button>
             <Button
               type="submit"
+              size="lg"
               disabled={isSubmitting}
-              className="font-semibold"
+              className="gap-2 shadow-[0_0_20px_rgba(255,79,216,0.3)] font-bold px-6"
             >
-              {isSubmitting ? "Guardando..." : "Registrar Venta"}
+              {isSubmitting ? "Registrando..." : `Registrar Venta (${currency(grandTotal || (quantity * currentUnitPrice))})`}
             </Button>
           </div>
         </form>
