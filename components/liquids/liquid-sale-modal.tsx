@@ -32,11 +32,7 @@ import {
 } from "@/components/ui/select";
 import type { PaymentMethod } from "@/types/domain";
 
-export function LiquidSaleModal({
-  trigger,
-}: {
-  trigger?: React.ReactNode;
-}) {
+export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const businessDate = useAppStore((state) => state.businessDate);
   const flavors = useAppStore((state) => state.flavors);
@@ -110,7 +106,7 @@ export function LiquidSaleModal({
       <DialogContent className="max-w-lg border-white/10 bg-[#0f071a]/95 backdrop-blur-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-            <FlaskConical className="size-5 text-primary" />
+            <FlaskConical className="text-primary size-5" />
             Registrar Venta de Líquido Concentrado
           </DialogTitle>
           <DialogDescription>
@@ -145,7 +141,9 @@ export function LiquidSaleModal({
                   <SelectItem value="cash">Efectivo</SelectItem>
                   <SelectItem value="nequi">Nequi</SelectItem>
                   <SelectItem value="daviplata">Daviplata</SelectItem>
-                  <SelectItem value="transfer">Transferencia Bancaria</SelectItem>
+                  <SelectItem value="transfer">
+                    Transferencia Bancaria
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -171,12 +169,15 @@ export function LiquidSaleModal({
                     <div className="flex w-full items-center justify-between">
                       <span className="text-xs font-bold">{item.label}</span>
                       {item.hasAlcohol && (
-                        <Badge variant="warning" className="px-1.5 py-0 text-[10px]">
+                        <Badge
+                          variant="warning"
+                          className="px-1.5 py-0 text-[10px]"
+                        >
                           Licor
                         </Badge>
                       )}
                     </div>
-                    <span className="mt-1 text-sm font-extrabold text-primary">
+                    <span className="text-primary mt-1 text-sm font-extrabold">
                       {currency(item.price)}
                     </span>
                   </button>
@@ -210,7 +211,9 @@ export function LiquidSaleModal({
                 type="number"
                 min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                onChange={(e) =>
+                  setQuantity(Math.max(1, Number(e.target.value)))
+                }
                 required
               />
             </div>
@@ -237,17 +240,21 @@ export function LiquidSaleModal({
           </div>
 
           <div className="glass-panel mt-2 rounded-2xl border border-white/10 p-3">
-            <div className="flex items-center justify-between text-xs text-muted">
+            <div className="text-muted flex items-center justify-between text-xs">
               <span>Precio Unitario:</span>
-              <span className="font-semibold text-white">{currency(unitPrice)}</span>
+              <span className="font-semibold text-white">
+                {currency(unitPrice)}
+              </span>
             </div>
-            <div className="mt-1 flex items-center justify-between text-xs text-muted">
+            <div className="text-muted mt-1 flex items-center justify-between text-xs">
               <span>Rendimiento Proyectado:</span>
-              <span className="font-semibold text-secondary">{totalLiters} Litros</span>
+              <span className="text-secondary font-semibold">
+                {totalLiters} Litros
+              </span>
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2 text-sm">
               <span className="font-bold text-white">Total Venta:</span>
-              <span className="font-display text-xl font-extrabold text-primary tracking-wide">
+              <span className="font-display text-primary text-xl font-extrabold tracking-wide">
                 {currency(totalAmount)}
               </span>
             </div>
@@ -262,7 +269,11 @@ export function LiquidSaleModal({
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="font-semibold">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="font-semibold"
+            >
               {isSubmitting ? "Guardando..." : "Registrar Venta"}
             </Button>
           </div>

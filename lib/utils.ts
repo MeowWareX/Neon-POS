@@ -43,4 +43,3 @@ export function formatDate(value: string | Date) {
     dateStyle: "medium",
   }).format(new Date(value));
 }
-

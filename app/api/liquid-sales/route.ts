@@ -18,7 +18,12 @@ export async function GET() {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Error fetching liquid sales" },
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Error fetching liquid sales",
+      },
       { status: 500 },
     );
   }
@@ -52,7 +57,10 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) {
-      return NextResponse.json({ message: "ID parameter missing" }, { status: 400 });
+      return NextResponse.json(
+        { message: "ID parameter missing" },
+        { status: 400 },
+      );
     }
 
     const supabase = getSupabaseAdminClient();

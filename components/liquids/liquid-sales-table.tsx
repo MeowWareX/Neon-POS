@@ -10,10 +10,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import {
-  LIQUID_VARIANT_CONFIG,
-  LIQUID_YIELD_LITERS,
-} from "@/lib/constants";
+import { LIQUID_VARIANT_CONFIG, LIQUID_YIELD_LITERS } from "@/lib/constants";
 import { currency, formatDate } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +35,9 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
 
   const filteredSales = sales.filter((item) => {
     const matchesSearch =
-      (item.customerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.customerName || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       (item.notes || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.flavorName || "").toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -71,9 +70,17 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
       case "cash":
         return <Badge variant="success">Efectivo</Badge>;
       case "nequi":
-        return <Badge variant="default" className="bg-purple-600">Nequi</Badge>;
+        return (
+          <Badge variant="default" className="bg-purple-600">
+            Nequi
+          </Badge>
+        );
       case "daviplata":
-        return <Badge variant="default" className="bg-red-600">Daviplata</Badge>;
+        return (
+          <Badge variant="default" className="bg-red-600">
+            Daviplata
+          </Badge>
+        );
       case "transfer":
         return <Badge variant="warning">Transferencia</Badge>;
       default:
@@ -86,7 +93,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
       {/* Search and Filters bar */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+          <Search className="text-muted absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             placeholder="Buscar por cliente, sabor u observaciones..."
             value={searchTerm}
@@ -104,8 +111,12 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
               <SelectItem value="all">Todas las variantes</SelectItem>
               <SelectItem value="base_sin_licor">Base Sin Licor</SelectItem>
               <SelectItem value="base_con_licor">Base Con Licor</SelectItem>
-              <SelectItem value="cremoso_sin_licor">Cremoso Sin Licor</SelectItem>
-              <SelectItem value="cremoso_con_licor">Cremoso Con Licor</SelectItem>
+              <SelectItem value="cremoso_sin_licor">
+                Cremoso Sin Licor
+              </SelectItem>
+              <SelectItem value="cremoso_con_licor">
+                Cremoso Con Licor
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -128,11 +139,11 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
       {filteredSales.length === 0 ? (
         <Card className="glass-panel border-white/10 p-8 text-center">
           <CardContent className="pt-6">
-            <FlaskConical className="mx-auto size-12 text-muted opacity-40" />
+            <FlaskConical className="text-muted mx-auto size-12 opacity-40" />
             <p className="mt-3 text-lg font-bold text-white">
               No se encontraron ventas de líquidos
             </p>
-            <p className="mt-1 text-sm text-muted">
+            <p className="text-muted mt-1 text-sm">
               {sales.length === 0
                 ? "Utiliza el botón 'Nueva Venta de Líquido' para registrar la primera venta."
                 : "Intenta ajustar los filtros de búsqueda."}
@@ -140,20 +151,22 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           </CardContent>
         </Card>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-white/10 glass-panel">
+        <div className="glass-panel overflow-x-auto rounded-2xl border border-white/10">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 bg-white/5 text-xs text-muted uppercase">
+            <thead className="text-muted border-b border-white/10 bg-white/5 text-xs uppercase">
               <tr>
                 <th className="px-4 py-3 font-semibold">Fecha</th>
                 <th className="px-4 py-3 font-semibold">Variante</th>
                 <th className="px-4 py-3 font-semibold">Sabor</th>
-                <th className="px-4 py-3 font-semibold text-center">Cant.</th>
-                <th className="px-4 py-3 font-semibold text-center">Rendimiento</th>
-                <th className="px-4 py-3 font-semibold text-right">Unitario</th>
-                <th className="px-4 py-3 font-semibold text-right">Total</th>
+                <th className="px-4 py-3 text-center font-semibold">Cant.</th>
+                <th className="px-4 py-3 text-center font-semibold">
+                  Rendimiento
+                </th>
+                <th className="px-4 py-3 text-right font-semibold">Unitario</th>
+                <th className="px-4 py-3 text-right font-semibold">Total</th>
                 <th className="px-4 py-3 font-semibold">Pago</th>
                 <th className="px-4 py-3 font-semibold">Cliente / Notas</th>
-                <th className="px-4 py-3 font-semibold text-center">Acción</th>
+                <th className="px-4 py-3 text-center font-semibold">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -165,11 +178,11 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                 return (
                   <tr
                     key={sale.id}
-                    className="hover:bg-white/5 transition-colors"
+                    className="transition-colors hover:bg-white/5"
                   >
-                    <td className="px-4 py-3.5 whitespace-nowrap font-medium text-white">
+                    <td className="px-4 py-3.5 font-medium whitespace-nowrap text-white">
                       <div className="flex items-center gap-2">
-                        <Calendar className="size-3.5 text-muted shrink-0" />
+                        <Calendar className="text-muted size-3.5 shrink-0" />
                         {formatDate(sale.saleDate)}
                       </div>
                     </td>
@@ -192,7 +205,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
 
                     <td className="px-4 py-3.5 whitespace-nowrap">
                       {sale.flavorName ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                        <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
                           <Droplet className="size-3" />
                           {sale.flavorName}
                         </span>
@@ -201,19 +214,19 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                       )}
                     </td>
 
-                    <td className="px-4 py-3.5 whitespace-nowrap text-center font-bold text-white">
+                    <td className="px-4 py-3.5 text-center font-bold whitespace-nowrap text-white">
                       {sale.quantity} bot.
                     </td>
 
-                    <td className="px-4 py-3.5 whitespace-nowrap text-center text-xs font-semibold text-secondary">
+                    <td className="text-secondary px-4 py-3.5 text-center text-xs font-semibold whitespace-nowrap">
                       ~{totalLiters} L
                     </td>
 
-                    <td className="px-4 py-3.5 whitespace-nowrap text-right text-muted">
+                    <td className="text-muted px-4 py-3.5 text-right whitespace-nowrap">
                       {currency(sale.unitPrice)}
                     </td>
 
-                    <td className="px-4 py-3.5 whitespace-nowrap text-right font-display font-extrabold text-primary">
+                    <td className="font-display text-primary px-4 py-3.5 text-right font-extrabold whitespace-nowrap">
                       {currency(sale.total)}
                     </td>
 
@@ -221,15 +234,17 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                       {paymentBadge(sale.paymentMethod)}
                     </td>
 
-                    <td className="px-4 py-3.5 max-w-[200px] truncate text-xs text-muted">
+                    <td className="text-muted max-w-[200px] truncate px-4 py-3.5 text-xs">
                       {sale.customerName && (
                         <div className="flex items-center gap-1 font-medium text-white/90">
-                          <User className="size-3 text-muted shrink-0" />
+                          <User className="text-muted size-3 shrink-0" />
                           {sale.customerName}
                         </div>
                       )}
                       {sale.notes && (
-                        <p className="truncate italic text-white/70">{sale.notes}</p>
+                        <p className="truncate text-white/70 italic">
+                          {sale.notes}
+                        </p>
                       )}
                       {!sale.customerName && !sale.notes && "-"}
                     </td>

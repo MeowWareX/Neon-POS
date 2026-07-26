@@ -262,7 +262,6 @@ export function summarizeLiquidSales(liquidSales: LiquidSale[]) {
   };
 }
 
-
 export function getCashSummary({
   sessions,
   orders,

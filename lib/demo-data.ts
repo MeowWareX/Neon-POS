@@ -951,4 +951,3 @@ export function buildDemoState(): DemoState {
     liquidSales,
   };
 }
-

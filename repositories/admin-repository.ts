@@ -619,4 +619,3 @@ export async function deleteLiquidSaleWithSupabase(
     throw new Error(error.message);
   }
 }
-

@@ -56,4 +56,3 @@ export const LIQUID_VARIANT_CONFIG: Record<
 };
 
 export const LIQUID_YIELD_LITERS = 6;
-

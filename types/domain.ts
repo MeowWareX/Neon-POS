@@ -12,7 +12,6 @@ export type ProductTypeCode = (typeof PRODUCT_TYPES)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export type { LiquidVariantCode };
 
-
 export type SyncState = "local" | "pending" | "synced";
 
 export interface AppUser {
@@ -227,4 +226,3 @@ export interface LiquidSaleInput {
   customerName?: string | null;
   notes?: string | null;
 }
-
