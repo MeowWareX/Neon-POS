@@ -99,7 +99,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
 
     setItems((prev) => [...prev, newItem]);
     setQuantity(1);
-    toast.success(`Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName})`);
+    toast.success(
+      `Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName})`,
+    );
   };
 
   const handleRemoveItem = (id: string) => {
@@ -198,24 +200,30 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="flex max-h-[92vh] w-[95vw] sm:w-full max-w-2xl flex-col overflow-hidden border-white/10 bg-[#0f071a]/98 p-4 sm:p-6 backdrop-blur-xl rounded-3xl">
+      <DialogContent className="flex max-h-[92vh] w-[95vw] max-w-2xl flex-col overflow-hidden rounded-3xl border-white/10 bg-[#0f071a]/98 p-4 backdrop-blur-xl sm:w-full sm:p-6">
         <DialogHeader className="flex-none pb-2">
-          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl font-bold">
+          <DialogTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
             <FlaskConical className="text-primary size-5 shrink-0" />
             Registrar Venta de Líquidos Concentrados
           </DialogTitle>
           <DialogDescription className="text-xs sm:text-sm">
-            Agrega múltiples botellas de distintos sabores en una sola transacción comercial.
+            Agrega múltiples botellas de distintos sabores en una sola
+            transacción comercial.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden mt-1">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-1 flex min-h-0 flex-1 flex-col overflow-hidden"
+        >
           {/* Scrollable Form Body */}
-          <div className="flex-1 overflow-y-auto min-h-0 pr-1 sm:pr-2 space-y-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 sm:pr-2">
             {/* Header Controls: Date & Payment Method */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="saleDate" className="text-xs font-semibold">Fecha Comercial</Label>
+                <Label htmlFor="saleDate" className="text-xs font-semibold">
+                  Fecha Comercial
+                </Label>
                 <Input
                   id="saleDate"
                   type="date"
@@ -227,12 +235,22 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="paymentMethod" className="text-xs font-semibold">Método de Pago</Label>
+                <Label
+                  htmlFor="paymentMethod"
+                  className="text-xs font-semibold"
+                >
+                  Método de Pago
+                </Label>
                 <Select
                   value={paymentMethod}
-                  onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
+                  onValueChange={(val) =>
+                    setPaymentMethod(val as PaymentMethod)
+                  }
                 >
-                  <SelectTrigger id="paymentMethod" className="h-9 text-xs sm:text-sm">
+                  <SelectTrigger
+                    id="paymentMethod"
+                    className="h-9 text-xs sm:text-sm"
+                  >
                     <SelectValue placeholder="Seleccionar pago" />
                   </SelectTrigger>
                   <SelectContent>
@@ -248,12 +266,15 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
             </div>
 
             {/* Selector Card for Adding Items */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4 space-y-3">
+            <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="text-muted-foreground text-[11px] font-bold tracking-wider uppercase">
                   Seleccionar Producto y Sabor
                 </span>
-                <Badge variant="secondary" className="text-[10px] sm:text-[11px]">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-[11px]"
+                >
                   {currency(currentUnitPrice)} / botella
                 </Badge>
               </div>
@@ -275,9 +296,14 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                       }`}
                     >
                       <div className="flex w-full items-center justify-between">
-                        <span className="text-xs font-bold truncate">{itemConfig.label}</span>
+                        <span className="truncate text-xs font-bold">
+                          {itemConfig.label}
+                        </span>
                         {itemConfig.hasAlcohol && (
-                          <Badge variant="warning" className="px-1 py-0 text-[8px] sm:text-[9px] shrink-0 ml-1">
+                          <Badge
+                            variant="warning"
+                            className="ml-1 shrink-0 px-1 py-0 text-[8px] sm:text-[9px]"
+                          >
                             Licor
                           </Badge>
                         )}
@@ -291,9 +317,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               {/* Flavor & Quantity Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px_auto] gap-2.5 items-end pt-1">
+              <div className="grid grid-cols-1 items-end gap-2.5 pt-1 sm:grid-cols-[1fr_100px_auto]">
                 <div className="space-y-1.5">
-                  <Label htmlFor="flavor" className="text-xs">Sabor del Líquido</Label>
+                  <Label htmlFor="flavor" className="text-xs">
+                    Sabor del Líquido
+                  </Label>
                   <Select value={flavorId} onValueChange={setFlavorId}>
                     <SelectTrigger id="flavor" className="h-9 text-xs">
                       <SelectValue placeholder="Seleccionar sabor" />
@@ -305,14 +333,18 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                           {f.name}
                         </SelectItem>
                       ))}
-                      <SelectItem value="custom">✏️ Escribir otro sabor...</SelectItem>
+                      <SelectItem value="custom">
+                        ✏️ Escribir otro sabor...
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {flavorId === "custom" ? (
                   <div className="space-y-1.5 sm:col-span-3">
-                    <Label htmlFor="customFlavor" className="text-xs">Nombre del Sabor Personalizado</Label>
+                    <Label htmlFor="customFlavor" className="text-xs">
+                      Nombre del Sabor Personalizado
+                    </Label>
                     <Input
                       id="customFlavor"
                       placeholder="Ej: Fresa, Uva, Maracuyá..."
@@ -324,13 +356,17 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                 ) : null}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="quantity" className="text-xs">Cantidad</Label>
+                  <Label htmlFor="quantity" className="text-xs">
+                    Cantidad
+                  </Label>
                   <Input
                     id="quantity"
                     type="number"
                     min={1}
                     value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                    onChange={(e) =>
+                      setQuantity(Math.max(1, Number(e.target.value)))
+                    }
                     className="h-9 text-xs"
                   />
                 </div>
@@ -339,7 +375,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                   type="button"
                   variant="secondary"
                   onClick={handleAddItem}
-                  className="h-9 gap-1.5 bg-primary/20 hover:bg-primary/30 border border-primary/30 text-white font-semibold text-xs"
+                  className="bg-primary/20 hover:bg-primary/30 border-primary/30 h-9 gap-1.5 border text-xs font-semibold text-white"
                 >
                   <Plus className="size-3.5" />
                   Agregar
@@ -348,9 +384,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
             </div>
 
             {/* List of Added Items in Cart */}
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-3 space-y-2">
+            <div className="space-y-2 rounded-2xl border border-white/10 bg-black/20 p-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                <span className="text-muted flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase">
                   <ShoppingCart className="size-3.5" />
                   Desglose de la Venta ({items.length} ítems)
                 </span>
@@ -359,7 +395,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-6 text-[11px] text-muted hover:text-white px-2"
+                    className="text-muted h-6 px-2 text-[11px] hover:text-white"
                     onClick={() => setItems([])}
                   >
                     Limpiar lista
@@ -368,35 +404,39 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               {items.length === 0 ? (
-                <div className="p-4 text-center text-muted text-xs border border-dashed border-white/10 rounded-xl bg-white/2">
-                  Agrega botellas con sus respectivos sabores usando el panel superior.
+                <div className="text-muted rounded-xl border border-dashed border-white/10 bg-white/2 p-4 text-center text-xs">
+                  Agrega botellas con sus respectivos sabores usando el panel
+                  superior.
                 </div>
               ) : (
-                <div className="max-h-[140px] overflow-y-auto space-y-2 pr-1">
+                <div className="max-h-[140px] space-y-2 overflow-y-auto pr-1">
                   {items.map((item) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 p-2 text-xs"
                     >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-white truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-white">
                           {item.quantity}x {item.variantLabel}
                         </p>
-                        <p className="text-[11px] text-muted truncate">
-                          Sabor: <span className="text-primary font-medium">{item.flavorName}</span>
+                        <p className="text-muted truncate text-[11px]">
+                          Sabor:{" "}
+                          <span className="text-primary font-medium">
+                            {item.flavorName}
+                          </span>
                           {" · "}
                           {currency(item.unitPrice)} c/u
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-bold text-white text-xs">
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-xs font-bold text-white">
                           {currency(item.total)}
                         </span>
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="size-6 text-muted hover:text-red-400"
+                          className="text-muted size-6 hover:text-red-400"
                           onClick={() => handleRemoveItem(item.id)}
                         >
                           <Trash2 className="size-3" />
@@ -409,9 +449,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
             </div>
 
             {/* Customer & Notes Optional Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1">
-                <Label htmlFor="customerName" className="text-xs">Cliente / Comprador</Label>
+                <Label htmlFor="customerName" className="text-xs">
+                  Cliente / Comprador
+                </Label>
                 <Input
                   id="customerName"
                   placeholder="Ej: Bar Central / Juan"
@@ -422,7 +464,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="notes" className="text-xs">Notas / Observaciones</Label>
+                <Label htmlFor="notes" className="text-xs">
+                  Notas / Observaciones
+                </Label>
                 <Input
                   id="notes"
                   placeholder="Ej: Factura #104"
@@ -435,14 +479,27 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           </div>
 
           {/* Fixed Summary Panel & Submit Button */}
-          <div className="flex-none pt-3 mt-1 border-t border-white/10 flex items-center justify-between gap-3 bg-[#0f071a]">
+          <div className="mt-1 flex flex-none items-center justify-between gap-3 border-t border-white/10 bg-[#0f071a] pt-3">
             <div>
               <div className="flex items-center gap-1.5">
-                <Badge variant="secondary" className="text-[10px] sm:text-xs py-0.5">{totalBottles} botellas</Badge>
-                <Badge variant="muted" className="text-[10px] sm:text-xs py-0.5">{totalLiters}L proyectados</Badge>
+                <Badge
+                  variant="secondary"
+                  className="py-0.5 text-[10px] sm:text-xs"
+                >
+                  {totalBottles} botellas
+                </Badge>
+                <Badge
+                  variant="muted"
+                  className="py-0.5 text-[10px] sm:text-xs"
+                >
+                  {totalLiters}L proyectados
+                </Badge>
               </div>
-              <p className="text-[11px] sm:text-xs text-muted mt-1">
-                Total Venta: <span className="text-sm sm:text-base font-extrabold text-white">{currency(grandTotal || (quantity * currentUnitPrice))}</span>
+              <p className="text-muted mt-1 text-[11px] sm:text-xs">
+                Total Venta:{" "}
+                <span className="text-sm font-extrabold text-white sm:text-base">
+                  {currency(grandTotal || quantity * currentUnitPrice)}
+                </span>
               </p>
             </div>
 
@@ -450,9 +507,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               type="submit"
               size="lg"
               disabled={isSubmitting}
-              className="gap-2 shadow-[0_0_20px_rgba(255,79,216,0.3)] font-bold text-xs sm:text-sm px-4 sm:px-6 h-10"
+              className="h-10 gap-2 px-4 text-xs font-bold shadow-[0_0_20px_rgba(255,79,216,0.3)] sm:px-6 sm:text-sm"
             >
-              {isSubmitting ? "Registrando..." : `Registrar Venta (${currency(grandTotal || (quantity * currentUnitPrice))})`}
+              {isSubmitting
+                ? "Registrando..."
+                : `Registrar Venta (${currency(grandTotal || quantity * currentUnitPrice)})`}
             </Button>
           </div>
         </form>
