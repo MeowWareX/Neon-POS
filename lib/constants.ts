@@ -8,7 +8,6 @@ export const PAYMENT_METHODS = ["cash", "nequi"] as const;
 
 export const PRODUCT_TYPES = [
   "basico",
-  "premium",
   "cremoso",
   "picoso",
   "gomitas-enchilada",

@@ -277,7 +277,15 @@ export const useAppStore = create<AppState>()(
         let nextActiveFlavors: ActiveFlavor[] = [];
 
         set((state) => {
-          const filtered = state.activeFlavors.filter(
+          const otherDates = state.activeFlavors.filter(
+            (item) => item.businessDate !== state.businessDate,
+          );
+
+          const todayFlavors = state.activeFlavors.filter(
+            (item) => item.businessDate === state.businessDate,
+          );
+
+          const filtered = todayFlavors.filter(
             (item) => item.flavorId !== flavorId,
           );
 
@@ -285,7 +293,7 @@ export const useAppStore = create<AppState>()(
             ? filtered.filter((item) => item.tankNumber !== tankNumber)
             : filtered;
 
-          nextActiveFlavors = tankNumber
+          const updatedToday = tankNumber
             ? [
                 ...withoutTank,
                 {
@@ -296,6 +304,8 @@ export const useAppStore = create<AppState>()(
                 },
               ]
             : withoutTank;
+
+          nextActiveFlavors = [...otherDates, ...updatedToday];
 
           return { activeFlavors: nextActiveFlavors };
         });
@@ -625,7 +635,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 9,
+      version: 10,
       migrate: (persistedState: unknown) => {
         const demo = buildDemoState();
         const prev = (persistedState as Partial<AppState>) || {};
@@ -639,11 +649,18 @@ export const useAppStore = create<AppState>()(
           }
         });
 
-        // Merge any new productTypes from demo into prev.productTypes if missing
-        const prevTypes = prev.productTypes || [];
+        // Merge any new productTypes from demo into prev.productTypes if missing (excluding premium)
+        const prevTypes = (prev.productTypes || []).filter(
+          (pt) => (pt.code as string) !== "premium",
+        );
         const mergedProductTypes = [...prevTypes];
         demo.productTypes.forEach((dpt) => {
-          if (!mergedProductTypes.some((pt) => pt.code === dpt.code || pt.id === dpt.id)) {
+          if (
+            (dpt.code as string) !== "premium" &&
+            !mergedProductTypes.some(
+              (pt) => pt.code === dpt.code || pt.id === dpt.id,
+            )
+          ) {
             mergedProductTypes.push(dpt);
           }
         });
@@ -652,16 +669,22 @@ export const useAppStore = create<AppState>()(
         const prevFlavors = prev.flavors || [];
         const mergedFlavors = [...prevFlavors];
         demo.flavors.forEach((df) => {
-          if (!mergedFlavors.some((f) => f.name === df.name || f.id === df.id)) {
+          if (
+            !mergedFlavors.some((f) => f.name === df.name || f.id === df.id)
+          ) {
             mergedFlavors.push(df);
           }
         });
+
+        const finalTypes = (
+          mergedProductTypes.length ? mergedProductTypes : demo.productTypes
+        ).filter((pt) => (pt.code as string) !== "premium");
 
         return {
           ...demo,
           ...prev,
           sizes: mergedSizes.length ? mergedSizes : demo.sizes,
-          productTypes: mergedProductTypes.length ? mergedProductTypes : demo.productTypes,
+          productTypes: finalTypes,
           flavors: mergedFlavors.length ? mergedFlavors : demo.flavors,
           treasuryAccounts: prev.treasuryAccounts?.length
             ? prev.treasuryAccounts

@@ -72,29 +72,14 @@ export function PosTerminal() {
   const postFlavorRef = useRef<HTMLDivElement>(null);
 
   const todaysFlavors = useMemo(() => {
-    const list = activeFlavors
+    return activeFlavors
       .filter((item) => item.businessDate === businessDate)
       .sort((a, b) => a.tankNumber - b.tankNumber)
       .map((active) => ({
         ...active,
         flavor: flavors.find((item) => item.id === active.flavorId),
       }))
-      .filter((item) => item.flavor);
-
-    if (list.length > 0) {
-      return list;
-    }
-
-    // Fallback: If no tanks are mapped for today, display active catalog flavors so operator is not blocked
-    return flavors
-      .filter((f) => f.isActive && !f.name.includes("Enchilado"))
-      .map((flavor, index) => ({
-        id: flavor.id,
-        flavorId: flavor.id,
-        tankNumber: (((index % 3) + 1) as 1 | 2 | 3),
-        businessDate,
-        flavor,
-      }));
+      .filter((item): item is typeof item & { flavor: NonNullable<(typeof item)["flavor"]> } => Boolean(item.flavor));
   }, [activeFlavors, businessDate, flavors]);
 
   const currentItem = useMemo(
@@ -536,8 +521,11 @@ export function PosTerminal() {
                       (t) => t.code === "gomitas-enchilada",
                     );
                     setDraft({
-                      typeId: ptGomitas?.id || "44444444-5555-5555-5555-555555555555",
-                      flavorId: neutralFlavor?.id || "88888888-8888-8888-8888-888888888888",
+                      typeId:
+                        ptGomitas?.id || "44444444-5555-5555-5555-555555555555",
+                      flavorId:
+                        neutralFlavor?.id ||
+                        "88888888-8888-8888-8888-888888888888",
                       extraIds: [],
                       quantity: 1,
                     });
@@ -582,43 +570,43 @@ export function PosTerminal() {
                             size.code !== "10k",
                         )
                       : sizes.filter(
-                          (size) =>
-                            size.code === "3k" ||
-                            size.code === "6k" ||
-                            size.code === "10k",
-                        ).length > 0
-                      ? sizes.filter(
-                          (size) =>
-                            size.code === "3k" ||
-                            size.code === "6k" ||
-                            size.code === "10k",
-                        )
-                      : [
-                          {
-                            id: "33333333-3000-3000-3000-333333333333",
-                            code: "3k",
-                            label: "Vasito 3K",
-                            ounces: 3,
-                            price: 3000,
-                            baseCost: 1000,
-                          },
-                          {
-                            id: "33333333-6000-6000-6000-333333333333",
-                            code: "6k",
-                            label: "Mediano 6K",
-                            ounces: 6,
-                            price: 6000,
-                            baseCost: 2000,
-                          },
-                          {
-                            id: "33333333-9000-9000-9000-333333333333",
-                            code: "10k",
-                            label: "Grande 10K",
-                            ounces: 10,
-                            price: 10000,
-                            baseCost: 3500,
-                          },
-                        ]
+                            (size) =>
+                              size.code === "3k" ||
+                              size.code === "6k" ||
+                              size.code === "10k",
+                          ).length > 0
+                        ? sizes.filter(
+                            (size) =>
+                              size.code === "3k" ||
+                              size.code === "6k" ||
+                              size.code === "10k",
+                          )
+                        : [
+                            {
+                              id: "33333333-3000-3000-3000-333333333333",
+                              code: "3k",
+                              label: "Vasito 3K",
+                              ounces: 3,
+                              price: 3000,
+                              baseCost: 1000,
+                            },
+                            {
+                              id: "33333333-6000-6000-6000-333333333333",
+                              code: "6k",
+                              label: "Mediano 6K",
+                              ounces: 6,
+                              price: 6000,
+                              baseCost: 2000,
+                            },
+                            {
+                              id: "33333333-9000-9000-9000-333333333333",
+                              code: "10k",
+                              label: "Grande 10K",
+                              ounces: 10,
+                              price: 10000,
+                              baseCost: 3500,
+                            },
+                          ]
                     ).map((size) => ({
                       id: size.id,
                       label: size.label,
@@ -639,8 +627,12 @@ export function PosTerminal() {
                           );
                           setDraft((current) => ({
                             ...current,
-                            typeId: ptGomitas?.id || "44444444-5555-5555-5555-555555555555",
-                            flavorId: neutralFlavor?.id || "88888888-8888-8888-8888-888888888888",
+                            typeId:
+                              ptGomitas?.id ||
+                              "44444444-5555-5555-5555-555555555555",
+                            flavorId:
+                              neutralFlavor?.id ||
+                              "88888888-8888-8888-8888-888888888888",
                             sizeId: size.id,
                             extraIds: [],
                           }));
@@ -658,17 +650,36 @@ export function PosTerminal() {
                   ref={flavorStepRef}
                   className="scroll-mt-36 md:scroll-mt-28"
                 >
-                  <StepBlock
-                    step="3"
-                    title="Sabor activo"
-                    items={todaysFlavors.map((entry) => ({
-                      id: entry.id,
-                      label: entry.flavor?.name ?? "Sabor",
-                      caption: `Tanque ${entry.tankNumber}`,
-                      active: draft.flavorId === entry.flavorId,
-                      onClick: () => selectFlavor(entry.flavorId),
-                    }))}
-                  />
+                  {todaysFlavors.length > 0 ? (
+                    <StepBlock
+                      step="3"
+                      title="Sabor activo"
+                      items={todaysFlavors.map((entry) => ({
+                        id: entry.id,
+                        label: entry.flavor?.name ?? "Sabor",
+                        caption: `Tanque ${entry.tankNumber}`,
+                        active: draft.flavorId === entry.flavorId,
+                        onClick: () => selectFlavor(entry.flavorId),
+                      }))}
+                    />
+                  ) : (
+                    <div>
+                      <div className="mb-3 flex items-center gap-3">
+                        <div className="bg-primary/15 font-display text-primary flex size-10 items-center justify-center rounded-2xl">
+                          3
+                        </div>
+                        <h3 className="text-lg font-semibold">Sabor activo</h3>
+                      </div>
+                      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+                        <p className="text-sm font-semibold text-amber-200">
+                          ⚠️ No hay sabores asignados a los tanques para hoy.
+                        </p>
+                        <p className="mt-1 text-xs text-amber-100/80">
+                          Por favor asigna los tanques del día en el módulo <strong>Sabores</strong> (Administración) para habilitar las ventas.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : null}
 

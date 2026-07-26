@@ -120,13 +120,6 @@ export function buildDemoState(): DemoState {
       costModifier: 0,
     },
     {
-      id: "44444444-2222-2222-2222-222222222222",
-      code: "premium",
-      label: "Premium",
-      priceModifier: 2500,
-      costModifier: 700,
-    },
-    {
       id: "44444444-3333-3333-3333-333333333333",
       code: "cremoso",
       label: "Cremoso",
