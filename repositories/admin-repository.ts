@@ -661,9 +661,10 @@ export async function getLiquidMovementsWithSupabase(
     throw new Error(error.message);
   }
 
-  type LiquidMovementRow = Database["public"]["Tables"]["liquid_inventory_movements"]["Row"] & {
-    liquid_inventory?: { flavor_name?: string } | null;
-  };
+  type LiquidMovementRow =
+    Database["public"]["Tables"]["liquid_inventory_movements"]["Row"] & {
+      liquid_inventory?: { flavor_name?: string } | null;
+    };
 
   return (data || []).map((row: LiquidMovementRow) => ({
     id: row.id,
@@ -715,4 +716,3 @@ export async function recordLiquidMovementWithSupabase(
     throw new Error(error.message);
   }
 }
-

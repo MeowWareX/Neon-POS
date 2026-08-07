@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { PlusCircle } from "lucide-react";
-import { LIQUID_VARIANT_CONFIG, LIQUID_VARIANTS, LiquidVariantCode } from "@/lib/constants";
+import {
+  LIQUID_VARIANT_CONFIG,
+  LIQUID_VARIANTS,
+  LiquidVariantCode,
+} from "@/lib/constants";
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +28,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }) {
+export function LiquidProductionModal({
+  trigger,
+}: {
+  trigger?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const flavors = useAppStore((state) => state.flavors);
   const addLiquidProduction = useAppStore((state) => state.addLiquidProduction);
@@ -94,28 +102,30 @@ export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }
         {trigger || (
           <Button
             size="sm"
-            className="w-full sm:w-auto justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-medium gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+            className="w-full justify-center gap-1.5 bg-emerald-600 font-medium text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:bg-emerald-500 sm:w-auto"
           >
-            <PlusCircle className="size-4" />
-            + Entrada Producción
+            <PlusCircle className="size-4" />+ Entrada Producción
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="glass-panel border-white/20 bg-slate-950/90 text-white max-w-md">
+      <DialogContent className="glass-panel max-w-md border-white/20 bg-slate-950/90 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold text-emerald-400">
             <PlusCircle className="size-5" />
             Registrar Producción de Bolsas
           </DialogTitle>
           <DialogDescription className="text-muted text-xs">
-            Añade bolsas de líquido concentrado producidas al inventario en stock.
+            Añade bolsas de líquido concentrado producidas al inventario en
+            stock.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Flavor selection */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Sabor del Líquido *</Label>
+            <Label className="text-xs font-semibold text-white">
+              Sabor del Líquido *
+            </Label>
             <Select value={flavorId} onValueChange={setFlavorId}>
               <SelectTrigger className="border-white/10 bg-white/5 text-white">
                 <SelectValue placeholder="Selecciona un sabor" />
@@ -127,14 +137,18 @@ export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }
                     {f.name}
                   </SelectItem>
                 ))}
-                <SelectItem value="custom">+ Sabor Personalizado / Otro</SelectItem>
+                <SelectItem value="custom">
+                  + Sabor Personalizado / Otro
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {flavorId === "custom" && (
             <div className="space-y-1.5">
-              <Label className="text-xs text-white">Nombre del Sabor Personalizado *</Label>
+              <Label className="text-xs text-white">
+                Nombre del Sabor Personalizado *
+              </Label>
               <Input
                 value={customFlavor}
                 onChange={(e) => setCustomFlavor(e.target.value)}
@@ -146,7 +160,9 @@ export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }
 
           {/* Optional Variant selection */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Variante (Opcional)</Label>
+            <Label className="text-xs font-semibold text-white">
+              Variante (Opcional)
+            </Label>
             <Select value={variant} onValueChange={setVariant}>
               <SelectTrigger className="border-white/10 bg-white/5 text-white">
                 <SelectValue placeholder="Variante asociada (opcional)" />
@@ -164,19 +180,25 @@ export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }
 
           {/* Quantity */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Cantidad de Bolsas Producidas *</Label>
+            <Label className="text-xs font-semibold text-white">
+              Cantidad de Bolsas Producidas *
+            </Label>
             <Input
               type="number"
               min={1}
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="border-white/10 bg-white/5 text-white text-lg font-bold"
+              onChange={(e) =>
+                setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+              }
+              className="border-white/10 bg-white/5 text-lg font-bold text-white"
             />
           </div>
 
           {/* Notes */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-white">Notas / Número de Lote (Opcional)</Label>
+            <Label className="text-xs text-white">
+              Notas / Número de Lote (Opcional)
+            </Label>
             <Input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -197,7 +219,7 @@ export function LiquidProductionModal({ trigger }: { trigger?: React.ReactNode }
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+              className="bg-emerald-600 font-bold text-white hover:bg-emerald-500"
             >
               Añadir al Stock
             </Button>

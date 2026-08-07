@@ -625,7 +625,9 @@ export const useAppStore = create<AppState>()(
         let newMovement: LiquidInventoryMovement | null = null;
 
         set((state) => {
-          const targetFlavorName = (input.flavorName || "").trim().toLowerCase();
+          const targetFlavorName = (input.flavorName || "")
+            .trim()
+            .toLowerCase();
           const inventory = state.liquidInventory || [];
           const itemIndex = inventory.findIndex(
             (item) =>
@@ -639,7 +641,10 @@ export const useAppStore = create<AppState>()(
 
           if (itemIndex >= 0) {
             const existing = inventory[itemIndex];
-            const newStock = Math.max(0, existing.currentStock - input.quantity);
+            const newStock = Math.max(
+              0,
+              existing.currentStock - input.quantity,
+            );
             updatedItem = {
               ...existing,
               currentStock: newStock,
@@ -688,9 +693,15 @@ export const useAppStore = create<AppState>()(
             fetch("/api/liquid-inventory", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ item: updatedItem, movement: newMovement }),
+              body: JSON.stringify({
+                item: updatedItem,
+                movement: newMovement,
+              }),
             }).catch((err) =>
-              console.error("Error syncing liquid inventory sale deduction:", err),
+              console.error(
+                "Error syncing liquid inventory sale deduction:",
+                err,
+              ),
             );
           }
         }
@@ -814,7 +825,8 @@ export const useAppStore = create<AppState>()(
             flavorName: updatedItem.flavorName,
             movementType: "production",
             quantity: input.quantity,
-            notes: input.notes || "Entrada de producción de líquido concentrado",
+            notes:
+              input.notes || "Entrada de producción de líquido concentrado",
             createdAt: new Date().toISOString(),
           };
 
@@ -984,8 +996,11 @@ export const useAppStore = create<AppState>()(
           treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
           historicalDays: prev.historicalDays || demo.historicalDays,
           liquidSales: prev.liquidSales || demo.liquidSales,
-          liquidInventory: prev.liquidInventory?.length ? prev.liquidInventory : demo.liquidInventory,
-          liquidInventoryMovements: prev.liquidInventoryMovements || demo.liquidInventoryMovements,
+          liquidInventory: prev.liquidInventory?.length
+            ? prev.liquidInventory
+            : demo.liquidInventory,
+          liquidInventoryMovements:
+            prev.liquidInventoryMovements || demo.liquidInventoryMovements,
           users: prev.users || [],
           initialized: prev.initialized || false,
           businessDate: prev.businessDate || getBusinessDate(),

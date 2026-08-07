@@ -23,13 +23,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }) {
+export function LiquidAdjustmentModal({
+  trigger,
+}: {
+  trigger?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const liquidInventory = useAppStore((state) => state.liquidInventory) || [];
-  const recordLiquidAdjustment = useAppStore((state) => state.recordLiquidAdjustment);
+  const recordLiquidAdjustment = useAppStore(
+    (state) => state.recordLiquidAdjustment,
+  );
 
   const [inventoryId, setInventoryId] = useState<string>("none");
-  const [movementType, setMovementType] = useState<"point_use" | "adjustment" | "waste">("point_use");
+  const [movementType, setMovementType] = useState<
+    "point_use" | "adjustment" | "waste"
+  >("point_use");
   const [quantity, setQuantity] = useState<number>(1);
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,34 +102,38 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
           <Button
             size="sm"
             variant="outline"
-            className="w-full sm:w-auto justify-center border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 font-medium gap-1.5"
+            className="w-full justify-center gap-1.5 border-amber-500/40 bg-amber-500/10 font-medium text-amber-300 hover:bg-amber-500/20 sm:w-auto"
           >
-            <MinusCircle className="size-4" />
-            - Uso en Punto / Ajuste
+            <MinusCircle className="size-4" />- Uso en Punto / Ajuste
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="glass-panel border-white/20 bg-slate-950/90 text-white max-w-md">
+      <DialogContent className="glass-panel max-w-md border-white/20 bg-slate-950/90 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold text-amber-400">
             <MinusCircle className="size-5" />
             Descontar Bolsas del Stock
           </DialogTitle>
           <DialogDescription className="text-muted text-xs">
-            Registra la salida de bolsas por consumo en el punto (refil de máquinas), mermas o ajustes no comerciales.
+            Registra la salida de bolsas por consumo en el punto (refil de
+            máquinas), mermas o ajustes no comerciales.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Stock Item Selection */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Líquido en Stock *</Label>
+            <Label className="text-xs font-semibold text-white">
+              Líquido en Stock *
+            </Label>
             <Select value={inventoryId} onValueChange={setInventoryId}>
               <SelectTrigger className="border-white/10 bg-white/5 text-white">
                 <SelectValue placeholder="Selecciona el sabor disponible" />
               </SelectTrigger>
               <SelectContent className="border-white/15 bg-slate-900 text-white">
-                <SelectItem value="none">-- Seleccionar de la lista --</SelectItem>
+                <SelectItem value="none">
+                  -- Seleccionar de la lista --
+                </SelectItem>
                 {liquidInventory.map((item) => (
                   <SelectItem key={item.id} value={item.id}>
                     {item.flavorName} ({item.currentStock} bolsas disponibles)
@@ -132,9 +144,9 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
           </div>
 
           {selectedItem && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3 text-xs">
               <span className="text-muted">Stock Actual Disponible:</span>
-              <span className="font-bold text-emerald-400 text-sm">
+              <span className="text-sm font-bold text-emerald-400">
                 {selectedItem.currentStock} bolsas
               </span>
             </div>
@@ -142,7 +154,9 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
 
           {/* Reason */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Motivo de Salida *</Label>
+            <Label className="text-xs font-semibold text-white">
+              Motivo de Salida *
+            </Label>
             <Select
               value={movementType}
               onValueChange={(val) =>
@@ -168,7 +182,9 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
 
           {/* Quantity */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-white">Cantidad a Descontar (Bolsas) *</Label>
+            <Label className="text-xs font-semibold text-white">
+              Cantidad a Descontar (Bolsas) *
+            </Label>
             <Input
               type="number"
               min={1}
@@ -177,13 +193,15 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
               onChange={(e) =>
                 setQuantity(Math.max(1, parseInt(e.target.value) || 1))
               }
-              className="border-white/10 bg-white/5 text-white text-lg font-bold"
+              className="border-white/10 bg-white/5 text-lg font-bold text-white"
             />
           </div>
 
           {/* Notes */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-white">Detalle / Nota de la Salida</Label>
+            <Label className="text-xs text-white">
+              Detalle / Nota de la Salida
+            </Label>
             <Input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -204,7 +222,7 @@ export function LiquidAdjustmentModal({ trigger }: { trigger?: React.ReactNode }
             <Button
               type="submit"
               disabled={isSubmitting || inventoryId === "none"}
-              className="bg-amber-600 hover:bg-amber-500 text-white font-bold"
+              className="bg-amber-600 font-bold text-white hover:bg-amber-500"
             >
               Confirmar Descuento
             </Button>

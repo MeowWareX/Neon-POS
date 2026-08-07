@@ -102,7 +102,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-auto">
+        <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto">
           <Select value={variantFilter} onValueChange={setVariantFilter}>
             <SelectTrigger className="w-full md:w-[170px]">
               <SelectValue placeholder="Variante" />
@@ -162,12 +162,12 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
               return (
                 <div
                   key={sale.id}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3 transition-all hover:bg-white/[0.08]"
+                  className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all hover:bg-white/[0.08]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-bold text-white text-sm">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-sm font-bold text-white">
                           {variantLabel}
                         </span>
                         {config?.hasAlcohol && (
@@ -180,7 +180,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                         )}
                         {paymentBadge(sale.paymentMethod)}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted">
+                      <div className="text-muted mt-1.5 flex items-center gap-1.5 text-xs">
                         <Calendar className="size-3 shrink-0" />
                         {formatDate(sale.saleDate)}
                       </div>
@@ -188,17 +188,17 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
 
                     <div className="flex items-center gap-1">
                       <div className="text-right">
-                        <span className="font-display text-primary text-lg font-extrabold block">
+                        <span className="font-display text-primary block text-lg font-extrabold">
                           {currency(sale.total)}
                         </span>
-                        <span className="text-[11px] text-muted">
+                        <span className="text-muted text-[11px]">
                           {currency(sale.unitPrice)} c/u
                         </span>
                       </div>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="size-8 text-red-400 hover:bg-red-500/10 hover:text-red-300 ml-1"
+                        className="ml-1 size-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
                         onClick={() => handleDelete(sale.id, variantLabel)}
                         disabled={deletingId === sale.id}
                         title="Eliminar registro"
@@ -208,7 +208,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
+                  <div className="flex items-center justify-between border-t border-white/5 pt-2 text-xs">
                     <div className="flex items-center gap-2">
                       {sale.flavorName ? (
                         <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold">
@@ -221,22 +221,22 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                     </div>
                     <div className="flex items-center gap-2 font-semibold text-white">
                       <span>{sale.quantity} bot.</span>
-                      <span className="text-secondary font-medium text-[11px]">
+                      <span className="text-secondary text-[11px] font-medium">
                         (~{totalLiters}L)
                       </span>
                     </div>
                   </div>
 
                   {(sale.customerName || sale.notes) && (
-                    <div className="pt-2 border-t border-white/5 text-xs text-muted space-y-1">
+                    <div className="text-muted space-y-1 border-t border-white/5 pt-2 text-xs">
                       {sale.customerName && (
                         <div className="flex items-center gap-1 font-medium text-white/90">
-                          <User className="size-3 shrink-0 text-muted" />
+                          <User className="text-muted size-3 shrink-0" />
                           {sale.customerName}
                         </div>
                       )}
                       {sale.notes && (
-                        <p className="italic text-white/70 truncate">
+                        <p className="truncate text-white/70 italic">
                           {sale.notes}
                         </p>
                       )}
@@ -248,7 +248,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           </div>
 
           {/* Desktop Table View (Visible on screens >= md) */}
-          <div className="hidden md:block glass-panel overflow-x-auto rounded-2xl border border-white/10">
+          <div className="glass-panel hidden overflow-x-auto rounded-2xl border border-white/10 md:block">
             <table className="w-full text-left text-sm">
               <thead className="text-muted border-b border-white/10 bg-white/5 text-xs uppercase">
                 <tr>
@@ -259,11 +259,15 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                   <th className="px-4 py-3 text-center font-semibold">
                     Rendimiento
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold">Unitario</th>
+                  <th className="px-4 py-3 text-right font-semibold">
+                    Unitario
+                  </th>
                   <th className="px-4 py-3 text-right font-semibold">Total</th>
                   <th className="px-4 py-3 font-semibold">Pago</th>
                   <th className="px-4 py-3 font-semibold">Cliente / Notas</th>
-                  <th className="px-4 py-3 text-center font-semibold">Acción</th>
+                  <th className="px-4 py-3 text-center font-semibold">
+                    Acción
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">

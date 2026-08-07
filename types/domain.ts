@@ -271,4 +271,3 @@ export interface LiquidAdjustmentInput {
   quantity: number; // number of bags to deduct/adjust (positive value representing deducted amount)
   notes?: string | null;
 }
-

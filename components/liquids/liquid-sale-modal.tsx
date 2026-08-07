@@ -194,7 +194,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="w-full sm:w-auto justify-center gap-2 shadow-[0_0_20px_rgba(255,79,216,0.25)]">
+          <Button className="w-full justify-center gap-2 shadow-[0_0_20px_rgba(255,79,216,0.25)] sm:w-auto">
             <Plus className="size-4" />
             Nueva Venta de Líquidos
           </Button>
@@ -325,12 +325,21 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                       Sabor del Líquido
                     </Label>
                     {(() => {
-                      const selectedFlavorObj = flavors.find((f) => f.id === flavorId);
+                      const selectedFlavorObj = flavors.find(
+                        (f) => f.id === flavorId,
+                      );
                       const selectedStockItem = liquidInventory.find(
                         (item) =>
-                          (flavorId !== "none" && flavorId !== "custom" && item.flavorId === flavorId) ||
-                          (selectedFlavorObj && item.flavorName.toLowerCase() === selectedFlavorObj.name.toLowerCase()) ||
-                          (flavorId === "custom" && customFlavor && item.flavorName.toLowerCase() === customFlavor.trim().toLowerCase())
+                          (flavorId !== "none" &&
+                            flavorId !== "custom" &&
+                            item.flavorId === flavorId) ||
+                          (selectedFlavorObj &&
+                            item.flavorName.toLowerCase() ===
+                              selectedFlavorObj.name.toLowerCase()) ||
+                          (flavorId === "custom" &&
+                            customFlavor &&
+                            item.flavorName.toLowerCase() ===
+                              customFlavor.trim().toLowerCase()),
                       );
 
                       if (!selectedStockItem) return null;
@@ -354,13 +363,21 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                       <SelectItem value="none">Sin sabor específico</SelectItem>
                       {flavors.map((f) => {
                         const stockItem = liquidInventory.find(
-                          (inv) => inv.flavorId === f.id || inv.flavorName.toLowerCase() === f.name.toLowerCase()
+                          (inv) =>
+                            inv.flavorId === f.id ||
+                            inv.flavorName.toLowerCase() ===
+                              f.name.toLowerCase(),
                         );
-                        const stockCount = stockItem ? stockItem.currentStock : null;
+                        const stockCount = stockItem
+                          ? stockItem.currentStock
+                          : null;
 
                         return (
                           <SelectItem key={f.id} value={f.id}>
-                            {f.name} {stockCount !== null ? `(${stockCount} en stock)` : ""}
+                            {f.name}{" "}
+                            {stockCount !== null
+                              ? `(${stockCount} en stock)`
+                              : ""}
                           </SelectItem>
                         );
                       })}
@@ -510,7 +527,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           </div>
 
           {/* Fixed Summary Panel & Submit Button */}
-          <div className="mt-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-white/10 bg-[#0f071a] pt-3">
+          <div className="mt-1 flex flex-col items-stretch justify-between gap-3 border-t border-white/10 bg-[#0f071a] pt-3 sm:flex-row sm:items-center">
             <div className="flex items-center justify-between sm:block">
               <div className="flex items-center gap-1.5">
                 <Badge
@@ -538,7 +555,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               type="submit"
               size="lg"
               disabled={isSubmitting}
-              className="h-10 w-full sm:w-auto justify-center gap-2 px-4 text-xs font-bold shadow-[0_0_20px_rgba(255,79,216,0.3)] sm:px-6 sm:text-sm"
+              className="h-10 w-full justify-center gap-2 px-4 text-xs font-bold shadow-[0_0_20px_rgba(255,79,216,0.3)] sm:w-auto sm:px-6 sm:text-sm"
             >
               {isSubmitting
                 ? "Registrando..."
