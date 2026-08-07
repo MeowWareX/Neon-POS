@@ -12,6 +12,10 @@ import type {
   Expense,
   HistoricalDay,
   InventoryMovement,
+  LiquidAdjustmentInput,
+  LiquidInventoryItem,
+  LiquidInventoryMovement,
+  LiquidProductionInput,
   LiquidSale,
   LiquidSaleInput,
   LoanPayment,
@@ -58,6 +62,12 @@ interface AppState extends ReturnType<typeof buildDemoState> {
   }) => HistoricalDay;
   addLiquidSale: (input: LiquidSaleInput) => LiquidSale;
   deleteLiquidSale: (id: string) => Promise<void>;
+  addLiquidProduction: (
+    input: LiquidProductionInput,
+  ) => LiquidInventoryMovement;
+  recordLiquidAdjustment: (
+    input: LiquidAdjustmentInput,
+  ) => LiquidInventoryMovement;
 }
 
 // Empty initial state - will be populated from BD
@@ -80,6 +90,8 @@ const emptyState = {
   treasuryTransfers: [],
   historicalDays: [],
   liquidSales: [],
+  liquidInventory: [],
+  liquidInventoryMovements: [],
 };
 
 function applyRemoteCatalog(
@@ -109,6 +121,12 @@ function applyRemoteCatalog(
     liquidSales: catalog.liquidSales?.length
       ? catalog.liquidSales
       : state.liquidSales,
+    liquidInventory: catalog.liquidInventory?.length
+      ? catalog.liquidInventory
+      : state.liquidInventory,
+    liquidInventoryMovements: catalog.liquidInventoryMovements?.length
+      ? catalog.liquidInventoryMovements
+      : state.liquidInventoryMovements,
   };
 }
 
@@ -124,6 +142,7 @@ async function loadRemoteCatalog() {
     cashSessionsRes,
     ordersRes,
     liquidSalesRes,
+    liquidInventoryRes,
   ] = await Promise.all([
     fetch("/api/configuration/sizes"),
     fetch("/api/configuration/product-types"),
@@ -135,7 +154,12 @@ async function loadRemoteCatalog() {
     fetch("/api/cash-sessions"),
     fetch("/api/orders/list"),
     fetch("/api/liquid-sales"),
+    fetch("/api/liquid-inventory"),
   ]);
+
+  const liquidData = liquidInventoryRes.ok
+    ? await liquidInventoryRes.json()
+    : { inventory: null, movements: null };
 
   return {
     sizes: sizesRes.ok ? await sizesRes.json() : null,
@@ -154,6 +178,8 @@ async function loadRemoteCatalog() {
       : null,
     orders: ordersRes.ok ? await ordersRes.json() : null,
     liquidSales: liquidSalesRes.ok ? await liquidSalesRes.json() : null,
+    liquidInventory: liquidData.inventory ?? null,
+    liquidInventoryMovements: liquidData.movements ?? null,
   };
 }
 
@@ -595,9 +621,51 @@ export const useAppStore = create<AppState>()(
           createdAt: new Date().toISOString(),
         };
 
-        set((state) => ({
-          liquidSales: [newSale, ...(state.liquidSales || [])],
-        }));
+        let updatedItem: LiquidInventoryItem | null = null;
+        let newMovement: LiquidInventoryMovement | null = null;
+
+        set((state) => {
+          const targetFlavorName = (input.flavorName || "").trim().toLowerCase();
+          const inventory = state.liquidInventory || [];
+          const itemIndex = inventory.findIndex(
+            (item) =>
+              (input.flavorId && item.flavorId === input.flavorId) ||
+              (targetFlavorName &&
+                item.flavorName.toLowerCase() === targetFlavorName),
+          );
+
+          const nextInventory = [...inventory];
+          let nextMovements = [...(state.liquidInventoryMovements || [])];
+
+          if (itemIndex >= 0) {
+            const existing = inventory[itemIndex];
+            const newStock = Math.max(0, existing.currentStock - input.quantity);
+            updatedItem = {
+              ...existing,
+              currentStock: newStock,
+              updatedAt: new Date().toISOString(),
+            };
+            nextInventory[itemIndex] = updatedItem;
+
+            newMovement = {
+              id: crypto.randomUUID(),
+              liquidInventoryId: existing.id,
+              flavorName: existing.flavorName,
+              movementType: "sale",
+              quantity: -input.quantity,
+              notes: `Venta de ${input.quantity} bolsa(s) (${config?.label ?? input.variant})`,
+              referenceId: newSale.id,
+              createdAt: new Date().toISOString(),
+            };
+            nextMovements = [newMovement, ...nextMovements];
+          }
+
+          return {
+            liquidSales: [newSale, ...(state.liquidSales || [])],
+            liquidInventory: nextInventory,
+            liquidInventoryMovements: nextMovements,
+          };
+        });
 
         if (typeof window !== "undefined" && window.navigator.onLine) {
           fetch("/api/liquid-sales", {
@@ -615,14 +683,83 @@ export const useAppStore = create<AppState>()(
               }
             })
             .catch((err) => console.error("Error syncing liquid sale:", err));
+
+          if (updatedItem && newMovement) {
+            fetch("/api/liquid-inventory", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ item: updatedItem, movement: newMovement }),
+            }).catch((err) =>
+              console.error("Error syncing liquid inventory sale deduction:", err),
+            );
+          }
         }
 
         return newSale;
       },
       deleteLiquidSale: async (id: string) => {
-        set((state) => ({
-          liquidSales: state.liquidSales.filter((s) => s.id !== id),
-        }));
+        set((state) => {
+          const saleToDelete = state.liquidSales.find((s) => s.id === id);
+          const nextInventory = [...(state.liquidInventory || [])];
+          let nextMovements = [...(state.liquidInventoryMovements || [])];
+
+          if (saleToDelete) {
+            const targetFlavorName = (saleToDelete.flavorName || "")
+              .trim()
+              .toLowerCase();
+            const itemIndex = nextInventory.findIndex(
+              (item) =>
+                (saleToDelete.flavorId &&
+                  item.flavorId === saleToDelete.flavorId) ||
+                (targetFlavorName &&
+                  item.flavorName.toLowerCase() === targetFlavorName),
+            );
+
+            if (itemIndex >= 0) {
+              const existing = nextInventory[itemIndex];
+              const restoredItem: LiquidInventoryItem = {
+                ...existing,
+                currentStock: existing.currentStock + saleToDelete.quantity,
+                updatedAt: new Date().toISOString(),
+              };
+              nextInventory[itemIndex] = restoredItem;
+
+              const restoreMovement: LiquidInventoryMovement = {
+                id: crypto.randomUUID(),
+                liquidInventoryId: existing.id,
+                flavorName: existing.flavorName,
+                movementType: "adjustment",
+                quantity: saleToDelete.quantity,
+                notes: `Restitución por venta de líquido eliminada #${saleToDelete.id.slice(0, 8)}`,
+                referenceId: saleToDelete.id,
+                createdAt: new Date().toISOString(),
+              };
+              nextMovements = [restoreMovement, ...nextMovements];
+
+              if (typeof window !== "undefined" && window.navigator.onLine) {
+                fetch("/api/liquid-inventory", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    item: restoredItem,
+                    movement: restoreMovement,
+                  }),
+                }).catch((err) =>
+                  console.error(
+                    "Error syncing liquid inventory restoration:",
+                    err,
+                  ),
+                );
+              }
+            }
+          }
+
+          return {
+            liquidSales: state.liquidSales.filter((s) => s.id !== id),
+            liquidInventory: nextInventory,
+            liquidInventoryMovements: nextMovements,
+          };
+        });
 
         if (typeof window !== "undefined" && window.navigator.onLine) {
           try {
@@ -631,6 +768,161 @@ export const useAppStore = create<AppState>()(
             console.error("Error deleting remote liquid sale:", err);
           }
         }
+      },
+      addLiquidProduction: (input: LiquidProductionInput) => {
+        let createdMovement: LiquidInventoryMovement | null = null;
+        let updatedItem: LiquidInventoryItem | null = null;
+
+        set((state) => {
+          const inventory = state.liquidInventory || [];
+          const targetFlavorName = input.flavorName.trim().toLowerCase();
+          const itemIndex = inventory.findIndex(
+            (item) =>
+              (input.flavorId && item.flavorId === input.flavorId) ||
+              item.flavorName.toLowerCase() === targetFlavorName,
+          );
+
+          const nextInventory = [...inventory];
+
+          if (itemIndex >= 0) {
+            const existing = inventory[itemIndex];
+            updatedItem = {
+              ...existing,
+              currentStock: existing.currentStock + input.quantity,
+              variant: input.variant || existing.variant,
+              updatedAt: new Date().toISOString(),
+            };
+            nextInventory[itemIndex] = updatedItem;
+          } else {
+            updatedItem = {
+              id: crypto.randomUUID(),
+              flavorId: input.flavorId || null,
+              flavorName: input.flavorName.trim(),
+              variant: input.variant || null,
+              currentStock: input.quantity,
+              unit: "bolsa",
+              minStock: 2,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            nextInventory.push(updatedItem);
+          }
+
+          createdMovement = {
+            id: crypto.randomUUID(),
+            liquidInventoryId: updatedItem.id,
+            flavorName: updatedItem.flavorName,
+            movementType: "production",
+            quantity: input.quantity,
+            notes: input.notes || "Entrada de producción de líquido concentrado",
+            createdAt: new Date().toISOString(),
+          };
+
+          return {
+            liquidInventory: nextInventory,
+            liquidInventoryMovements: [
+              createdMovement,
+              ...(state.liquidInventoryMovements || []),
+            ],
+          };
+        });
+
+        if (
+          typeof window !== "undefined" &&
+          window.navigator.onLine &&
+          updatedItem &&
+          createdMovement
+        ) {
+          fetch("/api/liquid-inventory", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              item: updatedItem,
+              movement: createdMovement,
+            }),
+          }).catch((err) =>
+            console.error("Error syncing liquid production:", err),
+          );
+        }
+
+        return createdMovement!;
+      },
+      recordLiquidAdjustment: (input: LiquidAdjustmentInput) => {
+        let createdMovement: LiquidInventoryMovement | null = null;
+        let updatedItem: LiquidInventoryItem | null = null;
+
+        set((state) => {
+          const inventory = state.liquidInventory || [];
+          const itemIndex = inventory.findIndex(
+            (item) => item.id === input.liquidInventoryId,
+          );
+
+          if (itemIndex < 0) {
+            return state;
+          }
+
+          const existing = inventory[itemIndex];
+          const deductQty = Math.abs(input.quantity);
+          const newStock = Math.max(0, existing.currentStock - deductQty);
+
+          updatedItem = {
+            ...existing,
+            currentStock: newStock,
+            updatedAt: new Date().toISOString(),
+          };
+
+          const nextInventory = [...inventory];
+          nextInventory[itemIndex] = updatedItem;
+
+          let movementNotes = input.notes;
+          if (!movementNotes) {
+            if (input.movementType === "point_use") {
+              movementNotes = "Uso de bolsa de líquido en punto de venta";
+            } else if (input.movementType === "waste") {
+              movementNotes = "Descuento por merma o deterioro";
+            } else {
+              movementNotes = "Ajuste manual de inventario";
+            }
+          }
+
+          createdMovement = {
+            id: crypto.randomUUID(),
+            liquidInventoryId: existing.id,
+            flavorName: existing.flavorName,
+            movementType: input.movementType,
+            quantity: -deductQty,
+            notes: movementNotes,
+            createdAt: new Date().toISOString(),
+          };
+
+          return {
+            liquidInventory: nextInventory,
+            liquidInventoryMovements: [
+              createdMovement,
+              ...(state.liquidInventoryMovements || []),
+            ],
+          };
+        });
+
+        if (
+          typeof window !== "undefined" &&
+          window.navigator.onLine &&
+          updatedItem &&
+          createdMovement
+        ) {
+          fetch("/api/liquid-inventory", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              item: updatedItem,
+              movement: createdMovement,
+            }),
+          }).catch((err) =>
+            console.error("Error syncing liquid adjustment:", err),
+          );
+        }
+
+        return createdMovement!;
       },
     }),
     {
@@ -692,6 +984,8 @@ export const useAppStore = create<AppState>()(
           treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
           historicalDays: prev.historicalDays || demo.historicalDays,
           liquidSales: prev.liquidSales || demo.liquidSales,
+          liquidInventory: prev.liquidInventory?.length ? prev.liquidInventory : demo.liquidInventory,
+          liquidInventoryMovements: prev.liquidInventoryMovements || demo.liquidInventoryMovements,
           users: prev.users || [],
           initialized: prev.initialized || false,
           businessDate: prev.businessDate || getBusinessDate(),
@@ -717,6 +1011,8 @@ export const useAppStore = create<AppState>()(
         treasuryTransfers: state.treasuryTransfers,
         historicalDays: state.historicalDays,
         liquidSales: state.liquidSales,
+        liquidInventory: state.liquidInventory,
+        liquidInventoryMovements: state.liquidInventoryMovements,
         // LOCAL TRANSACTIONAL - cleared on reload (read from BD on next sync)
         inventoryItems: [],
         inventoryMovements: [],

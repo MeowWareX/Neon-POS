@@ -102,9 +102,9 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-auto">
           <Select value={variantFilter} onValueChange={setVariantFilter}>
-            <SelectTrigger className="w-[170px]">
+            <SelectTrigger className="w-full md:w-[170px]">
               <SelectValue placeholder="Variante" />
             </SelectTrigger>
             <SelectContent>
@@ -121,7 +121,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           </Select>
 
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-full md:w-[150px]">
               <SelectValue placeholder="Método Pago" />
             </SelectTrigger>
             <SelectContent>
@@ -151,122 +151,220 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
           </CardContent>
         </Card>
       ) : (
-        <div className="glass-panel overflow-x-auto rounded-2xl border border-white/10">
-          <table className="w-full text-left text-sm">
-            <thead className="text-muted border-b border-white/10 bg-white/5 text-xs uppercase">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Fecha</th>
-                <th className="px-4 py-3 font-semibold">Variante</th>
-                <th className="px-4 py-3 font-semibold">Sabor</th>
-                <th className="px-4 py-3 text-center font-semibold">Cant.</th>
-                <th className="px-4 py-3 text-center font-semibold">
-                  Rendimiento
-                </th>
-                <th className="px-4 py-3 text-right font-semibold">Unitario</th>
-                <th className="px-4 py-3 text-right font-semibold">Total</th>
-                <th className="px-4 py-3 font-semibold">Pago</th>
-                <th className="px-4 py-3 font-semibold">Cliente / Notas</th>
-                <th className="px-4 py-3 text-center font-semibold">Acción</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filteredSales.map((sale) => {
-                const config = LIQUID_VARIANT_CONFIG[sale.variant];
-                const variantLabel = config?.label || sale.variant;
-                const totalLiters = sale.quantity * LIQUID_YIELD_LITERS;
+        <>
+          {/* Mobile Card List View (Visible on screens < md) */}
+          <div className="space-y-3 md:hidden">
+            {filteredSales.map((sale) => {
+              const config = LIQUID_VARIANT_CONFIG[sale.variant];
+              const variantLabel = config?.label || sale.variant;
+              const totalLiters = sale.quantity * LIQUID_YIELD_LITERS;
 
-                return (
-                  <tr
-                    key={sale.id}
-                    className="transition-colors hover:bg-white/5"
-                  >
-                    <td className="px-4 py-3.5 font-medium whitespace-nowrap text-white">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="text-muted size-3.5 shrink-0" />
-                        {formatDate(sale.saleDate)}
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-white">
+              return (
+                <div
+                  key={sale.id}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3 transition-all hover:bg-white/[0.08]"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-bold text-white text-sm">
                           {variantLabel}
                         </span>
                         {config?.hasAlcohol && (
                           <Badge
                             variant="warning"
-                            className="px-1 py-0 text-[10px]"
+                            className="px-1.5 py-0 text-[10px]"
                           >
                             Licor
                           </Badge>
                         )}
+                        {paymentBadge(sale.paymentMethod)}
                       </div>
-                    </td>
+                      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted">
+                        <Calendar className="size-3 shrink-0" />
+                        {formatDate(sale.saleDate)}
+                      </div>
+                    </div>
 
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      {sale.flavorName ? (
-                        <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
-                          <Droplet className="size-3" />
-                          {sale.flavorName}
+                    <div className="flex items-center gap-1">
+                      <div className="text-right">
+                        <span className="font-display text-primary text-lg font-extrabold block">
+                          {currency(sale.total)}
                         </span>
-                      ) : (
-                        <span className="text-muted text-xs">Sin sabor</span>
-                      )}
-                    </td>
-
-                    <td className="px-4 py-3.5 text-center font-bold whitespace-nowrap text-white">
-                      {sale.quantity} bot.
-                    </td>
-
-                    <td className="text-secondary px-4 py-3.5 text-center text-xs font-semibold whitespace-nowrap">
-                      ~{totalLiters} L
-                    </td>
-
-                    <td className="text-muted px-4 py-3.5 text-right whitespace-nowrap">
-                      {currency(sale.unitPrice)}
-                    </td>
-
-                    <td className="font-display text-primary px-4 py-3.5 text-right font-extrabold whitespace-nowrap">
-                      {currency(sale.total)}
-                    </td>
-
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      {paymentBadge(sale.paymentMethod)}
-                    </td>
-
-                    <td className="text-muted max-w-[200px] truncate px-4 py-3.5 text-xs">
-                      {sale.customerName && (
-                        <div className="flex items-center gap-1 font-medium text-white/90">
-                          <User className="text-muted size-3 shrink-0" />
-                          {sale.customerName}
-                        </div>
-                      )}
-                      {sale.notes && (
-                        <p className="truncate text-white/70 italic">
-                          {sale.notes}
-                        </p>
-                      )}
-                      {!sale.customerName && !sale.notes && "-"}
-                    </td>
-
-                    <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                        <span className="text-[11px] text-muted">
+                          {currency(sale.unitPrice)} c/u
+                        </span>
+                      </div>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="size-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                        className="size-8 text-red-400 hover:bg-red-500/10 hover:text-red-300 ml-1"
                         onClick={() => handleDelete(sale.id, variantLabel)}
                         disabled={deletingId === sale.id}
                         title="Eliminar registro"
                       >
                         <Trash2 className="size-4" />
                       </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
+                    <div className="flex items-center gap-2">
+                      {sale.flavorName ? (
+                        <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold">
+                          <Droplet className="size-3" />
+                          {sale.flavorName}
+                        </span>
+                      ) : (
+                        <span className="text-muted">Sin sabor</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 font-semibold text-white">
+                      <span>{sale.quantity} bot.</span>
+                      <span className="text-secondary font-medium text-[11px]">
+                        (~{totalLiters}L)
+                      </span>
+                    </div>
+                  </div>
+
+                  {(sale.customerName || sale.notes) && (
+                    <div className="pt-2 border-t border-white/5 text-xs text-muted space-y-1">
+                      {sale.customerName && (
+                        <div className="flex items-center gap-1 font-medium text-white/90">
+                          <User className="size-3 shrink-0 text-muted" />
+                          {sale.customerName}
+                        </div>
+                      )}
+                      {sale.notes && (
+                        <p className="italic text-white/70 truncate">
+                          {sale.notes}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View (Visible on screens >= md) */}
+          <div className="hidden md:block glass-panel overflow-x-auto rounded-2xl border border-white/10">
+            <table className="w-full text-left text-sm">
+              <thead className="text-muted border-b border-white/10 bg-white/5 text-xs uppercase">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Fecha</th>
+                  <th className="px-4 py-3 font-semibold">Variante</th>
+                  <th className="px-4 py-3 font-semibold">Sabor</th>
+                  <th className="px-4 py-3 text-center font-semibold">Cant.</th>
+                  <th className="px-4 py-3 text-center font-semibold">
+                    Rendimiento
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold">Unitario</th>
+                  <th className="px-4 py-3 text-right font-semibold">Total</th>
+                  <th className="px-4 py-3 font-semibold">Pago</th>
+                  <th className="px-4 py-3 font-semibold">Cliente / Notas</th>
+                  <th className="px-4 py-3 text-center font-semibold">Acción</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredSales.map((sale) => {
+                  const config = LIQUID_VARIANT_CONFIG[sale.variant];
+                  const variantLabel = config?.label || sale.variant;
+                  const totalLiters = sale.quantity * LIQUID_YIELD_LITERS;
+
+                  return (
+                    <tr
+                      key={sale.id}
+                      className="transition-colors hover:bg-white/5"
+                    >
+                      <td className="px-4 py-3.5 font-medium whitespace-nowrap text-white">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="text-muted size-3.5 shrink-0" />
+                          {formatDate(sale.saleDate)}
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-white">
+                            {variantLabel}
+                          </span>
+                          {config?.hasAlcohol && (
+                            <Badge
+                              variant="warning"
+                              className="px-1 py-0 text-[10px]"
+                            >
+                              Licor
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        {sale.flavorName ? (
+                          <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+                            <Droplet className="size-3" />
+                            {sale.flavorName}
+                          </span>
+                        ) : (
+                          <span className="text-muted text-xs">Sin sabor</span>
+                        )}
+                      </td>
+
+                      <td className="px-4 py-3.5 text-center font-bold whitespace-nowrap text-white">
+                        {sale.quantity} bot.
+                      </td>
+
+                      <td className="text-secondary px-4 py-3.5 text-center text-xs font-semibold whitespace-nowrap">
+                        ~{totalLiters} L
+                      </td>
+
+                      <td className="text-muted px-4 py-3.5 text-right whitespace-nowrap">
+                        {currency(sale.unitPrice)}
+                      </td>
+
+                      <td className="font-display text-primary px-4 py-3.5 text-right font-extrabold whitespace-nowrap">
+                        {currency(sale.total)}
+                      </td>
+
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        {paymentBadge(sale.paymentMethod)}
+                      </td>
+
+                      <td className="text-muted max-w-[200px] truncate px-4 py-3.5 text-xs">
+                        {sale.customerName && (
+                          <div className="flex items-center gap-1 font-medium text-white/90">
+                            <User className="text-muted size-3 shrink-0" />
+                            {sale.customerName}
+                          </div>
+                        )}
+                        {sale.notes && (
+                          <p className="truncate text-white/70 italic">
+                            {sale.notes}
+                          </p>
+                        )}
+                        {!sale.customerName && !sale.notes && "-"}
+                      </td>
+
+                      <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="size-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                          onClick={() => handleDelete(sale.id, variantLabel)}
+                          disabled={deletingId === sale.id}
+                          title="Eliminar registro"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

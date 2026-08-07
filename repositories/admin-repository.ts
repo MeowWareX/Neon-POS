@@ -4,6 +4,9 @@ import type {
   CashSession,
   Expense,
   InventoryMovement,
+  LiquidInventoryItem,
+  LiquidInventoryMovement,
+  LiquidMovementType,
   LiquidSale,
   LiquidVariantCode,
   LoanPayment,
@@ -619,3 +622,97 @@ export async function deleteLiquidSaleWithSupabase(
     throw new Error(error.message);
   }
 }
+
+export async function getLiquidInventoryWithSupabase(
+  supabase: SupabaseClient<Database>,
+): Promise<LiquidInventoryItem[]> {
+  const { data, error } = await supabase
+    .from("liquid_inventory")
+    .select("*")
+    .is("deleted_at", null)
+    .order("flavor_name", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data || []).map((row) => ({
+    id: row.id,
+    flavorId: row.flavor_id,
+    flavorName: row.flavor_name,
+    variant: row.variant as LiquidVariantCode | null,
+    currentStock: Number(row.current_stock),
+    unit: row.unit,
+    minStock: Number(row.min_stock),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export async function getLiquidMovementsWithSupabase(
+  supabase: SupabaseClient<Database>,
+): Promise<LiquidInventoryMovement[]> {
+  const { data, error } = await supabase
+    .from("liquid_inventory_movements")
+    .select("*, liquid_inventory(flavor_name)")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  type LiquidMovementRow = Database["public"]["Tables"]["liquid_inventory_movements"]["Row"] & {
+    liquid_inventory?: { flavor_name?: string } | null;
+  };
+
+  return (data || []).map((row: LiquidMovementRow) => ({
+    id: row.id,
+    liquidInventoryId: row.liquid_inventory_id,
+    flavorName: row.liquid_inventory?.flavor_name || "Desconocido",
+    movementType: row.movement_type as LiquidMovementType,
+    quantity: Number(row.quantity),
+    notes: row.notes,
+    referenceId: row.reference_id,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function upsertLiquidInventoryItemWithSupabase(
+  supabase: SupabaseClient<Database>,
+  item: LiquidInventoryItem,
+) {
+  const { error } = await supabase.from("liquid_inventory").upsert({
+    id: item.id,
+    flavor_id: item.flavorId ?? null,
+    flavor_name: item.flavorName,
+    variant: item.variant ?? null,
+    current_stock: item.currentStock,
+    unit: item.unit ?? "bolsa",
+    min_stock: item.minStock ?? 2,
+    updated_at: item.updatedAt || new Date().toISOString(),
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function recordLiquidMovementWithSupabase(
+  supabase: SupabaseClient<Database>,
+  movement: LiquidInventoryMovement,
+) {
+  const { error } = await supabase.from("liquid_inventory_movements").insert({
+    id: movement.id,
+    liquid_inventory_id: movement.liquidInventoryId,
+    movement_type: movement.movementType,
+    quantity: movement.quantity,
+    notes: movement.notes ?? null,
+    reference_id: movement.referenceId ?? null,
+    created_at: movement.createdAt,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+

@@ -12,6 +12,7 @@ import { LIQUID_YIELD_LITERS } from "@/lib/constants";
 import { currency } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAppStore } from "@/stores/app-store";
+import { LiquidInventoryCard } from "@/components/liquids/liquid-inventory-card";
 import { LiquidSaleModal } from "@/components/liquids/liquid-sale-modal";
 import { LiquidSalesTable } from "@/components/liquids/liquid-sales-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,95 +63,96 @@ export default function LiquidSalesPage() {
     <div className="space-y-6">
       {/* Header section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="border-primary/40 bg-primary/15 text-primary flex size-10 items-center justify-center rounded-2xl border shadow-[0_0_20px_rgba(255,79,216,0.3)]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2.5">
+            <div className="border-primary/40 bg-primary/15 text-primary flex size-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_0_20px_rgba(255,79,216,0.3)]">
               <FlaskConical className="size-5" />
             </div>
-            <div>
-              <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
+            <div className="min-w-0">
+              <h1 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl md:text-3xl truncate">
                 Ventas de Líquidos Concentrados
               </h1>
-              <p className="text-muted text-xs md:text-sm">
+              <p className="text-muted text-xs md:text-sm truncate">
                 Gestión comercial de insumos para máquinas granizadoras
-                (Rendimiento hasta 6L/unidad)
               </p>
             </div>
           </div>
         </div>
 
-        <LiquidSaleModal />
+        <div className="w-full sm:w-auto">
+          <LiquidSaleModal />
+        </div>
       </div>
 
-      {/* Summary KPA Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-panel border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted text-xs font-semibold tracking-wider uppercase">
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+        <Card className="glass-panel border-white/10 p-3 sm:p-4">
+          <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
+            <CardTitle className="text-muted text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate">
               Ventas Totales
             </CardTitle>
-            <TrendingUp className="text-primary size-4" />
+            <TrendingUp className="text-primary size-3.5 sm:size-4 shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="font-display text-primary text-2xl font-extrabold">
+          <CardContent className="p-0">
+            <div className="font-display text-primary text-lg sm:text-2xl font-extrabold truncate">
               {currency(metrics.totalSales)}
             </div>
-            <p className="text-muted mt-1 text-xs">
+            <p className="text-muted mt-0.5 sm:mt-1 text-[10px] sm:text-xs truncate">
               {metrics.count} registros de venta
             </p>
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted text-xs font-semibold tracking-wider uppercase">
+        <Card className="glass-panel border-white/10 p-3 sm:p-4">
+          <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
+            <CardTitle className="text-muted text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate">
               Botellas Vendidas
             </CardTitle>
-            <PackageCheck className="text-secondary size-4" />
+            <PackageCheck className="text-secondary size-3.5 sm:size-4 shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="font-display text-secondary text-2xl font-extrabold">
+          <CardContent className="p-0">
+            <div className="font-display text-secondary text-lg sm:text-2xl font-extrabold truncate">
               {metrics.totalUnits}{" "}
-              <span className="text-sm font-normal">unid.</span>
+              <span className="text-xs sm:text-sm font-normal">unid.</span>
             </div>
-            <p className="text-muted mt-1 text-xs">Concentrado empacado</p>
+            <p className="text-muted mt-0.5 sm:mt-1 text-[10px] sm:text-xs truncate">Concentrado empacado</p>
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted text-xs font-semibold tracking-wider uppercase">
+        <Card className="glass-panel border-white/10 p-3 sm:p-4">
+          <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
+            <CardTitle className="text-muted text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate">
               Capacidad Producida
             </CardTitle>
-            <Droplet className="size-4 text-cyan-400" />
+            <Droplet className="size-3.5 sm:size-4 text-cyan-400 shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="font-display text-2xl font-extrabold text-cyan-400">
+          <CardContent className="p-0">
+            <div className="font-display text-lg sm:text-2xl font-extrabold text-cyan-400 truncate">
               ~{metrics.totalLiters}{" "}
-              <span className="text-sm font-normal">Litros</span>
+              <span className="text-xs sm:text-sm font-normal">Litros</span>
             </div>
-            <p className="text-muted mt-1 text-xs">
-              Rendimiento granizado (6L x unit)
+            <p className="text-muted mt-0.5 sm:mt-1 text-[10px] sm:text-xs truncate">
+              Rendimiento granizado
             </p>
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted text-xs font-semibold tracking-wider uppercase">
+        <Card className="glass-panel border-white/10 p-3 sm:p-4">
+          <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
+            <CardTitle className="text-muted text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate">
               Desglose de Recaudo
             </CardTitle>
-            <Coins className="size-4 text-emerald-400" />
+            <Coins className="size-3.5 sm:size-4 text-emerald-400 shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between text-xs">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs">
               <span className="text-muted">Efectivo:</span>
               <span className="font-bold text-emerald-400">
                 {currency(metrics.cashSales)}
               </span>
             </div>
-            <div className="mt-1 flex items-center justify-between text-xs">
-              <span className="text-muted">Digital (Nequi/Transf):</span>
+            <div className="mt-0.5 flex items-center justify-between text-[11px] sm:text-xs">
+              <span className="text-muted">Digital:</span>
               <span className="font-bold text-purple-400">
                 {currency(metrics.digitalSales)}
               </span>
@@ -158,6 +160,9 @@ export default function LiquidSalesPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Stock Inventory Card */}
+      <LiquidInventoryCard />
 
       {/* Main Table Card */}
       <Card className="glass-panel border-white/10 p-4 md:p-6">

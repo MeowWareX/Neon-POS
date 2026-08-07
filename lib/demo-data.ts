@@ -11,6 +11,8 @@ import type {
   InventoryConsumptionRule,
   InventoryItem,
   InventoryMovement,
+  LiquidInventoryItem,
+  LiquidInventoryMovement,
   LiquidSale,
   LoanPayment,
   Order,
@@ -40,6 +42,8 @@ export interface DemoState {
   treasuryTransfers: TreasuryTransfer[];
   historicalDays: HistoricalDay[];
   liquidSales: LiquidSale[];
+  liquidInventory: LiquidInventoryItem[];
+  liquidInventoryMovements: LiquidInventoryMovement[];
 }
 
 export function buildDemoState(): DemoState {
@@ -961,6 +965,93 @@ export function buildDemoState(): DemoState {
     },
   ];
 
+  const liquidInventory: LiquidInventoryItem[] = [
+    {
+      id: "liq-inv-maracumango",
+      flavorId: "55555555-3333-3333-3333-333333333333",
+      flavorName: "Maracumango",
+      variant: "cremoso_con_licor",
+      currentStock: 5,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: subDays(new Date(), 10).toISOString(),
+      updatedAt: subHours(new Date(), 2).toISOString(),
+    },
+    {
+      id: "liq-inv-chicle",
+      flavorId: "55555555-1111-1111-1111-111111111111",
+      flavorName: "Chicle",
+      variant: "base_sin_licor",
+      currentStock: 4,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: subDays(new Date(), 10).toISOString(),
+      updatedAt: subHours(new Date(), 5).toISOString(),
+    },
+    {
+      id: "liq-inv-sandia",
+      flavorId: "55555555-2222-2222-2222-222222222222",
+      flavorName: "Sandía",
+      variant: "base_con_licor",
+      currentStock: 3,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: subDays(new Date(), 10).toISOString(),
+      updatedAt: subDays(new Date(), 1).toISOString(),
+    },
+    {
+      id: "liq-inv-limon",
+      flavorId: "55555555-4444-4444-4444-444444444444",
+      flavorName: "Limón",
+      variant: "base_sin_licor",
+      currentStock: 1,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: subDays(new Date(), 10).toISOString(),
+      updatedAt: subDays(new Date(), 2).toISOString(),
+    },
+  ];
+
+  const liquidInventoryMovements: LiquidInventoryMovement[] = [
+    {
+      id: "liq-mov-1",
+      liquidInventoryId: "liq-inv-maracumango",
+      flavorName: "Maracumango",
+      movementType: "production",
+      quantity: 6,
+      notes: "Producción lote inicial para almacenamiento",
+      createdAt: subDays(new Date(), 2).toISOString(),
+    },
+    {
+      id: "liq-mov-2",
+      liquidInventoryId: "liq-inv-maracumango",
+      flavorName: "Maracumango",
+      movementType: "sale",
+      quantity: -1,
+      notes: "Venta #LIQ-DEMO a Evento Eventos S.A.S",
+      referenceId: "liq-sale-1",
+      createdAt: subHours(new Date(), 2).toISOString(),
+    },
+    {
+      id: "liq-mov-3",
+      liquidInventoryId: "liq-inv-chicle",
+      flavorName: "Chicle",
+      movementType: "production",
+      quantity: 5,
+      notes: "Producción concentrado base sin licor",
+      createdAt: subDays(new Date(), 1).toISOString(),
+    },
+    {
+      id: "liq-mov-4",
+      liquidInventoryId: "liq-inv-chicle",
+      flavorName: "Chicle",
+      movementType: "point_use",
+      quantity: -1,
+      notes: "Carga de granizadora en el punto (Tanque 1)",
+      createdAt: subHours(new Date(), 5).toISOString(),
+    },
+  ];
+
   return {
     users,
     sizes,
@@ -980,5 +1071,7 @@ export function buildDemoState(): DemoState {
     treasuryTransfers,
     historicalDays,
     liquidSales,
+    liquidInventory,
+    liquidInventoryMovements,
   };
 }

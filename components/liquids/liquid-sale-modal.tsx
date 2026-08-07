@@ -47,6 +47,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const businessDate = useAppStore((state) => state.businessDate);
   const flavors = useAppStore((state) => state.flavors);
+  const liquidInventory = useAppStore((state) => state.liquidInventory) || [];
   const addLiquidSale = useAppStore((state) => state.addLiquidSale);
 
   // Common Header State
@@ -193,7 +194,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="gap-2 shadow-[0_0_20px_rgba(255,79,216,0.25)]">
+          <Button className="w-full sm:w-auto justify-center gap-2 shadow-[0_0_20px_rgba(255,79,216,0.25)]">
             <Plus className="size-4" />
             Nueva Venta de Líquidos
           </Button>
@@ -319,20 +320,50 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               {/* Flavor & Quantity Controls */}
               <div className="grid grid-cols-1 items-end gap-2.5 pt-1 sm:grid-cols-[1fr_100px_auto]">
                 <div className="space-y-1.5">
-                  <Label htmlFor="flavor" className="text-xs">
-                    Sabor del Líquido
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="flavor" className="text-xs">
+                      Sabor del Líquido
+                    </Label>
+                    {(() => {
+                      const selectedFlavorObj = flavors.find((f) => f.id === flavorId);
+                      const selectedStockItem = liquidInventory.find(
+                        (item) =>
+                          (flavorId !== "none" && flavorId !== "custom" && item.flavorId === flavorId) ||
+                          (selectedFlavorObj && item.flavorName.toLowerCase() === selectedFlavorObj.name.toLowerCase()) ||
+                          (flavorId === "custom" && customFlavor && item.flavorName.toLowerCase() === customFlavor.trim().toLowerCase())
+                      );
+
+                      if (!selectedStockItem) return null;
+                      const inStock = selectedStockItem.currentStock;
+                      return (
+                        <span
+                          className={`text-[10px] font-bold ${
+                            inStock > 0 ? "text-emerald-400" : "text-rose-400"
+                          }`}
+                        >
+                          Stock: {inStock} bolsa(s)
+                        </span>
+                      );
+                    })()}
+                  </div>
                   <Select value={flavorId} onValueChange={setFlavorId}>
                     <SelectTrigger id="flavor" className="h-9 text-xs">
                       <SelectValue placeholder="Seleccionar sabor" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Sin sabor específico</SelectItem>
-                      {flavors.map((f) => (
-                        <SelectItem key={f.id} value={f.id}>
-                          {f.name}
-                        </SelectItem>
-                      ))}
+                      {flavors.map((f) => {
+                        const stockItem = liquidInventory.find(
+                          (inv) => inv.flavorId === f.id || inv.flavorName.toLowerCase() === f.name.toLowerCase()
+                        );
+                        const stockCount = stockItem ? stockItem.currentStock : null;
+
+                        return (
+                          <SelectItem key={f.id} value={f.id}>
+                            {f.name} {stockCount !== null ? `(${stockCount} en stock)` : ""}
+                          </SelectItem>
+                        );
+                      })}
                       <SelectItem value="custom">
                         ✏️ Escribir otro sabor...
                       </SelectItem>
@@ -479,8 +510,8 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           </div>
 
           {/* Fixed Summary Panel & Submit Button */}
-          <div className="mt-1 flex flex-none items-center justify-between gap-3 border-t border-white/10 bg-[#0f071a] pt-3">
-            <div>
+          <div className="mt-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-white/10 bg-[#0f071a] pt-3">
+            <div className="flex items-center justify-between sm:block">
               <div className="flex items-center gap-1.5">
                 <Badge
                   variant="secondary"
@@ -507,7 +538,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               type="submit"
               size="lg"
               disabled={isSubmitting}
-              className="h-10 gap-2 px-4 text-xs font-bold shadow-[0_0_20px_rgba(255,79,216,0.3)] sm:px-6 sm:text-sm"
+              className="h-10 w-full sm:w-auto justify-center gap-2 px-4 text-xs font-bold shadow-[0_0_20px_rgba(255,79,216,0.3)] sm:px-6 sm:text-sm"
             >
               {isSubmitting
                 ? "Registrando..."

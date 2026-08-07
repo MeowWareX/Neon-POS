@@ -226,3 +226,49 @@ export interface LiquidSaleInput {
   customerName?: string | null;
   notes?: string | null;
 }
+
+export type LiquidMovementType =
+  | "production"
+  | "sale"
+  | "point_use"
+  | "adjustment"
+  | "waste";
+
+export interface LiquidInventoryItem {
+  id: string;
+  flavorId?: string | null;
+  flavorName: string;
+  variant?: LiquidVariantCode | null;
+  currentStock: number;
+  unit: string;
+  minStock: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LiquidInventoryMovement {
+  id: string;
+  liquidInventoryId: string;
+  flavorName: string;
+  movementType: LiquidMovementType;
+  quantity: number; // positive for addition (production), negative for deduction (sale, point_use, waste)
+  notes?: string | null;
+  referenceId?: string | null;
+  createdAt: string;
+}
+
+export interface LiquidProductionInput {
+  flavorId?: string | null;
+  flavorName: string;
+  variant?: LiquidVariantCode | null;
+  quantity: number;
+  notes?: string | null;
+}
+
+export interface LiquidAdjustmentInput {
+  liquidInventoryId: string;
+  movementType: "point_use" | "adjustment" | "waste";
+  quantity: number; // number of bags to deduct/adjust (positive value representing deducted amount)
+  notes?: string | null;
+}
+

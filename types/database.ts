@@ -88,6 +88,75 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      liquid_inventory: {
+        Row: {
+          id: string;
+          flavor_id: string | null;
+          flavor_name: string;
+          variant: string | null;
+          current_stock: number;
+          unit: string;
+          min_stock: number;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          flavor_id?: string | null;
+          flavor_name: string;
+          variant?: string | null;
+          current_stock?: number;
+          unit?: string;
+          min_stock?: number;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: Partial<{
+          id: string;
+          flavor_id: string | null;
+          flavor_name: string;
+          variant: string | null;
+          current_stock: number;
+          unit: string;
+          min_stock: number;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        }>;
+        Relationships: [];
+      };
+      liquid_inventory_movements: {
+        Row: {
+          id: string;
+          liquid_inventory_id: string;
+          movement_type: string;
+          quantity: number;
+          notes: string | null;
+          reference_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          liquid_inventory_id: string;
+          movement_type: string;
+          quantity: number;
+          notes?: string | null;
+          reference_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          liquid_inventory_id: string;
+          movement_type: string;
+          quantity: number;
+          notes: string | null;
+          reference_id: string | null;
+          created_at: string;
+        }>;
+        Relationships: [];
+      };
       order_items: {
         Row: {
           id: string;
