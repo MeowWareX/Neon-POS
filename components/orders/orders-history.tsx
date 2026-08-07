@@ -35,21 +35,42 @@ function summarizeOrderItem(
     extras: Extra[];
   },
 ) {
-  const size = catalog.sizes.find((entry) => entry.id === item.sizeId);
-  const productType = catalog.productTypes.find(
-    (entry) => entry.id === item.typeId,
-  );
+  const size =
+    catalog.sizes.find(
+      (entry) => entry.id === item.sizeId || entry.code === item.sizeId,
+    ) ||
+    (item.sizeId === "33333333-3000-3000-3000-333333333333"
+      ? { label: "Vasito 3K", code: "3k" }
+      : item.sizeId === "33333333-6000-6000-6000-333333333333"
+        ? { label: "Mediano 6K", code: "6k" }
+        : item.sizeId === "33333333-9000-9000-9000-333333333333"
+          ? { label: "Grande 10K", code: "10k" }
+          : undefined);
+
+  const productType =
+    catalog.productTypes.find(
+      (entry) => entry.id === item.typeId || entry.code === item.typeId,
+    ) ||
+    (item.typeId === "44444444-5555-5555-5555-555555555555"
+      ? { label: "Gomitas Enchiladas", code: "gomitas-enchilada" }
+      : undefined);
+
   const flavor = catalog.flavors.find((entry) => entry.id === item.flavorId);
   const extras = item.extraIds
     .map((extraId) => catalog.extras.find((entry) => entry.id === extraId))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
-  const isGomita = productType?.code === "gomitas-enchilada";
+  const isGomita =
+    productType?.code === "gomitas-enchilada" ||
+    item.typeId === "44444444-5555-5555-5555-555555555555";
 
   return {
     sizeLabel: size?.label ?? "Tamaño",
-    typeLabel: productType?.label ?? "Producto",
-    flavorLabel: isGomita ? "" : (flavor?.name ?? "Sabor"),
+    typeLabel:
+      productType?.label ?? (isGomita ? "Gomitas Enchiladas" : "Producto"),
+    flavorLabel: isGomita
+      ? flavor?.name || "Enchilado / Directo"
+      : flavor?.name ?? "Sabor",
     extras,
   };
 }

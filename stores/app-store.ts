@@ -98,13 +98,40 @@ function applyRemoteCatalog(
   state: ReturnType<typeof buildDemoState>,
   catalog: Awaited<ReturnType<typeof loadRemoteCatalog>>,
 ) {
+  const remoteSizes = catalog.sizes || [];
+  const mergedSizes = [...remoteSizes];
+  state.sizes.forEach((ds) => {
+    if (!mergedSizes.some((s) => s.code === ds.code || s.id === ds.id)) {
+      mergedSizes.push(ds);
+    }
+  });
+
+  const remoteTypes = catalog.productTypes || [];
+  const mergedTypes = [...remoteTypes];
+  state.productTypes.forEach((dt) => {
+    if (!mergedTypes.some((t) => t.code === dt.code || t.id === dt.id)) {
+      mergedTypes.push(dt);
+    }
+  });
+
+  const remoteFlavors = catalog.flavors || [];
+  const mergedFlavors = [...remoteFlavors];
+  state.flavors.forEach((df) => {
+    if (
+      !mergedFlavors.some(
+        (f) =>
+          f.name.toLowerCase() === df.name.toLowerCase() || f.id === df.id,
+      )
+    ) {
+      mergedFlavors.push(df);
+    }
+  });
+
   return {
-    sizes: catalog.sizes?.length ? catalog.sizes : state.sizes,
-    productTypes: catalog.productTypes?.length
-      ? catalog.productTypes
-      : state.productTypes,
+    sizes: mergedSizes.length ? mergedSizes : state.sizes,
+    productTypes: mergedTypes.length ? mergedTypes : state.productTypes,
     extras: catalog.extras?.length ? catalog.extras : state.extras,
-    flavors: catalog.flavors?.length ? catalog.flavors : state.flavors,
+    flavors: mergedFlavors.length ? mergedFlavors : state.flavors,
     activeFlavors: catalog.activeFlavors?.length
       ? catalog.activeFlavors
       : state.activeFlavors,

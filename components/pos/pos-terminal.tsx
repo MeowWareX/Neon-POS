@@ -900,23 +900,39 @@ export function PosTerminal() {
                             <div className="flex items-start justify-between gap-3">
                               <div>
                                 <p className="font-semibold">
-                                  {
-                                    sizes.find(
-                                      (entry) => entry.id === item.sizeId,
-                                    )?.label
-                                  }{" "}
-                                  {
-                                    productTypes.find(
-                                      (entry) => entry.id === item.typeId,
-                                    )?.label
-                                  }
+                                  {sizes.find(
+                                    (entry) =>
+                                      entry.id === item.sizeId ||
+                                      entry.code === item.sizeId,
+                                  )?.label ||
+                                    (item.sizeId ===
+                                    "33333333-3000-3000-3000-333333333333"
+                                      ? "Vasito 3K"
+                                      : item.sizeId ===
+                                          "33333333-6000-6000-6000-333333333333"
+                                        ? "Mediano 6K"
+                                        : item.sizeId ===
+                                            "33333333-9000-9000-9000-333333333333"
+                                          ? "Grande 10K"
+                                          : "Tamaño")}{" "}
+                                  {productTypes.find(
+                                    (entry) =>
+                                      entry.id === item.typeId ||
+                                      entry.code === item.typeId,
+                                  )?.label ||
+                                    (item.typeId ===
+                                    "44444444-5555-5555-5555-555555555555"
+                                      ? "Gomitas Enchiladas"
+                                      : "Producto")}
                                 </p>
                                 <p className="text-muted text-sm">
-                                  {
-                                    flavors.find(
-                                      (entry) => entry.id === item.flavorId,
-                                    )?.name
-                                  }
+                                  {flavors.find(
+                                    (entry) => entry.id === item.flavorId,
+                                  )?.name ||
+                                    (item.typeId ===
+                                    "44444444-5555-5555-5555-555555555555"
+                                      ? "Enchilado / Directo"
+                                      : "")}
                                 </p>
                               </div>
                               <p className="text-lg font-semibold">

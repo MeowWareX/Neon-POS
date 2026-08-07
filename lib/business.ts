@@ -56,17 +56,67 @@ export function calculateOrderItem({
   productTypes: ProductType[];
   extras: Extra[];
 }): OrderItem | null {
-  if (!draft.sizeId || !draft.typeId || !draft.flavorId) {
+  if (!draft.sizeId || !draft.typeId) {
     return null;
   }
 
-  const size = sizes.find((item) => item.id === draft.sizeId);
-  const productType = productTypes.find((item) => item.id === draft.typeId);
-  const selectedExtras = extras.filter((item) =>
-    draft.extraIds.includes(item.id),
+  let productType = productTypes.find(
+    (item) => item.id === draft.typeId || item.code === draft.typeId,
   );
+  if (!productType && draft.typeId === "44444444-5555-5555-5555-555555555555") {
+    productType = {
+      id: "44444444-5555-5555-5555-555555555555",
+      code: "gomitas-enchilada",
+      label: "Gomitas Enchiladas",
+      priceModifier: 0,
+      costModifier: 0,
+    };
+  }
+
+  let size = sizes.find(
+    (item) => item.id === draft.sizeId || item.code === draft.sizeId,
+  );
+  if (!size) {
+    if (draft.sizeId === "33333333-3000-3000-3000-333333333333") {
+      size = {
+        id: "33333333-3000-3000-3000-333333333333",
+        code: "3k",
+        label: "Vasito 3K",
+        ounces: 3,
+        price: 3000,
+        baseCost: 1000,
+      };
+    } else if (draft.sizeId === "33333333-6000-6000-6000-333333333333") {
+      size = {
+        id: "33333333-6000-6000-6000-333333333333",
+        code: "6k",
+        label: "Mediano 6K",
+        ounces: 6,
+        price: 6000,
+        baseCost: 2000,
+      };
+    } else if (draft.sizeId === "33333333-9000-9000-9000-333333333333") {
+      size = {
+        id: "33333333-9000-9000-9000-333333333333",
+        code: "10k",
+        label: "Grande 10K",
+        ounces: 10,
+        price: 10000,
+        baseCost: 3500,
+      };
+    }
+  }
 
   if (!size || !productType) {
+    return null;
+  }
+
+  const isGomita = productType.code === "gomitas-enchilada";
+  const flavorId =
+    draft.flavorId ||
+    (isGomita ? "88888888-8888-8888-8888-888888888888" : undefined);
+
+  if (!flavorId) {
     return null;
   }
 
@@ -74,6 +124,10 @@ export function calculateOrderItem({
   if (matrixPrice === undefined || matrixPrice === null) {
     return null; // Invalid combination
   }
+
+  const selectedExtras = extras.filter((item) =>
+    draft.extraIds.includes(item.id),
+  );
 
   const baseUnitPrice = matrixPrice;
   const unitPrice =
@@ -85,9 +139,9 @@ export function calculateOrderItem({
 
   return {
     id: crypto.randomUUID(),
-    sizeId: draft.sizeId,
-    typeId: draft.typeId,
-    flavorId: draft.flavorId,
+    sizeId: size.id,
+    typeId: productType.id,
+    flavorId,
     extraIds: draft.extraIds,
     quantity: draft.quantity,
     unitPrice,
