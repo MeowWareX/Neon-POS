@@ -965,7 +965,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 11,
+      version: 12,
       migrate: (persistedState: unknown) => {
         const demo = buildDemoState();
         const prev = (persistedState as Partial<AppState>) || {};
@@ -1034,7 +1034,8 @@ export const useAppStore = create<AppState>()(
           }
         });
 
-        // Always update liquid inventory and movements to latest seeded stock state if version < 3 or missing items
+        // Always update liquid sales, inventory and movements to latest seeded stock state
+        const updatedLiquidSales = demo.liquidSales;
         const updatedLiquidInventory = demo.liquidInventory;
         const updatedLiquidMovements = demo.liquidInventoryMovements;
 
@@ -1049,7 +1050,7 @@ export const useAppStore = create<AppState>()(
             : demo.treasuryAccounts,
           treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
           historicalDays: prev.historicalDays || demo.historicalDays,
-          liquidSales: prev.liquidSales || demo.liquidSales,
+          liquidSales: updatedLiquidSales,
           liquidInventory: updatedLiquidInventory,
           liquidInventoryMovements: updatedLiquidMovements,
           users: prev.users || [],
