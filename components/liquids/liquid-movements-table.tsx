@@ -71,7 +71,8 @@ export function LiquidMovementsTable() {
       default:
         return (
           <Badge className="gap-1 border-blue-500/30 bg-blue-500/20 text-blue-300">
-            <RefreshCw className="size-3" /> Ajuste ({qty > 0 ? `+${qty}` : qty})
+            <RefreshCw className="size-3" /> Ajuste ({qty > 0 ? `+${qty}` : qty}
+            )
           </Badge>
         );
     }
@@ -84,12 +85,12 @@ export function LiquidMovementsTable() {
       {/* Filters Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="text-muted absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+          <Search className="text-muted absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             placeholder="Buscar por sabor u observaciones..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-white/5 border-white/10"
+            className="border-white/10 bg-white/5 pl-9"
           />
         </div>
 
@@ -97,10 +98,10 @@ export function LiquidMovementsTable() {
           <button
             type="button"
             onClick={() => setFilterType("all")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
+            className={`rounded-xl border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
               filterType === "all"
-                ? "bg-primary text-black border-primary"
-                : "bg-white/5 text-muted border-white/10 hover:text-white"
+                ? "bg-primary border-primary text-black"
+                : "text-muted border-white/10 bg-white/5 hover:text-white"
             }`}
           >
             Todos ({allMovements.length})
@@ -108,35 +109,39 @@ export function LiquidMovementsTable() {
           <button
             type="button"
             onClick={() => setFilterType("point_use")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
+            className={`rounded-xl border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
               filterType === "point_use"
-                ? "bg-amber-500/30 text-amber-300 border-amber-500/50"
-                : "bg-white/5 text-muted border-white/10 hover:text-white"
+                ? "border-amber-500/50 bg-amber-500/30 text-amber-300"
+                : "text-muted border-white/10 bg-white/5 hover:text-white"
             }`}
           >
-            🥤 Uso en Punto ({allMovements.filter((m) => m.movementType === "point_use").length})
+            🥤 Uso en Punto (
+            {allMovements.filter((m) => m.movementType === "point_use").length})
           </button>
           <button
             type="button"
             onClick={() => setFilterType("production")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
+            className={`rounded-xl border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
               filterType === "production"
-                ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
-                : "bg-white/5 text-muted border-white/10 hover:text-white"
+                ? "border-emerald-500/50 bg-emerald-500/30 text-emerald-300"
+                : "text-muted border-white/10 bg-white/5 hover:text-white"
             }`}
           >
-            📦 Producción ({allMovements.filter((m) => m.movementType === "production").length})
+            📦 Producción (
+            {allMovements.filter((m) => m.movementType === "production").length}
+            )
           </button>
           <button
             type="button"
             onClick={() => setFilterType("sale")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
+            className={`rounded-xl border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
               filterType === "sale"
-                ? "bg-cyan-500/30 text-cyan-300 border-cyan-500/50"
-                : "bg-white/5 text-muted border-white/10 hover:text-white"
+                ? "border-cyan-500/50 bg-cyan-500/30 text-cyan-300"
+                : "text-muted border-white/10 bg-white/5 hover:text-white"
             }`}
           >
-            💸 Ventas ({allMovements.filter((m) => m.movementType === "sale").length})
+            💸 Ventas (
+            {allMovements.filter((m) => m.movementType === "sale").length})
           </button>
         </div>
       </div>
@@ -160,9 +165,13 @@ export function LiquidMovementsTable() {
             {filteredMovements.map((mov) => {
               let formattedDate = "";
               try {
-                formattedDate = format(new Date(mov.createdAt), "dd MMM, yyyy HH:mm", {
-                  locale: es,
-                });
+                formattedDate = format(
+                  new Date(mov.createdAt),
+                  "dd MMM, yyyy HH:mm",
+                  {
+                    locale: es,
+                  },
+                );
               } catch {
                 formattedDate = mov.createdAt;
               }
@@ -170,23 +179,25 @@ export function LiquidMovementsTable() {
               return (
                 <div
                   key={mov.id}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2.5 transition-all hover:bg-white/[0.08]"
+                  className="space-y-2.5 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all hover:bg-white/[0.08]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="font-bold text-white text-sm block">
+                      <span className="block text-sm font-bold text-white">
                         {mov.flavorName}
                       </span>
-                      <div className="flex items-center gap-1.5 mt-1 text-xs text-muted">
+                      <div className="text-muted mt-1 flex items-center gap-1.5 text-xs">
                         <Calendar className="size-3 shrink-0" />
                         {formattedDate}
                       </div>
                     </div>
-                    <div>{getMovementBadge(mov.movementType, mov.quantity)}</div>
+                    <div>
+                      {getMovementBadge(mov.movementType, mov.quantity)}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
-                    <span className="text-muted truncate max-w-[220px]">
+                  <div className="flex items-center justify-between border-t border-white/5 pt-2 text-xs">
+                    <span className="text-muted max-w-[220px] truncate">
                       {mov.notes || "Sin observaciones"}
                     </span>
                     <span
@@ -194,7 +205,8 @@ export function LiquidMovementsTable() {
                         mov.quantity > 0 ? "text-emerald-400" : "text-amber-400"
                       }`}
                     >
-                      {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity} bolsa(s)
+                      {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity}{" "}
+                      bolsa(s)
                     </span>
                   </div>
                 </div>
@@ -203,14 +215,18 @@ export function LiquidMovementsTable() {
           </div>
 
           {/* Desktop Table View (>= md) */}
-          <div className="hidden md:block glass-panel overflow-x-auto rounded-2xl border border-white/10">
+          <div className="glass-panel hidden overflow-x-auto rounded-2xl border border-white/10 md:block">
             <table className="w-full text-left text-sm">
               <thead className="text-muted border-b border-white/10 bg-white/5 text-xs uppercase">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Fecha y Hora</th>
                   <th className="px-4 py-3 font-semibold">Sabor</th>
-                  <th className="px-4 py-3 font-semibold">Tipo de Movimiento</th>
-                  <th className="px-4 py-3 text-right font-semibold">Cantidad</th>
+                  <th className="px-4 py-3 font-semibold">
+                    Tipo de Movimiento
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold">
+                    Cantidad
+                  </th>
                   <th className="px-4 py-3 font-semibold">Notas / Detalle</th>
                 </tr>
               </thead>
@@ -218,24 +234,31 @@ export function LiquidMovementsTable() {
                 {filteredMovements.map((mov) => {
                   let formattedDate = "";
                   try {
-                    formattedDate = format(new Date(mov.createdAt), "dd MMM, yyyy HH:mm", {
-                      locale: es,
-                    });
+                    formattedDate = format(
+                      new Date(mov.createdAt),
+                      "dd MMM, yyyy HH:mm",
+                      {
+                        locale: es,
+                      },
+                    );
                   } catch {
                     formattedDate = mov.createdAt;
                   }
 
                   return (
-                    <tr key={mov.id} className="transition-colors hover:bg-white/5">
-                      <td className="px-4 py-3.5 whitespace-nowrap text-muted text-xs">
+                    <tr
+                      key={mov.id}
+                      className="transition-colors hover:bg-white/5"
+                    >
+                      <td className="text-muted px-4 py-3.5 text-xs whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <Calendar className="size-3.5 shrink-0 text-muted" />
+                          <Calendar className="text-muted size-3.5 shrink-0" />
                           {formattedDate}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 whitespace-nowrap font-bold text-white">
+                      <td className="px-4 py-3.5 font-bold whitespace-nowrap text-white">
                         <span className="inline-flex items-center gap-1.5">
-                          <Droplet className="size-3.5 text-primary" />
+                          <Droplet className="text-primary size-3.5" />
                           {mov.flavorName}
                         </span>
                       </td>
@@ -244,12 +267,15 @@ export function LiquidMovementsTable() {
                       </td>
                       <td
                         className={`px-4 py-3.5 text-right font-extrabold whitespace-nowrap ${
-                          mov.quantity > 0 ? "text-emerald-400" : "text-amber-400"
+                          mov.quantity > 0
+                            ? "text-emerald-400"
+                            : "text-amber-400"
                         }`}
                       >
-                        {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity} bolsa(s)
+                        {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity}{" "}
+                        bolsa(s)
                       </td>
-                      <td className="px-4 py-3.5 text-muted text-xs max-w-[280px] truncate">
+                      <td className="text-muted max-w-[280px] truncate px-4 py-3.5 text-xs">
                         {mov.notes || "-"}
                       </td>
                     </tr>

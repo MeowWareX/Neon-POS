@@ -177,7 +177,8 @@ export default function LiquidSalesPage() {
                 Historial de Operaciones de Líquidos
               </h2>
               <p className="text-muted text-xs">
-                Consulta las ventas comerciales y el registro de insumos enviados al punto de venta.
+                Consulta las ventas comerciales y el registro de insumos
+                enviados al punto de venta.
               </p>
             </div>
 
