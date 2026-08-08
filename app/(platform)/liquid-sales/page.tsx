@@ -13,9 +13,11 @@ import { currency } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAppStore } from "@/stores/app-store";
 import { LiquidInventoryCard } from "@/components/liquids/liquid-inventory-card";
+import { LiquidMovementsTable } from "@/components/liquids/liquid-movements-table";
 import { LiquidSaleModal } from "@/components/liquids/liquid-sale-modal";
 import { LiquidSalesTable } from "@/components/liquids/liquid-sales-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function LiquidSalesPage() {
   const user = useAuthStore((state) => state.user);
@@ -166,21 +168,37 @@ export default function LiquidSalesPage() {
       {/* Stock Inventory Card */}
       <LiquidInventoryCard />
 
-      {/* Main Table Card */}
+      {/* Main Tables with Tabs */}
       <Card className="glass-panel border-white/10 p-4 md:p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-white">
-              Historial de Ventas de Líquidos
-            </h2>
-            <p className="text-muted text-xs">
-              Registro independiente de salidas comerciales de insumos
-              concentrados
-            </p>
-          </div>
-        </div>
+        <Tabs defaultValue="sales" className="w-full space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-white">
+                Historial de Operaciones de Líquidos
+              </h2>
+              <p className="text-muted text-xs">
+                Consulta las ventas comerciales y el registro de insumos enviados al punto de venta.
+              </p>
+            </div>
 
-        <LiquidSalesTable sales={liquidSales} />
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="sales" className="gap-1.5 text-xs">
+                🧾 Ventas Comerciales ({liquidSales.length})
+              </TabsTrigger>
+              <TabsTrigger value="movements" className="gap-1.5 text-xs">
+                📦 Insumos a Punto / Movimientos
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="sales" className="mt-0">
+            <LiquidSalesTable sales={liquidSales} />
+          </TabsContent>
+
+          <TabsContent value="movements" className="mt-0">
+            <LiquidMovementsTable />
+          </TabsContent>
+        </Tabs>
       </Card>
     </div>
   );
