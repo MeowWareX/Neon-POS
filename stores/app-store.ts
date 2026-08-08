@@ -119,8 +119,7 @@ function applyRemoteCatalog(
   state.flavors.forEach((df) => {
     if (
       !mergedFlavors.some(
-        (f) =>
-          f.name.toLowerCase() === df.name.toLowerCase() || f.id === df.id,
+        (f) => f.name.toLowerCase() === df.name.toLowerCase() || f.id === df.id,
       )
     ) {
       mergedFlavors.push(df);
@@ -1011,6 +1010,30 @@ export const useAppStore = create<AppState>()(
           mergedProductTypes.length ? mergedProductTypes : demo.productTypes
         ).filter((pt) => (pt.code as string) !== "premium");
 
+        // Merge liquid inventory items
+        const prevLiquidInventory = prev.liquidInventory || [];
+        const mergedLiquidInventory = [...prevLiquidInventory];
+        demo.liquidInventory.forEach((dli) => {
+          if (
+            !mergedLiquidInventory.some(
+              (li) =>
+                li.id === dli.id ||
+                li.flavorName.toLowerCase() === dli.flavorName.toLowerCase(),
+            )
+          ) {
+            mergedLiquidInventory.push(dli);
+          }
+        });
+
+        // Merge liquid inventory movements
+        const prevLiquidMovements = prev.liquidInventoryMovements || [];
+        const mergedLiquidMovements = [...prevLiquidMovements];
+        demo.liquidInventoryMovements.forEach((dlm) => {
+          if (!mergedLiquidMovements.some((lm) => lm.id === dlm.id)) {
+            mergedLiquidMovements.push(dlm);
+          }
+        });
+
         return {
           ...demo,
           ...prev,
@@ -1023,11 +1046,12 @@ export const useAppStore = create<AppState>()(
           treasuryTransfers: prev.treasuryTransfers || demo.treasuryTransfers,
           historicalDays: prev.historicalDays || demo.historicalDays,
           liquidSales: prev.liquidSales || demo.liquidSales,
-          liquidInventory: prev.liquidInventory?.length
-            ? prev.liquidInventory
+          liquidInventory: mergedLiquidInventory.length
+            ? mergedLiquidInventory
             : demo.liquidInventory,
-          liquidInventoryMovements:
-            prev.liquidInventoryMovements || demo.liquidInventoryMovements,
+          liquidInventoryMovements: mergedLiquidMovements.length
+            ? mergedLiquidMovements
+            : demo.liquidInventoryMovements,
           users: prev.users || [],
           initialized: prev.initialized || false,
           businessDate: prev.businessDate || getBusinessDate(),

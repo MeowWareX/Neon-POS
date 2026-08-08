@@ -70,7 +70,7 @@ function summarizeOrderItem(
       productType?.label ?? (isGomita ? "Gomitas Enchiladas" : "Producto"),
     flavorLabel: isGomita
       ? flavor?.name || "Enchilado / Directo"
-      : flavor?.name ?? "Sabor",
+      : (flavor?.name ?? "Sabor"),
     extras,
   };
 }
