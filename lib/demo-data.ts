@@ -932,16 +932,11 @@ export function buildDemoState(): DemoState {
 
   const historicalDays: HistoricalDay[] = [];
 
-  const liquidSales: LiquidSale[] = [
-  ];
+  const liquidSales: LiquidSale[] = [];
 
-  const liquidInventory: LiquidInventoryItem[] = [
-    
-  ];
+  const liquidInventory: LiquidInventoryItem[] = [];
 
-  const liquidInventoryMovements: LiquidInventoryMovement[] = [
-  
-  ];
+  const liquidInventoryMovements: LiquidInventoryMovement[] = [];
 
   return {
     users,
