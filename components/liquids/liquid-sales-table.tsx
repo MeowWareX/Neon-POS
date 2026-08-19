@@ -178,6 +178,14 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                             Licor
                           </Badge>
                         )}
+                        {sale.unitPrice < (config?.price || 30000) && (
+                          <Badge
+                            variant="success"
+                            className="px-1.5 py-0 text-[10px] font-bold"
+                          >
+                            🏷️ Mayorista
+                          </Badge>
+                        )}
                         {paymentBadge(sale.paymentMethod)}
                       </div>
                       <div className="text-muted mt-1.5 flex items-center gap-1.5 text-xs">
@@ -299,6 +307,14 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                               className="px-1 py-0 text-[10px]"
                             >
                               Licor
+                            </Badge>
+                          )}
+                          {sale.unitPrice < (config?.price || 30000) && (
+                            <Badge
+                              variant="success"
+                              className="px-1 py-0 text-[10px] font-bold"
+                            >
+                              🏷️ Mayorista
                             </Badge>
                           )}
                         </div>

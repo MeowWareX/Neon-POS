@@ -63,3 +63,61 @@ export const LIQUID_VARIANT_CONFIG: Record<
 };
 
 export const LIQUID_YIELD_LITERS = 6;
+
+export interface LiquidPriceSuggestion {
+  total: number;
+  unitPrice: number;
+  tierLabel: string;
+}
+
+export function getSuggestedLiquidPrice(
+  variant: LiquidVariantCode,
+  quantity: number,
+): LiquidPriceSuggestion {
+  const config = LIQUID_VARIANT_CONFIG[variant];
+  const hasAlcohol = config?.hasAlcohol ?? false;
+
+  if (hasAlcohol) {
+    if (quantity >= 10) {
+      return {
+        total: 30000 * quantity,
+        unitPrice: 30000,
+        tierLabel: "Tarifa Mayorista (≥10 unid)",
+      };
+    }
+    if (quantity >= 6) {
+      const unitPrice = Math.round(200000 / 6);
+      return {
+        total: Math.round((200000 / 6) * quantity),
+        unitPrice,
+        tierLabel: "Tarifa Mayorista (≥6 unid)",
+      };
+    }
+    return {
+      total: 35000 * quantity,
+      unitPrice: 35000,
+      tierLabel: "Tarifa Estándar Detal",
+    };
+  } else {
+    if (quantity >= 10) {
+      return {
+        total: 26000 * quantity,
+        unitPrice: 26000,
+        tierLabel: "Tarifa Mayorista (≥10 unid)",
+      };
+    }
+    if (quantity >= 6) {
+      const unitPrice = Math.round(170000 / 6);
+      return {
+        total: Math.round((170000 / 6) * quantity),
+        unitPrice,
+        tierLabel: "Tarifa Mayorista (≥6 unid)",
+      };
+    }
+    return {
+      total: 30000 * quantity,
+      unitPrice: 30000,
+      tierLabel: "Tarifa Estándar Detal",
+    };
+  }
+}

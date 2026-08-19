@@ -25,7 +25,7 @@ NEON OS is a mobile-first POS, inventory, analytics, cash, and accounting web ap
 - Active flavor and tank assignment
 - Cash opening and closing
 - Expense and loan payment tracking
-- Demo mode that runs locally without Supabase
+- Digital Loyalty Pass System (Apple Wallet, Google Wallet, PWA Web Card & POS) — ver [docs/loyalty-system.md](docs/loyalty-system.md)
 - Supabase sync routes for orders, inventory, flavors, cash, expenses, and loan payments
 
 ## Local setup

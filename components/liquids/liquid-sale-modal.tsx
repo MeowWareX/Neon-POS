@@ -8,6 +8,7 @@ import {
   LIQUID_VARIANTS,
   LIQUID_YIELD_LITERS,
   LiquidVariantCode,
+  getSuggestedLiquidPrice,
 } from "@/lib/constants";
 import { currency } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
@@ -41,6 +42,8 @@ interface LiquidDraftItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  isWholesale?: boolean;
+  pricingNote?: string;
 }
 
 export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
@@ -65,13 +68,64 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [flavorId, setFlavorId] = useState<string>("none");
   const [customFlavor, setCustomFlavor] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [unitPriceInput, setUnitPriceInput] = useState<string>("");
+  const [isCustomPrice, setIsCustomPrice] = useState<boolean>(false);
 
   const currentConfig = LIQUID_VARIANT_CONFIG[variant];
-  const currentUnitPrice = currentConfig?.price ?? 0;
+  const standardUnitPrice = currentConfig?.price ?? 0;
+
+  const suggested = getSuggestedLiquidPrice(variant, quantity);
+  const activeUnitPrice = isCustomPrice && unitPriceInput !== ""
+    ? Number(unitPriceInput) || 0
+    : suggested.unitPrice;
+
+  const itemTotal = activeUnitPrice * quantity;
+
+  const handleVariantChange = (newVariant: LiquidVariantCode) => {
+    setVariant(newVariant);
+    if (!isCustomPrice) {
+      setUnitPriceInput("");
+    }
+  };
+
+  const handleQuantityChange = (newQty: number) => {
+    const validQty = Math.max(1, newQty);
+    setQuantity(validQty);
+    if (!isCustomPrice) {
+      setUnitPriceInput("");
+    }
+  };
+
+  const applyPresetPrice = (type: "standard" | "wholesale6" | "wholesale10") => {
+    setIsCustomPrice(true);
+    const hasAlcohol = currentConfig?.hasAlcohol ?? false;
+    if (type === "standard") {
+      const price = hasAlcohol ? 35000 : 30000;
+      setUnitPriceInput(String(price));
+    } else if (type === "wholesale6") {
+      if (quantity < 6) setQuantity(6);
+      const price = Math.round((hasAlcohol ? 200000 : 170000) / 6);
+      setUnitPriceInput(String(price));
+    } else if (type === "wholesale10") {
+      if (quantity < 10) setQuantity(10);
+      const price = hasAlcohol ? 30000 : 26000;
+      setUnitPriceInput(String(price));
+    }
+  };
+
+  const resetToAutoPrice = () => {
+    setIsCustomPrice(false);
+    setUnitPriceInput("");
+  };
 
   const handleAddItem = () => {
     if (quantity <= 0) {
       toast.error("La cantidad debe ser al menos 1");
+      return;
+    }
+
+    if (activeUnitPrice <= 0) {
+      toast.error("El precio unitario debe ser mayor a $0");
       return;
     }
 
@@ -87,6 +141,12 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
       finalFlavorId = flavorId;
     }
 
+    const isWholesale = activeUnitPrice < standardUnitPrice;
+    let pricingNote = "";
+    if (isWholesale) {
+      pricingNote = `Mayorista: ${currency(activeUnitPrice)} c/u`;
+    }
+
     const newItem: LiquidDraftItem = {
       id: crypto.randomUUID(),
       variant,
@@ -94,14 +154,18 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
       flavorId: finalFlavorId,
       flavorName: finalFlavorName,
       quantity,
-      unitPrice: currentUnitPrice,
-      total: currentUnitPrice * quantity,
+      unitPrice: activeUnitPrice,
+      total: itemTotal,
+      isWholesale,
+      pricingNote,
     };
 
     setItems((prev) => [...prev, newItem]);
     setQuantity(1);
+    setIsCustomPrice(false);
+    setUnitPriceInput("");
     toast.success(
-      `Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName})`,
+      `Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName}) a ${currency(activeUnitPrice)} c/u`,
     );
   };
 
@@ -140,8 +204,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           flavorId: finalFlavorId,
           flavorName: finalFlavorName,
           quantity,
-          unitPrice: currentUnitPrice,
-          total: currentUnitPrice * quantity,
+          unitPrice: activeUnitPrice,
+          total: activeUnitPrice * quantity,
+          isWholesale: activeUnitPrice < standardUnitPrice,
         },
       ];
     }
@@ -276,7 +341,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                   variant="secondary"
                   className="text-[10px] sm:text-[11px]"
                 >
-                  {currency(currentUnitPrice)} / botella
+                  {currency(activeUnitPrice)} / botella
                 </Badge>
               </div>
 
@@ -289,7 +354,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     <button
                       key={vKey}
                       type="button"
-                      onClick={() => setVariant(vKey)}
+                      onClick={() => handleVariantChange(vKey)}
                       className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
                         isSelected
                           ? "border-primary bg-primary/20 text-white shadow-[0_0_15px_rgba(255,79,216,0.3)]"
@@ -317,9 +382,68 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                 })}
               </div>
 
-              {/* Flavor & Quantity Controls */}
-              <div className="grid grid-cols-1 items-end gap-2.5 pt-1 sm:grid-cols-[1fr_100px_auto]">
-                <div className="space-y-1.5">
+              {/* Preset Pricing Shortcuts */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted text-[10px] font-semibold tracking-wider uppercase">
+                    Tarifa de Venta / Descuentos por Mayor:
+                  </span>
+                  <span className="text-primary text-[11px] font-extrabold">
+                    {suggested.tierLabel}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => applyPresetPrice("standard")}
+                    className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
+                      !isCustomPrice && quantity < 6
+                        ? "border-primary/50 bg-primary/20 text-white"
+                        : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    Detal ({currency(currentConfig.hasAlcohol ? 35000 : 30000)})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => applyPresetPrice("wholesale6")}
+                    className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
+                      quantity >= 6 && quantity < 10 && !isCustomPrice
+                        ? "border-amber-500/50 bg-amber-500/20 text-amber-300"
+                        : "border-white/10 bg-white/5 text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-300"
+                    }`}
+                  >
+                    Paquete x6 ({currency(currentConfig.hasAlcohol ? 200000 : 170000)})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => applyPresetPrice("wholesale10")}
+                    className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
+                      quantity >= 10 && !isCustomPrice
+                        ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300"
+                        : "border-white/10 bg-white/5 text-emerald-400/80 hover:bg-emerald-500/10 hover:text-emerald-300"
+                    }`}
+                  >
+                    Paquete x10 ({currency(currentConfig.hasAlcohol ? 300000 : 260000)})
+                  </button>
+
+                  {isCustomPrice && (
+                    <button
+                      type="button"
+                      onClick={resetToAutoPrice}
+                      className="text-muted underline hover:text-white text-[10px] ml-auto"
+                    >
+                      Restablecer precio auto
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Flavor, Quantity & Custom Price Controls */}
+              <div className="grid grid-cols-1 items-end gap-2.5 pt-1 sm:grid-cols-12">
+                <div className="space-y-1.5 sm:col-span-5">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="flavor" className="text-xs">
                       Sabor del Líquido
@@ -389,7 +513,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                 </div>
 
                 {flavorId === "custom" ? (
-                  <div className="space-y-1.5 sm:col-span-3">
+                  <div className="space-y-1.5 sm:col-span-12">
                     <Label htmlFor="customFlavor" className="text-xs">
                       Nombre del Sabor Personalizado
                     </Label>
@@ -403,7 +527,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                   </div>
                 ) : null}
 
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="quantity" className="text-xs">
                     Cantidad
                   </Label>
@@ -413,21 +537,56 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     min={1}
                     value={quantity}
                     onChange={(e) =>
-                      setQuantity(Math.max(1, Number(e.target.value)))
+                      handleQuantityChange(Number(e.target.value))
                     }
                     className="h-9 text-xs"
                   />
                 </div>
 
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleAddItem}
-                  className="bg-primary/20 hover:bg-primary/30 border-primary/30 h-9 gap-1.5 border text-xs font-semibold text-white"
-                >
-                  <Plus className="size-3.5" />
-                  Agregar
-                </Button>
+                <div className="space-y-1.5 sm:col-span-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="unitPrice" className="text-xs font-semibold">
+                      Precio Unitario ($)
+                    </Label>
+                    {activeUnitPrice < standardUnitPrice && (
+                      <span className="text-emerald-400 text-[10px] font-bold">
+                        Descuento aplicado
+                      </span>
+                    )}
+                  </div>
+                  <Input
+                    id="unitPrice"
+                    type="number"
+                    step={500}
+                    placeholder={String(activeUnitPrice)}
+                    value={isCustomPrice ? unitPriceInput : activeUnitPrice}
+                    onChange={(e) => {
+                      setIsCustomPrice(true);
+                      setUnitPriceInput(e.target.value);
+                    }}
+                    className="h-9 text-xs font-bold text-emerald-400"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleAddItem}
+                    className="bg-primary/20 hover:bg-primary/30 border-primary/30 h-9 w-full gap-1.5 border text-xs font-semibold text-white"
+                  >
+                    <Plus className="size-3.5" />
+                    Agregar
+                  </Button>
+                </div>
+              </div>
+
+              {/* Subtotal Calculation Display */}
+              <div className="flex items-center justify-between pt-1 text-xs border-t border-white/5">
+                <span className="text-muted">Subtotal de este ítem ({quantity} unid):</span>
+                <span className="font-extrabold text-white text-sm">
+                  {currency(itemTotal)}
+                </span>
               </div>
             </div>
 
@@ -464,9 +623,19 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                       className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 p-2 text-xs"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-semibold text-white">
-                          {item.quantity}x {item.variantLabel}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate font-semibold text-white">
+                            {item.quantity}x {item.variantLabel}
+                          </p>
+                          {item.isWholesale && (
+                            <Badge
+                              variant="success"
+                              className="px-1 py-0 text-[9px] font-bold"
+                            >
+                              🏷️ Mayorista
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-muted truncate text-[11px]">
                           Sabor:{" "}
                           <span className="text-primary font-medium">
@@ -546,7 +715,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               <p className="text-muted mt-1 text-[11px] sm:text-xs">
                 Total Venta:{" "}
                 <span className="text-sm font-extrabold text-white sm:text-base">
-                  {currency(grandTotal || quantity * currentUnitPrice)}
+                  {currency(grandTotal || quantity * activeUnitPrice)}
                 </span>
               </p>
             </div>
@@ -559,7 +728,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
             >
               {isSubmitting
                 ? "Registrando..."
-                : `Registrar Venta (${currency(grandTotal || quantity * currentUnitPrice)})`}
+                : `Registrar Venta (${currency(grandTotal || quantity * activeUnitPrice)})`}
             </Button>
           </div>
         </form>
