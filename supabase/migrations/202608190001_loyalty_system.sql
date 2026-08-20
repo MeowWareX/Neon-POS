@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.loyalty_logs (
     customer_id UUID NOT NULL REFERENCES public.customers(id) ON DELETE CASCADE,
     order_id UUID REFERENCES public.orders(id) ON DELETE SET NULL,
     stamps_added INT DEFAULT 0,
+    rewards_granted INT DEFAULT 0,
     reward_redeemed BOOLEAN DEFAULT FALSE,
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()

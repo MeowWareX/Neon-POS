@@ -138,6 +138,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <LogOut className="size-4" />
             Cerrar sesión
           </Button>
+          <div className="mt-3 text-center">
+            <Link
+              href="/privacy"
+              className="text-muted hover:text-primary text-[11px] underline transition-colors"
+            >
+              Política de Privacidad
+            </Link>
+          </div>
         </div>
       </aside>
 
@@ -236,8 +244,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 }}
               >
                 <LogOut className="size-4" />
-                Cerrar sesion
+                Cerrar sesión
               </Button>
+              <div className="mt-2 text-center">
+                <Link
+                  href="/privacy"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-muted hover:text-primary text-[11px] underline transition-colors"
+                >
+                  Política de Privacidad
+                </Link>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

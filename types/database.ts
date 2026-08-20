@@ -643,6 +643,102 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      loyalty_logs: {
+        Row: {
+          id: string;
+          customer_id: string;
+          order_id: string | null;
+          stamps_added: number;
+          rewards_granted: number;
+          reward_redeemed: boolean;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_id: string;
+          order_id?: string | null;
+          stamps_added?: number;
+          rewards_granted?: number;
+          reward_redeemed?: boolean;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          customer_id: string;
+          order_id: string | null;
+          stamps_added: number;
+          rewards_granted: number;
+          reward_redeemed: boolean;
+          notes: string | null;
+          created_at: string;
+        }>;
+        Relationships: [];
+      };
+      loyalty_passes: {
+        Row: {
+          id: string;
+          customer_id: string;
+          wallet_type: string;
+          pass_token: string;
+          push_token: string | null;
+          last_synced_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_id: string;
+          wallet_type: 'web' | 'google' | 'apple';
+          pass_token: string;
+          push_token?: string | null;
+          last_synced_at?: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          customer_id: string;
+          wallet_type: string;
+          pass_token: string;
+          push_token: string | null;
+          last_synced_at: string;
+          created_at: string;
+        }>;
+        Relationships: [];
+      };
+      customers: {
+        Row: {
+          id: string;
+          full_name: string;
+          phone: string;
+          email: string | null;
+          stamps_count: number;
+          total_rewards_claimed: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          full_name: string;
+          phone: string;
+          email?: string | null;
+          stamps_count?: number;
+          total_rewards_claimed?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          full_name: string;
+          phone: string;
+          email: string | null;
+          stamps_count: number;
+          total_rewards_claimed: number;
+          created_at: string;
+          updated_at: string;
+        }>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

@@ -268,6 +268,44 @@ export interface LiquidProductionInput {
 export interface LiquidAdjustmentInput {
   liquidInventoryId: string;
   movementType: "point_use" | "adjustment" | "waste";
-  quantity: number; // number of bags to deduct/adjust (positive value representing deducted amount)
+  quantity: number;
   notes?: string | null;
+}
+
+export type WalletType = 'web' | 'google' | 'apple';
+
+export interface LoyaltyCustomer {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string | null;
+  stampsCount: number;
+  totalRewardsClaimed: number;
+  createdAt: string;
+}
+
+export interface LoyaltyPass {
+  id: string;
+  customerId: string;
+  walletType: WalletType;
+  passToken: string;
+  pushToken: string | null;
+  lastSyncedAt: string;
+  createdAt: string;
+}
+
+export interface LoyaltyLog {
+  id: string;
+  customerId: string;
+  orderId: string | null;
+  stampsAdded: number;
+  rewardRedeemed: boolean;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface LoyaltyCardResponse {
+  customer: LoyaltyCustomer;
+  pass: LoyaltyPass;
+  recentLogs: LoyaltyLog[];
 }

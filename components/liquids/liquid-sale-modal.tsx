@@ -75,9 +75,10 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const standardUnitPrice = currentConfig?.price ?? 0;
 
   const suggested = getSuggestedLiquidPrice(variant, quantity);
-  const activeUnitPrice = isCustomPrice && unitPriceInput !== ""
-    ? Number(unitPriceInput) || 0
-    : suggested.unitPrice;
+  const activeUnitPrice =
+    isCustomPrice && unitPriceInput !== ""
+      ? Number(unitPriceInput) || 0
+      : suggested.unitPrice;
 
   const itemTotal = activeUnitPrice * quantity;
 
@@ -96,7 +97,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
     }
   };
 
-  const applyPresetPrice = (type: "standard" | "wholesale6" | "wholesale10") => {
+  const applyPresetPrice = (
+    type: "standard" | "wholesale6" | "wholesale10",
+  ) => {
     setIsCustomPrice(true);
     const hasAlcohol = currentConfig?.hasAlcohol ?? false;
     if (type === "standard") {
@@ -414,7 +417,8 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                         : "border-white/10 bg-white/5 text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-300"
                     }`}
                   >
-                    Paquete x6 ({currency(currentConfig.hasAlcohol ? 200000 : 170000)})
+                    Paquete x6 (
+                    {currency(currentConfig.hasAlcohol ? 200000 : 170000)})
                   </button>
 
                   <button
@@ -426,14 +430,15 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                         : "border-white/10 bg-white/5 text-emerald-400/80 hover:bg-emerald-500/10 hover:text-emerald-300"
                     }`}
                   >
-                    Paquete x10 ({currency(currentConfig.hasAlcohol ? 300000 : 260000)})
+                    Paquete x10 (
+                    {currency(currentConfig.hasAlcohol ? 300000 : 260000)})
                   </button>
 
                   {isCustomPrice && (
                     <button
                       type="button"
                       onClick={resetToAutoPrice}
-                      className="text-muted underline hover:text-white text-[10px] ml-auto"
+                      className="text-muted ml-auto text-[10px] underline hover:text-white"
                     >
                       Restablecer precio auto
                     </button>
@@ -545,11 +550,14 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
 
                 <div className="space-y-1.5 sm:col-span-3">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="unitPrice" className="text-xs font-semibold">
+                    <Label
+                      htmlFor="unitPrice"
+                      className="text-xs font-semibold"
+                    >
                       Precio Unitario ($)
                     </Label>
                     {activeUnitPrice < standardUnitPrice && (
-                      <span className="text-emerald-400 text-[10px] font-bold">
+                      <span className="text-[10px] font-bold text-emerald-400">
                         Descuento aplicado
                       </span>
                     )}
@@ -582,9 +590,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               {/* Subtotal Calculation Display */}
-              <div className="flex items-center justify-between pt-1 text-xs border-t border-white/5">
-                <span className="text-muted">Subtotal de este ítem ({quantity} unid):</span>
-                <span className="font-extrabold text-white text-sm">
+              <div className="flex items-center justify-between border-t border-white/5 pt-1 text-xs">
+                <span className="text-muted">
+                  Subtotal de este ítem ({quantity} unid):
+                </span>
+                <span className="text-sm font-extrabold text-white">
                   {currency(itemTotal)}
                 </span>
               </div>

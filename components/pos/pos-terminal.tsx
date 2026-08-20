@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, ReceiptText, ShoppingBag, Trash2 } from "lucide-react";
+import { Plus, ReceiptText, ShoppingBag, Trash2, UserCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LoyaltyScannerModal } from "@/components/pos/loyalty-scanner-modal";
 import {
   calculateOrderItem,
   createOrderRecord,
@@ -72,6 +73,16 @@ export function PosTerminal() {
   const [category, setCategory] = useState<"granizados" | "gomitas-enchilada">(
     "granizados",
   );
+  const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
+  const [selectedLoyaltyCustomer, setSelectedLoyaltyCustomer] = useState<{
+    id: string;
+    fullName: string;
+    phone: string;
+    email?: string | null;
+    stampsCount: number;
+    totalRewardsClaimed: number;
+    passToken: string;
+  } | null>(null);
   const topPageRef = useRef<HTMLDivElement>(null);
   const sizeStepRef = useRef<HTMLDivElement>(null);
   const flavorStepRef = useRef<HTMLDivElement>(null);
@@ -372,6 +383,42 @@ export function PosTerminal() {
       clearOrder();
       setPaymentMethod("cash");
       toast.success(`Pedido ${order.orderNumber} guardado.`);
+
+      // Apply loyalty stamps if customer selected
+      if (selectedLoyaltyCustomer) {
+        const stampsToAdd = items.reduce((sum, item) => sum + item.quantity, 0);
+        const redeemReward = selectedLoyaltyCustomer.stampsCount + stampsToAdd >= 10;
+
+        try {
+          const stampRes = await fetch("/api/loyalty/stamp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              passToken: selectedLoyaltyCustomer.passToken,
+              orderId: order.id,
+              stampsToAdd,
+              redeemReward,
+            }),
+          });
+
+          if (stampRes.ok) {
+            const stampData = await stampRes.json();
+            if (stampData.rewardRedeemed) {
+              toast.success("🎁 ¡Raspado gratis canjeado!", { duration: 4000 });
+            } else if (stampData.newStampsCount >= 10) {
+              toast.success("🎁 ¡Raspado gratis disponible!", { duration: 4000 });
+            } else {
+              toast.success(`${stampData.message}`, { duration: 3000 });
+            }
+          } else {
+            toast.warning("Sellos guardados localmente, se sincronizarán luego");
+          }
+        } catch {
+          toast.warning("Sellos guardados localmente, se sincronizarán luego");
+        }
+
+        setSelectedLoyaltyCustomer(null);
+      }
 
       if (navigator.onLine) {
         try {
@@ -969,7 +1016,19 @@ export function PosTerminal() {
                     )}
                   </div>
 
-                  <div className="mt-5 hidden gap-2 md:flex">
+<div className="mt-5 hidden gap-2 md:flex">
+                    <Button
+                      variant={selectedLoyaltyCustomer ? "default" : "secondary"}
+                      className="flex-1"
+                      size="lg"
+                      onClick={() => setLoyaltyModalOpen(true)}
+                      disabled={isSaving}
+                    >
+                      <UserCheck className="size-4" />
+                      {selectedLoyaltyCustomer
+                        ? `${selectedLoyaltyCustomer.fullName} (${selectedLoyaltyCustomer.stampsCount}/10)`
+                        : "💎 Tarjeta NEON"}
+                    </Button>
                     <Button
                       className="flex-1"
                       size="lg"
@@ -978,6 +1037,10 @@ export function PosTerminal() {
                     >
                       <ReceiptText className="size-4" />
                       {isSaving ? "Guardando..." : "Guardar pedido"}
+                    </Button>
+                    <Button variant="ghost" size="lg" onClick={clearOrder}>
+                      <Trash2 className="size-4" />
+                      Reiniciar
                     </Button>
                   </div>
                 </>
@@ -1042,6 +1105,18 @@ export function PosTerminal() {
               Agregar a orden
             </Button>
             <Button
+              variant={selectedLoyaltyCustomer ? "default" : "secondary"}
+              className="flex-1"
+              size="lg"
+              onClick={() => setLoyaltyModalOpen(true)}
+              disabled={isSaving}
+            >
+              <UserCheck className="size-4" />
+              {selectedLoyaltyCustomer
+                ? `${selectedLoyaltyCustomer.fullName} (${selectedLoyaltyCustomer.stampsCount}/10)`
+                : "💎 Tarjeta NEON"}
+            </Button>
+            <Button
               size="lg"
               onClick={() => void saveOrder()}
               disabled={isSaving}
@@ -1051,6 +1126,7 @@ export function PosTerminal() {
             </Button>
             <Button variant="ghost" size="lg" onClick={clearOrder}>
               <Trash2 className="size-4" />
+              Reiniciar
             </Button>
           </div>
           <p className="text-muted mt-2 text-center text-xs">
@@ -1058,6 +1134,12 @@ export function PosTerminal() {
           </p>
         </div>
       ) : null}
+
+      <LoyaltyScannerModal
+        isOpen={loyaltyModalOpen}
+        onClose={() => setLoyaltyModalOpen(false)}
+        onCustomerFound={setSelectedLoyaltyCustomer}
+      />
     </>
   );
 }
