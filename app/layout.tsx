@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     icon: "/icon.jpg",
     apple: "/apple-icon.jpg",
   },
+  verification: {
+    google: "google6ca0e040c77bd7a2",
+  },
 };
 
 export const viewport: Viewport = {
