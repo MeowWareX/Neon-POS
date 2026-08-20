@@ -1114,11 +1114,7 @@ export function PosTerminal() {
       {showPostFlavorSteps ? (
         <div className="bg-background/95 fixed inset-x-0 bottom-0 z-30 border-t border-white/10 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2">
-            <Button
-              size="lg"
-              className="col-span-2"
-              onClick={addCurrentItem}
-            >
+            <Button size="lg" className="col-span-2" onClick={addCurrentItem}>
               <Plus className="size-4" />
               Agregar a orden
             </Button>
@@ -1143,13 +1139,21 @@ export function PosTerminal() {
               <ReceiptText className="size-4" />
               {isSaving ? "Guardando..." : "Guardar pedido"}
             </Button>
-            <Button variant="ghost" size="lg" className="w-full" onClick={clearOrder}>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full"
+              onClick={clearOrder}
+            >
               <Trash2 className="size-4" />
               Reiniciar
             </Button>
             <div className="flex items-center justify-end pr-2">
               <p className="text-muted text-sm">
-                Total: <span className="text-white font-semibold">{currency(draftTotal)}</span>
+                Total:{" "}
+                <span className="font-semibold text-white">
+                  {currency(draftTotal)}
+                </span>
               </p>
             </div>
           </div>
