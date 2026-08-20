@@ -14,7 +14,7 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Neon - Aplicación Oficial, POS & Club de Fidelización",
+  title: "Neon",
   description:
     "Neon es la aplicación oficial de punto de venta (POS) y fidelización digital en Google Wallet para www.clubneon.co.",
 };
