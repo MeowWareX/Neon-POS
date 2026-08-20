@@ -20,8 +20,7 @@ const parsed = envSchema.safeParse({
     process.env.SUPABASE_PUBLISHABLE_KEY,
   SUPABASE_SERVICE_ROLE_KEY:
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY,
-  GOOGLE_WALLET_ISSUER_ID:
-    process.env.GOOGLE_WALLET_ISSUER_ID,
+  GOOGLE_WALLET_ISSUER_ID: process.env.GOOGLE_WALLET_ISSUER_ID,
   GOOGLE_WALLET_CLASS_ID:
     process.env.GOOGLE_WALLET_CLASS_ID || "neon_loyalty_v1",
   GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL:
@@ -59,6 +58,6 @@ export const hasServiceRole = Boolean(
 
 export const isGoogleWalletConfigured = Boolean(
   env.GOOGLE_WALLET_ISSUER_ID &&
-    env.GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL &&
-    env.GOOGLE_WALLET_PRIVATE_KEY,
+  env.GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL &&
+  env.GOOGLE_WALLET_PRIVATE_KEY,
 );
