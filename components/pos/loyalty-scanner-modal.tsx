@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Search, Camera } from "lucide-react";
+import jsQR from "jsqr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,18 +16,6 @@ interface CustomerInfo {
   totalRewardsClaimed: number;
   passToken: string;
 }
-
-interface DetectedBarcodeShape {
-  rawValue: string;
-}
-
-interface BarcodeDetectorApi {
-  detect: (source: ImageData) => Promise<DetectedBarcodeShape[]>;
-}
-
-type BarcodeDetectorCtor = new (options: {
-  formats: string[];
-}) => BarcodeDetectorApi;
 
 interface LoyaltyScannerModalProps {
   isOpen: boolean;
@@ -93,13 +82,34 @@ export function LoyaltyScannerModal({
     try {
       setScanning(true);
       setError("");
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+
+      let stream: MediaStream | null = null;
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false,
+        });
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false,
+        });
       }
+
+      streamRef.current = stream;
+
+      // Wait for the <video> element to be mounted by React
+      const attachStream = () => {
+        const video = videoRef.current;
+        if (video) {
+          video.srcObject = stream;
+          void video.play().catch(() => {});
+        } else {
+          setTimeout(attachStream, 50);
+        }
+      };
+      attachStream();
     } catch {
       setError("No se pudo acceder a la cámara. Usa búsqueda por teléfono.");
       setScanning(false);
@@ -130,50 +140,48 @@ export function LoyaltyScannerModal({
   );
 
   const scanQRCode = useCallback(() => {
-    if (!videoRef.current || scanning) return;
+    if (!videoRef.current || !scanning) return;
 
     try {
+      const video = videoRef.current;
+      if (!video.videoWidth || !video.videoHeight) {
+        requestAnimationFrame(() => scanQRCode());
+        return;
+      }
+
+      const canvasWidth = Math.min(video.videoWidth, 640);
+      const canvasHeight = Math.floor(
+        canvasWidth * (video.videoHeight / video.videoWidth),
+      );
+
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       if (!ctx) return;
 
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+      const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const BarcodeDetector = (
-        window as Window & { BarcodeDetector?: BarcodeDetectorCtor }
-      ).BarcodeDetector;
-      const code = BarcodeDetector
-        ? new BarcodeDetector({ formats: ["qr_code", "data_matrix"] })
-        : null;
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "dontInvert",
+      });
 
-      if (code) {
-        code
-          .detect(imageData)
-          .then((codes: DetectedBarcodeShape[]) => {
-            if (codes.length > 0) {
-              const rawValue = codes[0].rawValue;
-              if (rawValue && rawValue !== lastScanRef.current) {
-                lastScanRef.current = rawValue;
-                handleQRResult(rawValue);
-              }
-            }
-          })
-          .catch(() => {
-            if (scanning) requestAnimationFrame(() => scanQRCode());
-          });
-      } else {
-        setError(
-          "Tu navegador no soporta escaneo QR nativo. Usa búsqueda por teléfono.",
-        );
-        stopCamera();
+      if (code && code.data) {
+        const rawValue = code.data;
+        if (rawValue && rawValue !== lastScanRef.current) {
+          lastScanRef.current = rawValue;
+          handleQRResult(rawValue);
+          return;
+        }
       }
+
+      requestAnimationFrame(() => scanQRCode());
     } catch {
-      if (scanning) requestAnimationFrame(() => scanQRCode());
+      requestAnimationFrame(() => scanQRCode());
     }
-  }, [handleQRResult, scanning, stopCamera]);
+  }, [handleQRResult, scanning]);
 
   useEffect(() => {
     if (isOpen) {
@@ -188,14 +196,15 @@ export function LoyaltyScannerModal({
   }, [isOpen, stopCamera]);
 
   useEffect(() => {
-    if (scanning && videoRef.current) {
+    if (scanning) {
       const animate = () => {
-        if (scanning) {
+        if (scanning && videoRef.current?.videoWidth) {
           scanQRCode();
-          requestAnimationFrame(animate);
         }
+        requestAnimationFrame(animate);
       };
-      animate();
+      const frame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(frame);
     }
   }, [scanning, scanQRCode]);
 
@@ -229,16 +238,19 @@ export function LoyaltyScannerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg overflow-hidden rounded-2xl border border-white/10">
-        <CardHeader className="flex items-center justify-between border-b border-white/10 pb-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+      <div
+        className="glass-panel flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-white/10 sm:max-w-lg sm:rounded-2xl"
+        style={{ maxHeight: "92dvh" }}
+      >
+        <CardHeader className="flex shrink-0 items-center justify-between border-b border-white/10 pb-4">
           <CardTitle className="text-lg">💎 Tarjeta NEON Club</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="size-5" />
           </Button>
         </CardHeader>
 
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="flex-1 space-y-4 overflow-y-auto p-6">
           {!showResult ? (
             <>
               {/* Search by phone */}
@@ -289,14 +301,17 @@ export function LoyaltyScannerModal({
 
                 {scanning && (
                   <div
-                    className="relative overflow-hidden rounded-xl"
+                    className="relative aspect-video w-full overflow-hidden rounded-xl"
                     style={{ background: "#000" }}
                   >
                     <video
                       ref={videoRef}
-                      className="aspect-video w-full object-cover"
+                      className="h-full w-full object-cover"
+                      autoPlay
                       playsInline
                       muted
+                      controls={false}
+                      disablePictureInPicture
                     />
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div

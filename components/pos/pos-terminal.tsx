@@ -530,7 +530,7 @@ export function PosTerminal() {
     <>
       <div
         ref={topPageRef}
-        className="grid gap-5 pb-28 xl:grid-cols-[1.2fr_0.8fr] xl:pb-0"
+        className="grid gap-5 pb-64 xl:grid-cols-[1.2fr_0.8fr] xl:pb-0"
       >
         <div className="space-y-5">
           {cart.length > 0 ? (
@@ -1112,40 +1112,47 @@ export function PosTerminal() {
       </div>
 
       {showPostFlavorSteps ? (
-        <div className="bg-background/95 fixed inset-x-0 bottom-0 z-30 border-t border-white/10 p-3 backdrop-blur md:hidden">
-          <div className="mx-auto grid max-w-3xl grid-cols-[1fr_1fr_auto] gap-2">
-            <Button size="lg" onClick={addCurrentItem}>
+        <div className="bg-background/95 fixed inset-x-0 bottom-0 z-30 border-t border-white/10 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2">
+            <Button
+              size="lg"
+              className="col-span-2"
+              onClick={addCurrentItem}
+            >
               <Plus className="size-4" />
               Agregar a orden
             </Button>
             <Button
               variant={selectedLoyaltyCustomer ? "default" : "secondary"}
-              className="flex-1"
+              className="w-full"
               size="lg"
               onClick={() => setLoyaltyModalOpen(true)}
               disabled={isSaving}
             >
               <UserCheck className="size-4" />
               {selectedLoyaltyCustomer
-                ? `${selectedLoyaltyCustomer.fullName} (${selectedLoyaltyCustomer.stampsCount}/10)`
+                ? `${selectedLoyaltyCustomer.stampsCount}/10`
                 : "💎 Tarjeta NEON"}
             </Button>
             <Button
               size="lg"
+              className="w-full"
               onClick={() => void saveOrder()}
               disabled={isSaving}
             >
               <ReceiptText className="size-4" />
               {isSaving ? "Guardando..." : "Guardar pedido"}
             </Button>
-            <Button variant="ghost" size="lg" onClick={clearOrder}>
+            <Button variant="ghost" size="lg" className="w-full" onClick={clearOrder}>
               <Trash2 className="size-4" />
               Reiniciar
             </Button>
+            <div className="flex items-center justify-end pr-2">
+              <p className="text-muted text-sm">
+                Total: <span className="text-white font-semibold">{currency(draftTotal)}</span>
+              </p>
+            </div>
           </div>
-          <p className="text-muted mt-2 text-center text-xs">
-            Total: {currency(draftTotal)}
-          </p>
         </div>
       ) : null}
 
