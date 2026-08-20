@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLoyaltyCard } from "@/hooks/use-loyalty-card";
 import { QRCodeSVG } from "qrcode.react";
@@ -53,9 +53,35 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
   const { customer, recentLogs, loading, error, load } =
     useLoyaltyCard(passToken);
 
+  const [walletLoading, setWalletLoading] = useState(false);
+
   useEffect(() => {
     load();
   }, [load]);
+
+  async function handleGoogleWallet() {
+    setWalletLoading(true);
+    try {
+      const response = await fetch(`/api/loyalty/google-pass`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passToken }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "No se pudo generar el pase");
+      }
+
+      window.open(payload.saveUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      console.error("Google Wallet error:", err);
+      alert("No se pudo generar tu tarjeta de Google Wallet.");
+    } finally {
+      setWalletLoading(false);
+    }
+  }
 
   // QR apunta a la propia tarjeta; el POS extrae el pass_token del contenido
   const qrUrl = useMemo(() => {
@@ -249,9 +275,13 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
                   background: "rgba(55, 214, 255, 0.15)",
                   color: "#3de8c2",
                   border: "1px solid rgba(61, 232, 194, 0.3)",
+                  opacity: walletLoading ? 0.6 : 1,
+                  cursor: walletLoading ? "wait" : "pointer",
                 }}
+                onClick={handleGoogleWallet}
+                disabled={walletLoading}
               >
-                📱 Google Wallet
+                {walletLoading ? "Generando..." : "📱 Google Wallet"}
               </button>
               <button
                 className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"

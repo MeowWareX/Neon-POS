@@ -99,8 +99,7 @@ export default function HomePage() {
           Aplicación Oficial Neon — www.clubneon.co
         </div>
 
-        <h1 className="font-display mx-auto max-w-4xl text-4xl leading-tight font-black tracking-tight sm:text-6xl md:text-7xl">
-          Aplicación Oficial{" "}
+        <h1 className="font-display mx-auto max-w-4xl text-5xl leading-tight font-black tracking-tight sm:text-7xl md:text-8xl">
           <span
             style={{
               background:
@@ -112,6 +111,10 @@ export default function HomePage() {
             Neon
           </span>
         </h1>
+
+        <p className="mx-auto max-w-2xl text-lg font-medium text-pink-300 sm:text-xl">
+          Aplicación Oficial de Punto de Venta (POS) y Fidelización Digital
+        </p>
 
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
           La aplicación <strong className="text-white">Neon</strong> es la

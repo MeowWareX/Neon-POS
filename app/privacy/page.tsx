@@ -16,9 +16,9 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidad | NEON Drinks & Snacks",
+  title: "Política de Privacidad | Neon",
   description:
-    "Política de Privacidad y Tratamiento de Datos Personales de NEON POS y el programa de fidelización NEON Club (Google Wallet & Apple Wallet).",
+    "Política de Privacidad y Tratamiento de Datos Personales de Neon POS y el programa de fidelización Neon Club (Google Wallet & Apple Wallet).",
 };
 
 export default function PrivacyPolicyPage() {
