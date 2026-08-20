@@ -36,7 +36,7 @@ export default function TermsPage() {
                 height={28}
                 className="size-7 rounded-lg object-cover"
               />
-              <span className="font-display text-sm font-bold text-white tracking-wider">
+              <span className="font-display text-sm font-bold tracking-wider text-white">
                 Neon
               </span>
             </div>

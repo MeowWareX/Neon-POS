@@ -382,8 +382,9 @@ export default function HomePage() {
               className="size-7 rounded-lg object-cover"
             />
             <div>
-              <span className="font-bold text-white">Neon</span> — www.clubneon.co
-              © {new Date().getFullYear()}. Todos los derechos reservados.
+              <span className="font-bold text-white">Neon</span> —
+              www.clubneon.co © {new Date().getFullYear()}. Todos los derechos
+              reservados.
             </div>
           </div>
           <div className="flex items-center gap-6">
