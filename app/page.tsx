@@ -136,7 +136,10 @@ export default function HomePage() {
         </p>
 
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-          La aplicación Neon es la solución tecnológica de Punto de Venta (POS) y programa de fidelización digital Neon Club con pases interactivos para Google Wallet y Apple Wallet. Su propósito es gestionar ventas, inventario y recompensas de lealtad para Neon Drinks & Snacks.
+          La aplicación Neon es la solución tecnológica de Punto de Venta (POS)
+          y programa de fidelización digital Neon Club con pases interactivos
+          para Google Wallet y Apple Wallet. Su propósito es gestionar ventas,
+          inventario y recompensas de lealtad para Neon Drinks & Snacks.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -169,10 +172,17 @@ export default function HomePage() {
             </h2>
             <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
               La aplicación Neon (disponible en{" "}
-              <a href="https://www.clubneon.co" className="text-pink-400 hover:underline">
+              <a
+                href="https://www.clubneon.co"
+                className="text-pink-400 hover:underline"
+              >
                 www.clubneon.co
               </a>
-              ) es una plataforma de punto de venta (POS) y fidelización digital diseñada para gestionar las ventas, inventario y lealtad de los clientes de Neon Drinks & Snacks. El propósito de solicitar permisos de Google OAuth 2.0 es únicamente para autenticar al usuario mediante su correo electrónico registrado en Google.
+              ) es una plataforma de punto de venta (POS) y fidelización digital
+              diseñada para gestionar las ventas, inventario y lealtad de los
+              clientes de Neon Drinks & Snacks. El propósito de solicitar
+              permisos de Google OAuth 2.0 es únicamente para autenticar al
+              usuario mediante su correo electrónico registrado en Google.
             </p>
           </div>
 
@@ -313,11 +323,17 @@ export default function HomePage() {
               las API de Google con terceros o plataformas publicitarias.
             </p>
             <p className="mt-3">
-              <strong>Otros datos procesados por esta aplicación:</strong><br />
-              - Nombre completo del usuario (proporcionado al registrarse)<br />
-              - ID de usuario único (para identificar cuentas de empleados/administradores)<br />
-              - Dirección IP y timestamp de inicio de sesión (seguridad y auditoría)<br />
-              - Datos de inventario, ventas, caja y contabilidad (proporcionados por el personal del negocio)
+              <strong>Otros datos procesados por esta aplicación:</strong>
+              <br />
+              - Nombre completo del usuario (proporcionado al registrarse)
+              <br />
+              - ID de usuario único (para identificar cuentas de
+              empleados/administradores)
+              <br />
+              - Dirección IP y timestamp de inicio de sesión (seguridad y
+              auditoría)
+              <br />- Datos de inventario, ventas, caja y contabilidad
+              (proporcionados por el personal del negocio)
             </p>
           </div>
         </div>

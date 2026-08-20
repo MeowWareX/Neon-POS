@@ -26,7 +26,9 @@ export async function GET() {
 
     const { data: customers, error: listErr } = await supabase
       .from("customers")
-      .select("id, full_name, phone, email, stamps_count, total_rewards_claimed, created_at, updated_at")
+      .select(
+        "id, full_name, phone, email, stamps_count, total_rewards_claimed, created_at, updated_at",
+      )
       .order("created_at", { ascending: false })
       .limit(1000);
 
@@ -34,7 +36,9 @@ export async function GET() {
 
     const { data: logs, error: logsErr } = await supabase
       .from("loyalty_logs")
-      .select("customer_id, stamps_added, rewards_granted, reward_redeemed, created_at");
+      .select(
+        "customer_id, stamps_added, rewards_granted, reward_redeemed, created_at",
+      );
 
     if (logsErr) throw new Error(logsErr.message);
 
@@ -107,7 +111,9 @@ export async function GET() {
     return NextResponse.json(
       {
         message:
-          error instanceof Error ? error.message : "Error fetching loyalty metrics",
+          error instanceof Error
+            ? error.message
+            : "Error fetching loyalty metrics",
       },
       { status: 500 },
     );

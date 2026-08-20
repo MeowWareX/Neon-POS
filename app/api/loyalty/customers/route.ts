@@ -30,7 +30,9 @@ export async function GET() {
 
     const { data: logs, error: logsErr } = await supabase
       .from("loyalty_logs")
-      .select("customer_id, stamps_added, rewards_granted, reward_redeemed, created_at");
+      .select(
+        "customer_id, stamps_added, rewards_granted, reward_redeemed, created_at",
+      );
 
     if (logsErr) throw new Error(logsErr.message);
 
@@ -94,7 +96,9 @@ export async function GET() {
     return NextResponse.json(
       {
         message:
-          error instanceof Error ? error.message : "Error fetching loyalty customers",
+          error instanceof Error
+            ? error.message
+            : "Error fetching loyalty customers",
       },
       { status: 500 },
     );

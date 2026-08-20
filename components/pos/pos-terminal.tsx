@@ -397,17 +397,17 @@ export function PosTerminal() {
           selectedLoyaltyCustomer.stampsCount + stampsToAdd >= 10;
 
         try {
-const stampRes = await fetch("/api/loyalty/stamp", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                passToken: selectedLoyaltyCustomer.passToken || undefined,
-                phone: selectedLoyaltyCustomer.phone,
-                orderId: order.id,
-                stampsToAdd,
-                redeemReward,
-              }),
-            });
+          const stampRes = await fetch("/api/loyalty/stamp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              passToken: selectedLoyaltyCustomer.passToken || undefined,
+              phone: selectedLoyaltyCustomer.phone,
+              orderId: order.id,
+              stampsToAdd,
+              redeemReward,
+            }),
+          });
 
           if (stampRes.ok) {
             const stampData = await stampRes.json();

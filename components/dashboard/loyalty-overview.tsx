@@ -106,7 +106,9 @@ export function LoyaltyOverview() {
       )
       .join("\n");
 
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob(["\uFEFF" + csv], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -171,17 +173,15 @@ export function LoyaltyOverview() {
             {Object.entries(metrics.walletBreakdown).length === 0 ? (
               <p className="text-muted text-sm">No hay pases emitidos</p>
             ) : (
-              Object.entries(metrics.walletBreakdown).map(
-                ([wallet, count]) => (
-                  <div
-                    key={wallet}
-                    className="flex items-center justify-between rounded-[1.2rem] border border-white/10 bg-white/4 px-4 py-3"
-                  >
-                    <Badge variant="muted">{wallet}</Badge>
-                    <p className="font-semibold">{compactNumber(count)}</p>
-                  </div>
-                ),
-              )
+              Object.entries(metrics.walletBreakdown).map(([wallet, count]) => (
+                <div
+                  key={wallet}
+                  className="flex items-center justify-between rounded-[1.2rem] border border-white/10 bg-white/4 px-4 py-3"
+                >
+                  <Badge variant="muted">{wallet}</Badge>
+                  <p className="font-semibold">{compactNumber(count)}</p>
+                </div>
+              ))
             )}
           </CardContent>
         </Card>
@@ -241,13 +241,15 @@ export function LoyaltyOverview() {
         <CardContent className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="text-muted border-b border-white/10 text-xs uppercase tracking-wider">
+              <tr className="text-muted border-b border-white/10 text-xs tracking-wider uppercase">
                 <th className="px-3 py-2 font-semibold">Cliente</th>
                 <th className="px-3 py-2 font-semibold">Teléfono</th>
                 <th className="px-3 py-2 text-right font-semibold">Sellos</th>
                 <th className="px-3 py-2 text-right font-semibold">Premios</th>
                 <th className="px-3 py-2 text-right font-semibold">Pedidos</th>
-                <th className="px-3 py-2 text-right font-semibold">Última actividad</th>
+                <th className="px-3 py-2 text-right font-semibold">
+                  Última actividad
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -256,7 +258,9 @@ export function LoyaltyOverview() {
                   key={customer.id}
                   className="border-b border-white/5 transition-colors hover:bg-white/4"
                 >
-                  <td className="px-3 py-2.5 font-medium">{customer.fullName}</td>
+                  <td className="px-3 py-2.5 font-medium">
+                    {customer.fullName}
+                  </td>
                   <td className="text-muted px-3 py-2.5 font-mono text-xs">
                     {customer.phone}
                   </td>

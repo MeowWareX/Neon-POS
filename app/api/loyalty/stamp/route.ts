@@ -29,12 +29,11 @@ export async function POST(request: NextRequest) {
       const walletPass = await findPassForPush(supabase, body);
 
       if (walletPass) {
-        updateGoogleWalletPass(
-          walletPass.customer,
-          walletPass.pass,
-        ).catch((error) => {
-          console.warn("Google Wallet push update failed:", error);
-        });
+        updateGoogleWalletPass(walletPass.customer, walletPass.pass).catch(
+          (error) => {
+            console.warn("Google Wallet push update failed:", error);
+          },
+        );
       }
     }
 
