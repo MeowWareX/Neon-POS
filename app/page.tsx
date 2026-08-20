@@ -14,9 +14,9 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Neon | Sistema POS & Club de Fidelización Digital",
+  title: "Neon - Aplicación Oficial, POS & Club de Fidelización",
   description:
-    "Neon es la plataforma integral de punto de venta (POS) y programa de fidelización digital en Google Wallet y Apple Wallet para www.clubneon.co.",
+    "Neon es la aplicación oficial de punto de venta (POS) y fidelización digital en Google Wallet para www.clubneon.co.",
 };
 
 export default function HomePage() {
@@ -39,7 +39,7 @@ export default function HomePage() {
             </div>
             <div>
               <span className="font-display bg-gradient-to-r from-pink-400 via-emerald-300 to-yellow-300 bg-clip-text text-2xl font-bold tracking-[0.2em] text-transparent">
-                NEON
+                Neon
               </span>
               <span className="block text-[10px] tracking-wider text-slate-400 uppercase">
                 Drinks & Snacks
@@ -52,13 +52,13 @@ export default function HomePage() {
               href="#purpose"
               className="transition-colors hover:text-pink-400"
             >
-              Propósito de la App
+              Propósito de Neon
             </a>
             <a
-              href="#features"
+              href="#google-compliance"
               className="transition-colors hover:text-pink-400"
             >
-              Funcionalidades
+              Uso de Google APIs
             </a>
             <Link
               href="/privacy"
@@ -96,11 +96,11 @@ export default function HomePage() {
       <section className="relative mx-auto max-w-6xl space-y-6 px-4 pt-12 pb-16 text-center sm:px-8">
         <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-widest text-pink-300 uppercase backdrop-blur-md">
           <Sparkles className="h-4 w-4 text-emerald-400" />
-          Plataforma Oficial de Gestión & Fidelización
+          Aplicación Oficial Neon — www.clubneon.co
         </div>
 
         <h1 className="font-display mx-auto max-w-4xl text-4xl leading-tight font-black tracking-tight sm:text-6xl md:text-7xl">
-          Bienvenido a{" "}
+          Aplicación Oficial{" "}
           <span
             style={{
               background:
@@ -109,18 +109,17 @@ export default function HomePage() {
               color: "transparent",
             }}
           >
-            NEON
+            Neon
           </span>
         </h1>
 
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-          <strong className="text-white">Neon</strong> es la solución
-          tecnológica integral que combina un sistema de{" "}
-          <strong className="text-pink-400">Punto de Venta (POS)</strong> de
-          alta velocidad para coctelería y snacks con el programa de
-          fidelización digital{" "}
-          <strong className="text-emerald-400">Neon Club</strong> integrado
-          directamente en Google Wallet y Apple Wallet.
+          La aplicación <strong className="text-white">Neon</strong> es la
+          solución tecnológica de{" "}
+          <strong className="text-pink-400">Punto de Venta (POS)</strong> y
+          programa de fidelización digital{" "}
+          <strong className="text-emerald-400">Neon Club</strong> con pases
+          interactivos para Google Wallet y Apple Wallet.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -141,23 +140,27 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* App Purpose Section (Explicitly Addresses Google Reviewers) */}
+      {/* App Purpose Section (Designed for Google Cloud Verification Reviewers) */}
       <section id="purpose" className="mx-auto max-w-6xl px-4 py-12 sm:px-8">
         <div className="glass-panel space-y-8 rounded-3xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl sm:p-12">
-          <div className="mx-auto max-w-2xl space-y-3 text-center">
-            <h2 className="font-display text-2xl font-bold text-white sm:text-3xl">
+          <div className="mx-auto max-w-3xl space-y-3 text-center">
+            <div className="inline-block rounded-full bg-pink-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-pink-400 uppercase">
+              Verificación de Aplicación
+            </div>
+            <h2 className="font-display text-2xl font-bold text-white sm:text-4xl">
               Propósito de la Aplicación Neon
             </h2>
-            <p className="text-sm leading-relaxed text-slate-300">
-              La plataforma <strong>Neon</strong> está concebida para
-              transformar la experiencia del cliente y la eficiencia operativa
-              del establecimiento a través de dos módulos interconectados:
+            <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
+              La aplicación <strong className="text-white">Neon</strong>{" "}
+              (disponible en www.clubneon.co) es una plataforma creada para
+              optimizar el servicio en establecimiento mediante dos componentes
+              integrados:
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Card 1: POS */}
-            <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-pink-500/30">
+            <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-pink-500/30">
               <div className="w-fit rounded-xl bg-pink-500/20 p-3 text-pink-400">
                 <Zap className="h-6 w-6" />
               </div>
@@ -165,60 +168,125 @@ export default function HomePage() {
                 1. Punto de Venta (Neon POS)
               </h3>
               <p className="text-xs leading-relaxed text-slate-300">
-                Herramienta operativa interna que permite a los cajeros y
-                administradores registrar pedidos, gestionar inventarios de
-                líquidos (dosificación de licor y bases), realizar apertura y
-                cierre de cajas financieras y atender a los clientes con alta
-                velocidad durante horarios pico.
+                Sistema operativo que permite al personal de caja y
+                administración registrar comisiones, gestionar inventario de
+                licores y bebidas en tiempo real, abrir/cerrar caja y agilizar
+                la atención comercial.
               </p>
-              <ul className="space-y-1.5 pt-2 text-xs text-slate-400">
+              <ul className="space-y-2 pt-2 text-xs text-slate-400">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  Control dinámico de stock de líquidos y porciones.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  Control de insumos, stock y dosificación.
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  Facturación rápida e historial de comandas.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  Registro ágil de pedidos y facturación.
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  Funcionamiento offline con sincronización PWA.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  Soporte de funcionamiento offline PWA.
                 </li>
               </ul>
             </div>
 
             {/* Card 2: Club & Google Wallet */}
-            <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-emerald-500/30">
+            <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-emerald-500/30">
               <div className="w-fit rounded-xl bg-emerald-500/20 p-3 text-emerald-400">
                 <Wallet className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold text-white">
-                2. Fidelización (Neon Club)
+                2. Club de Fidelización (Neon Club)
               </h3>
               <p className="text-xs leading-relaxed text-slate-300">
-                Permite a los usuarios registrarse y guardar una tarjeta de
-                lealtad digital directamente en{" "}
-                <strong className="text-white">Google Wallet</strong> o{" "}
-                <strong className="text-white">Apple Wallet</strong>. Cada
-                compra acumula sellos digitales bajo la promoción &quot;PAGA 10,
-                LLEVA 11&quot;.
+                Permite a los clientes registrarse y portar su tarjeta de
+                lealtad digital en{" "}
+                <strong className="text-white">Google Wallet</strong> y{" "}
+                <strong className="text-white">Apple Wallet</strong>, sumando
+                sellos en la promoción &quot;PAGA 10, LLEVA 11&quot;.
               </p>
-              <ul className="space-y-1.5 pt-2 text-xs text-slate-400">
+              <ul className="space-y-2 pt-2 text-xs text-slate-400">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-pink-400" />
-                  Integración oficial con la API de Google Wallet.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-pink-400" />
+                  Emisión y actualización de pases en Google Wallet API.
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-pink-400" />
-                  Actualización de sellos y recompensas en tiempo real.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-pink-400" />
+                  Conteo automático de sellos y recompensas activas.
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-pink-400" />
-                  Acceso sin necesidad de descargar aplicaciones nativas
-                  pesadas.
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-pink-400" />
+                  Código QR único de identificación por cliente.
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Google API Compliance & Usage Disclosure Section */}
+      <section
+        id="google-compliance"
+        className="mx-auto max-w-6xl px-4 py-8 sm:px-8"
+      >
+        <div className="glass-panel space-y-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-black/40 to-black/60 p-8 backdrop-blur-xl sm:p-10">
+          <div className="flex flex-col items-start justify-between gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-400 uppercase">
+                <ShieldCheck className="h-4 w-4" />
+                Declaración de Cumplimiento de Google OAuth & APIs
+              </div>
+              <h2 className="text-2xl font-bold text-white">
+                Uso de Servicios de Google en la Aplicación Neon
+              </h2>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs text-pink-300">
+              App Name: Neon
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 text-xs leading-relaxed text-slate-300 sm:text-sm md:grid-cols-2">
+            <div className="space-y-2 rounded-2xl border border-white/5 bg-white/5 p-5">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+                <Lock className="h-4 w-4 text-pink-400" />
+                Autenticación Google OAuth 2.0
+              </h3>
+              <p>
+                La aplicación <strong className="text-white">Neon</strong>{" "}
+                utiliza Google OAuth 2.0 para permitir a los usuarios iniciar
+                sesión de manera rápida y autenticar su correo electrónico al
+                registrarse en <strong className="text-white">Neon Club</strong>
+                . Los datos obtenidos a través de la autenticación se emplean
+                exclusivamente para verificar la identidad del titular.
+              </p>
+            </div>
+
+            <div className="space-y-2 rounded-2xl border border-white/5 bg-white/5 p-5">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+                <Smartphone className="h-4 w-4 text-emerald-400" />
+                Integración con Google Wallet API
+              </h3>
+              <p>
+                La aplicación <strong className="text-white">Neon</strong> se
+                conecta con la API de Google Wallet (Google Pay API for Passes)
+                para generar, actualizar y sincronizar los pases de lealtad
+                digitales directamente en el dispositivo móvil del usuario.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-xs leading-relaxed text-slate-300">
+            <p>
+              <strong>Política de Uso Limitado de Datos:</strong> La aplicación{" "}
+              <strong className="text-white">Neon</strong> cumple estrictamente
+              con la{" "}
+              <em>
+                Política de Datos de Usuario de los Servicios de API de Google
+                (Google API Services User Data Policy)
+              </em>
+              , incluidos los requisitos de Uso Limitado. No vendemos,
+              transferimos ni compartimos datos de usuarios obtenidos mediante
+              las API de Google con terceros o plataformas publicitarias.
+            </p>
           </div>
         </div>
       </section>
@@ -230,7 +298,7 @@ export default function HomePage() {
       >
         <div className="space-y-2 text-center">
           <h2 className="font-display text-2xl font-bold text-white sm:text-3xl">
-            Características Principales de Neon
+            Características de la Aplicación Neon
           </h2>
           <p className="text-xs text-slate-400 sm:text-sm">
             Diseñado para ofrecer seguridad, agilidad y transparencia.
@@ -277,7 +345,7 @@ export default function HomePage() {
       <footer className="border-t border-white/10 bg-black/60 px-4 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs text-slate-400 sm:flex-row">
           <div>
-            <span className="font-bold text-white">NEON</span> — www.clubneon.co
+            <span className="font-bold text-white">Neon</span> — www.clubneon.co
             © {new Date().getFullYear()}. Todos los derechos reservados.
           </div>
           <div className="flex items-center gap-6">

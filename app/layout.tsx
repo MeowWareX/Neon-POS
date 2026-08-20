@@ -15,17 +15,17 @@ const bodyFont = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  applicationName: "NEON OS",
+  applicationName: "Neon",
   title: {
-    default: "NEON OS",
-    template: "%s | NEON OS",
+    default: "Neon",
+    template: "%s | Neon",
   },
   description:
-    "Offline-first POS, inventory, analytics, and cash management for NEON Drinks & Snacks.",
+    "Offline-first POS, inventory, analytics, and cash management for Neon Drinks & Snacks.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "NEON OS",
+    title: "Neon",
     statusBarStyle: "black-translucent",
   },
   icons: {
