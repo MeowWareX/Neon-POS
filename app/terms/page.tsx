@@ -120,12 +120,12 @@ export default function TermsPage() {
             </h2>
             <p>
               Para cualquier consulta o soporte relacionado con estos términos,
-              contáctanos en{" "}
+              contáctanos con Oscar Castro en{" "}
               <a
-                href="mailto:soporte@clubneon.co"
+                href="mailto:ocastrobeltran@gmail.com"
                 className="text-pink-400 underline"
               >
-                soporte@clubneon.co
+                ocastrobeltran@gmail.com
               </a>
               .
             </p>

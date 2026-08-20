@@ -133,8 +133,9 @@ export default function PrivacyPolicyPage() {
               El responsable del tratamiento de los datos recolectados a través
               de esta plataforma web, la aplicación de Punto de Venta (POS) y
               las tarjetas de fidelización digitales es{" "}
-              <strong>NEON Drinks & Snacks</strong> (en adelante
-              &quot;NEON&quot;), disponible a través de{" "}
+              <strong>NEON Drinks & Snacks</strong>, bajo la representación de{" "}
+              <strong>Oscar Castro</strong> (en adelante &quot;NEON&quot;),
+              disponible a través de{" "}
               <a
                 href="https://www.clubneon.co/"
                 target="_blank"
@@ -435,7 +436,7 @@ export default function PrivacyPolicyPage() {
               <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-emerald-500/10 p-4 sm:flex-row sm:items-center">
                 <div>
                   <p className="font-semibold text-white">
-                    NEON Drinks & Snacks
+                    NEON Drinks & Snacks — Oscar Castro
                   </p>
                   <p className="text-xs text-slate-400">
                     Atención de Tratamiento de Datos Personales
@@ -444,13 +445,15 @@ export default function PrivacyPolicyPage() {
                     www.clubneon.co
                   </p>
                 </div>
-                <a
-                  href="mailto:soporte@clubneon.co"
-                  className="inline-flex items-center gap-2 rounded-xl bg-pink-500 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-pink-500/25 transition-colors hover:bg-pink-600"
-                >
-                  <Mail className="h-4 w-4" />
-                  soporte@clubneon.co
-                </a>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <a
+                    href="mailto:ocastrobeltran@gmail.com"
+                    className="inline-flex items-center gap-2 rounded-xl bg-pink-500 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-pink-500/25 transition-colors hover:bg-pink-600"
+                  >
+                    <Mail className="h-4 w-4" />
+                    ocastrobeltran@gmail.com
+                  </a>
+                </div>
               </div>
             </div>
           </section>
