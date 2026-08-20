@@ -1,11 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
-import type { LoyaltyCustomer, LoyaltyPass, LoyaltyLog, WalletType } from "@/types/domain";
+import type {
+  LoyaltyCustomer,
+  LoyaltyPass,
+  LoyaltyLog,
+  WalletType,
+} from "@/types/domain";
 
 type CustomerRow = Database["public"]["Tables"]["customers"]["Row"];
 type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
 type LoyaltyPassRow = Database["public"]["Tables"]["loyalty_passes"]["Row"];
-type LoyaltyPassInsert = Database["public"]["Tables"]["loyalty_passes"]["Insert"];
+type LoyaltyPassInsert =
+  Database["public"]["Tables"]["loyalty_passes"]["Insert"];
 
 type LoyaltyLogRow = Database["public"]["Tables"]["loyalty_logs"]["Row"];
 type LoyaltyLogInsert = Database["public"]["Tables"]["loyalty_logs"]["Insert"];
@@ -103,16 +109,19 @@ export async function registerCustomer(
   }
 
   const { data: customerRow, error: custErr2 } = await supabase
-      .from("customers")
-      .select()
-      .eq("id", customerId)
-      .single();
+    .from("customers")
+    .select()
+    .eq("id", customerId)
+    .single();
 
-    if (custErr2 || !customerRow) {
-      throw new Error(custErr2?.message ?? "Failed to fetch customer");
-    }
+  if (custErr2 || !customerRow) {
+    throw new Error(custErr2?.message ?? "Failed to fetch customer");
+  }
 
-    const customer = mapCustomer({ ...customerRow, email: input.email ?? null } as unknown as CustomerRow);
+  const customer = mapCustomer({
+    ...customerRow,
+    email: input.email ?? null,
+  } as unknown as CustomerRow);
   const pass = mapPass(newPass);
   const webUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/club/${passToken}`;
 
@@ -136,7 +145,11 @@ export async function findCustomerByPhone(
 export async function getLoyaltyCardByToken(
   supabase: SupabaseClient<Database>,
   passToken: string,
-): Promise<{ customer: LoyaltyCustomer; pass: LoyaltyPass; recentLogs: LoyaltyLog[] } | null> {
+): Promise<{
+  customer: LoyaltyCustomer;
+  pass: LoyaltyPass;
+  recentLogs: LoyaltyLog[];
+} | null> {
   const { data: passRow, error: passErr } = await supabase
     .from("loyalty_passes")
     .select()
@@ -162,13 +175,28 @@ export async function getLoyaltyCardByToken(
 
   if (logsErr) throw new Error(logsErr.message);
 
-  return { customer: mapCustomer(customerRow), pass: mapPass(passRow), recentLogs: (logsRows ?? []).map(mapLog) };
+  return {
+    customer: mapCustomer(customerRow),
+    pass: mapPass(passRow),
+    recentLogs: (logsRows ?? []).map(mapLog),
+  };
 }
 
 export async function addStampsToCustomer(
   supabase: SupabaseClient<Database>,
-  input: { passToken?: string; phone?: string; orderId?: string; stampsToAdd: number; redeemReward?: boolean },
-): Promise<{ customer: LoyaltyCustomer; newStampsCount: number; rewardRedeemed: boolean; message: string }> {
+  input: {
+    passToken?: string;
+    phone?: string;
+    orderId?: string;
+    stampsToAdd: number;
+    redeemReward?: boolean;
+  },
+): Promise<{
+  customer: LoyaltyCustomer;
+  newStampsCount: number;
+  rewardRedeemed: boolean;
+  message: string;
+}> {
   let customerRow: CustomerRow | null;
 
   if (input.passToken) {
@@ -186,7 +214,8 @@ export async function addStampsToCustomer(
       .eq("id", passRow.customer_id)
       .maybeSingle();
 
-    if (custErr || !custRow) throw new Error(custErr?.message ?? "Customer not found");
+    if (custErr || !custRow)
+      throw new Error(custErr?.message ?? "Customer not found");
     customerRow = custRow;
   } else if (input.phone) {
     const { data: custRow, error: custErr } = await supabase
@@ -195,7 +224,8 @@ export async function addStampsToCustomer(
       .eq("phone", input.phone)
       .maybeSingle();
 
-    if (custErr || !custRow) throw new Error(custErr?.message ?? "Customer not found");
+    if (custErr || !custRow)
+      throw new Error(custErr?.message ?? "Customer not found");
     customerRow = custRow;
   } else {
     throw new Error("passToken or phone is required");
@@ -219,14 +249,17 @@ export async function addStampsToCustomer(
     .from("customers")
     .update({
       stamps_count: newStampsCount,
-      total_rewards_claimed: rewardRedeemed ? customerRow.total_rewards_claimed + 1 : customerRow.total_rewards_claimed,
+      total_rewards_claimed: rewardRedeemed
+        ? customerRow.total_rewards_claimed + 1
+        : customerRow.total_rewards_claimed,
       updated_at: new Date().toISOString(),
     })
     .eq("id", customerRow.id)
     .select()
     .single();
 
-  if (updErr || !updatedCustomer) throw new Error(updErr?.message ?? "Failed to update stamps");
+  if (updErr || !updatedCustomer)
+    throw new Error(updErr?.message ?? "Failed to update stamps");
 
   await supabase.from("loyalty_logs").insert({
     customer_id: customerRow.id,
@@ -241,13 +274,21 @@ export async function addStampsToCustomer(
   const message = rewardRedeemed
     ? "¡Raspado gratis redimido!"
     : nextReward
-    ? "¡Raspado gratis disponible!"
-    : `Sellos actualizados: ${newStampsCount}/10`;
+      ? "¡Raspado gratis disponible!"
+      : `Sellos actualizados: ${newStampsCount}/10`;
 
-  return { customer: mapCustomer(updatedCustomer), newStampsCount, rewardRedeemed, message };
+  return {
+    customer: mapCustomer(updatedCustomer),
+    newStampsCount,
+    rewardRedeemed,
+    message,
+  };
 }
 
-async function findCustomerByEmail(supabase: SupabaseClient<Database>, email: string): Promise<LoyaltyCustomer | null> {
+async function findCustomerByEmail(
+  supabase: SupabaseClient<Database>,
+  email: string,
+): Promise<LoyaltyCustomer | null> {
   const { data } = await supabase
     .from("customers")
     .select()
@@ -257,7 +298,10 @@ async function findCustomerByEmail(supabase: SupabaseClient<Database>, email: st
   return data ? mapCustomer(data) : null;
 }
 
-async function findCustomerByPhoneRaw(supabase: SupabaseClient<Database>, phone: string): Promise<CustomerRow | null> {
+async function findCustomerByPhoneRaw(
+  supabase: SupabaseClient<Database>,
+  phone: string,
+): Promise<CustomerRow | null> {
   const { data } = await supabase
     .from("customers")
     .select()

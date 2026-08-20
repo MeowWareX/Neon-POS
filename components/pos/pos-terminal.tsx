@@ -1,6 +1,12 @@
 "use client";
 
-import { Plus, ReceiptText, ShoppingBag, Trash2, UserCheck } from "lucide-react";
+import {
+  Plus,
+  ReceiptText,
+  ShoppingBag,
+  Trash2,
+  UserCheck,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -387,7 +393,8 @@ export function PosTerminal() {
       // Apply loyalty stamps if customer selected
       if (selectedLoyaltyCustomer) {
         const stampsToAdd = items.reduce((sum, item) => sum + item.quantity, 0);
-        const redeemReward = selectedLoyaltyCustomer.stampsCount + stampsToAdd >= 10;
+        const redeemReward =
+          selectedLoyaltyCustomer.stampsCount + stampsToAdd >= 10;
 
         try {
           const stampRes = await fetch("/api/loyalty/stamp", {
@@ -406,12 +413,16 @@ export function PosTerminal() {
             if (stampData.rewardRedeemed) {
               toast.success("🎁 ¡Raspado gratis canjeado!", { duration: 4000 });
             } else if (stampData.newStampsCount >= 10) {
-              toast.success("🎁 ¡Raspado gratis disponible!", { duration: 4000 });
+              toast.success("🎁 ¡Raspado gratis disponible!", {
+                duration: 4000,
+              });
             } else {
               toast.success(`${stampData.message}`, { duration: 3000 });
             }
           } else {
-            toast.warning("Sellos guardados localmente, se sincronizarán luego");
+            toast.warning(
+              "Sellos guardados localmente, se sincronizarán luego",
+            );
           }
         } catch {
           toast.warning("Sellos guardados localmente, se sincronizarán luego");
@@ -1016,9 +1027,11 @@ export function PosTerminal() {
                     )}
                   </div>
 
-<div className="mt-5 hidden gap-2 md:flex">
+                  <div className="mt-5 hidden gap-2 md:flex">
                     <Button
-                      variant={selectedLoyaltyCustomer ? "default" : "secondary"}
+                      variant={
+                        selectedLoyaltyCustomer ? "default" : "secondary"
+                      }
                       className="flex-1"
                       size="lg"
                       onClick={() => setLoyaltyModalOpen(true)}

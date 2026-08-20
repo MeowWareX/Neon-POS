@@ -689,7 +689,7 @@ export interface Database {
         Insert: {
           id?: string;
           customer_id: string;
-          wallet_type: 'web' | 'google' | 'apple';
+          wallet_type: "web" | "google" | "apple";
           pass_token: string;
           push_token?: string | null;
           last_synced_at?: string;

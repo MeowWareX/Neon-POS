@@ -34,7 +34,11 @@ interface LoyaltyScannerModalProps {
   onCustomerFound: (customer: CustomerInfo) => void;
 }
 
-export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: LoyaltyScannerModalProps) {
+export function LoyaltyScannerModal({
+  isOpen,
+  onClose,
+  onCustomerFound,
+}: LoyaltyScannerModalProps) {
   const [phone, setPhone] = useState("");
   const [searching, setSearching] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -197,7 +201,9 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
     setError("");
 
     try {
-      const res = await fetch(`/api/loyalty/lookup?phone=${encodeURIComponent(phone)}`);
+      const res = await fetch(
+        `/api/loyalty/lookup?phone=${encodeURIComponent(phone)}`,
+      );
       if (!res.ok) throw new Error("Cliente no encontrado");
       const data = await res.json();
       setFoundCustomer(data);
@@ -219,8 +225,8 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl glass-panel border border-white/10 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+      <div className="glass-panel w-full max-w-lg overflow-hidden rounded-2xl border border-white/10">
         <CardHeader className="flex items-center justify-between border-b border-white/10 pb-4">
           <CardTitle className="text-lg">💎 Tarjeta NEON Club</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
@@ -233,7 +239,7 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
             <>
               {/* Search by phone */}
               <div className="space-y-3">
-                <label className="text-sm text-muted">Buscar por celular</label>
+                <label className="text-muted text-sm">Buscar por celular</label>
                 <div className="flex gap-2">
                   <Input
                     type="tel"
@@ -243,14 +249,17 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
                     onKeyDown={(e) => e.key === "Enter" && searchByPhone()}
                     disabled={searching}
                   />
-                  <Button onClick={searchByPhone} disabled={searching || !phone}>
+                  <Button
+                    onClick={searchByPhone}
+                    disabled={searching || !phone}
+                  >
                     <Search className="size-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="relative h-px bg-white/10 my-4">
-                <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-[#0a0a0f] px-3 text-xs text-muted">
+              <div className="relative my-4 h-px bg-white/10">
+                <span className="text-muted absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0a0a0f] px-3 text-xs">
                   O ESCANEAR QR
                 </span>
               </div>
@@ -264,62 +273,86 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
                   disabled={!navigator.mediaDevices?.getUserMedia}
                 >
                   {scanning ? (
-                    <>Detener cámara <X className="size-4" /></>
+                    <>
+                      Detener cámara <X className="size-4" />
+                    </>
                   ) : (
-                    <>Escanear QR <Camera className="size-4" /></>
+                    <>
+                      Escanear QR <Camera className="size-4" />
+                    </>
                   )}
                 </Button>
 
                 {scanning && (
-                  <div className="relative rounded-xl overflow-hidden" style={{ background: "#000" }}>
+                  <div
+                    className="relative overflow-hidden rounded-xl"
+                    style={{ background: "#000" }}
+                  >
                     <video
                       ref={videoRef}
-                      className="w-full aspect-video object-cover"
+                      className="aspect-video w-full object-cover"
                       playsInline
                       muted
                     />
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="size-48 border-2 border-primary/50 rounded-lg" style={{ boxShadow: "0 0 20px rgba(255,79,216,0.3)" }} />
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <div
+                        className="border-primary/50 size-48 rounded-lg border-2"
+                        style={{ boxShadow: "0 0 20px rgba(255,79,216,0.3)" }}
+                      />
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-center text-xs text-white/70">
+                    <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-center text-xs text-white/70">
                       Apunta el código QR de la tarjeta del cliente
                     </div>
                   </div>
                 )}
 
                 {!navigator.mediaDevices?.getUserMedia && (
-                  <p className="text-xs text-muted text-center">
-                    Escaneo QR no disponible en este navegador. Usa búsqueda por teléfono.
+                  <p className="text-muted text-center text-xs">
+                    Escaneo QR no disponible en este navegador. Usa búsqueda por
+                    teléfono.
                   </p>
                 )}
               </div>
 
               {error && (
-                <p className="text-sm text-center" style={{ color: "#ff5577" }}>{error}</p>
+                <p className="text-center text-sm" style={{ color: "#ff5577" }}>
+                  {error}
+                </p>
               )}
             </>
           ) : (
             <>
               {/* Customer found result */}
               <div className="space-y-4">
-                <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold">{foundCustomer?.fullName}</h3>
+                <div className="space-y-2 text-center">
+                  <h3 className="text-xl font-semibold">
+                    {foundCustomer?.fullName}
+                  </h3>
                   <p className="text-muted text-sm">{foundCustomer?.phone}</p>
-                  {foundCustomer?.email && <p className="text-muted text-xs">{foundCustomer?.email}</p>}
+                  {foundCustomer?.email && (
+                    <p className="text-muted text-xs">{foundCustomer?.email}</p>
+                  )}
                 </div>
 
                 {/* Stamp display */}
-                <div className="flex items-center justify-center gap-2 flex-wrap">
+                <div className="flex flex-wrap items-center justify-center gap-2">
                   {Array.from({ length: 10 }, (_, i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
                       style={{
-                        background: i < (foundCustomer?.stampsCount ?? 0)
-                          ? "linear-gradient(135deg, #3de8c2, #ff73e3)"
-                          : "rgba(255,255,255,0.05)",
-                        color: i < (foundCustomer?.stampsCount ?? 0) ? "#000" : "rgba(255,255,255,0.3)",
-                        boxShadow: i < (foundCustomer?.stampsCount ?? 0) ? "0 0 12px rgba(61,232,194,0.5)" : "none",
+                        background:
+                          i < (foundCustomer?.stampsCount ?? 0)
+                            ? "linear-gradient(135deg, #3de8c2, #ff73e3)"
+                            : "rgba(255,255,255,0.05)",
+                        color:
+                          i < (foundCustomer?.stampsCount ?? 0)
+                            ? "#000"
+                            : "rgba(255,255,255,0.3)",
+                        boxShadow:
+                          i < (foundCustomer?.stampsCount ?? 0)
+                            ? "0 0 12px rgba(61,232,194,0.5)"
+                            : "none",
                       }}
                     >
                       {i < (foundCustomer?.stampsCount ?? 0) ? "✓" : i + 1}
@@ -329,13 +362,20 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
 
                 <div className="text-center">
                   {foundCustomer && foundCustomer.stampsCount >= 10 ? (
-                    <div className="rounded-xl bg-amber-500/20 border border-amber-500/50 p-3 animate-pulse">
-                      <p className="text-amber-300 font-semibold">🎁 ¡Raspado Gratis Disponible!</p>
-                      <p className="text-amber-200/80 text-sm">Presiona &quot;Canjear&quot; para aplicar al pedido actual</p>
+                    <div className="animate-pulse rounded-xl border border-amber-500/50 bg-amber-500/20 p-3">
+                      <p className="font-semibold text-amber-300">
+                        🎁 ¡Raspado Gratis Disponible!
+                      </p>
+                      <p className="text-sm text-amber-200/80">
+                        Presiona &quot;Canjear&quot; para aplicar al pedido
+                        actual
+                      </p>
                     </div>
                   ) : (
                     <p className="text-muted text-sm">
-                      {foundCustomer ? `${foundCustomer.stampsCount}/10 sellos` : "0/10 sellos"}
+                      {foundCustomer
+                        ? `${foundCustomer.stampsCount}/10 sellos`
+                        : "0/10 sellos"}
                     </p>
                   )}
                 </div>
@@ -355,15 +395,15 @@ export function LoyaltyScannerModal({ isOpen, onClose, onCustomerFound }: Loyalt
                     className="flex-1"
                     onClick={handleSelectCustomer}
                     style={{
-                      background: foundCustomer && foundCustomer.stampsCount >= 10
-                        ? "linear-gradient(90deg, #ffd24d, #ff73e3)"
-                        : undefined,
+                      background:
+                        foundCustomer && foundCustomer.stampsCount >= 10
+                          ? "linear-gradient(90deg, #ffd24d, #ff73e3)"
+                          : undefined,
                     }}
                   >
                     {foundCustomer && foundCustomer.stampsCount >= 10
                       ? "Canjear y seleccionar"
-                      : "Seleccionar cliente"
-                    }
+                      : "Seleccionar cliente"}
                   </Button>
                 </div>
               </div>

@@ -10,13 +10,19 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Database unavailable" },
+      { status: 503 },
+    );
   }
 
   try {
     const result = await addStampsToCustomer(supabase, body);
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 },
+    );
   }
 }

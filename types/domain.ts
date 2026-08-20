@@ -272,7 +272,7 @@ export interface LiquidAdjustmentInput {
   notes?: string | null;
 }
 
-export type WalletType = 'web' | 'google' | 'apple';
+export type WalletType = "web" | "google" | "apple";
 
 export interface LoyaltyCustomer {
   id: string;

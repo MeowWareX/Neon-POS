@@ -1,11 +1,13 @@
-"use client"
+"use client";
 
 import { useState, useCallback } from "react";
 import type { LoyaltyCustomer, LoyaltyCardResponse } from "@/types/domain";
 
 export function useLoyaltyCard(passToken: string) {
   const [customer, setCustomer] = useState<LoyaltyCustomer | null>(null);
-  const [recentLogs, setRecentLogs] = useState<NonNullable<LoyaltyCardResponse["recentLogs"]>>([]);
+  const [recentLogs, setRecentLogs] = useState<
+    NonNullable<LoyaltyCardResponse["recentLogs"]>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -1,6 +1,7 @@
 export const metadata = {
   title: "NEON Club - Tarjeta de Fidelización Digital",
-  description: "Acumula sellos con tus compras y canjea raspados gratis. Tu tarjeta virtual Neón te espera.",
+  description:
+    "Acumula sellos con tus compras y canjea raspados gratis. Tu tarjeta virtual Neón te espera.",
   robots: "noindex, nofollow",
 };
 
