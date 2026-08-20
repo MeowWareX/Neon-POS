@@ -2,11 +2,11 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "NEON OS",
-    short_name: "NEON OS",
+    name: "Neon",
+    short_name: "Neon",
     description:
-      "POS offline-first para NEON Drinks & Snacks con inventario, caja y analítica.",
-    start_url: "/pos",
+      "Aplicación oficial de punto de venta (POS) y programa de fidelización digital Neon Club con pases para Google Wallet y Apple Wallet.",
+    start_url: "/",
     display: "standalone",
     background_color: "#090014",
     theme_color: "#090014",

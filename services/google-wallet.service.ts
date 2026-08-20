@@ -66,7 +66,7 @@ async function getOrCreateLoyaltyClass(
     // Class does not exist yet -> create it
   }
 
-  const logoUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/logo.jpg`;
+  const logoUrl = `${env.NEXT_PUBLIC_APP_URL ?? ""}logo.jpg`;
 
   const { data } = await client.loyaltyclass.insert({
     requestBody: {
@@ -107,7 +107,7 @@ function buildLoyaltyObject(
 ): walletobjects_v1.Schema$LoyaltyObject {
   const issuerId = getIssuerId()!;
   const objectId = `${issuerId}.${customer.id}`;
-  const cardUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/club/${pass.passToken}`;
+  const cardUrl = `${env.NEXT_PUBLIC_APP_URL ?? ""}club/${pass.passToken}`;
   const remainingStamps = Math.max(0, 10 - customer.stampsCount);
 
   return {

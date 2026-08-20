@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | Neon",
   },
   description:
-    "Offline-first POS, inventory, analytics, and cash management for Neon Drinks & Snacks.",
+    "Neon es la aplicación oficial de punto de venta (POS) y programa de fidelización digital Neon Club con pases para Google Wallet en www.clubneon.co.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
