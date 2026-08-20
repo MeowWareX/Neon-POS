@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
   Lock,
@@ -35,13 +36,27 @@ export default function PrivacyPolicyPage() {
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Header / Nav */}
         <header className="flex flex-col items-start justify-between gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center">
-          <Link
-            href="/club/register"
-            className="glass-panel inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-medium text-slate-300 transition-all hover:border-pink-500/50 hover:text-pink-400"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver a NEON Club
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="glass-panel inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-medium text-slate-300 transition-all hover:border-pink-500/50 hover:text-pink-400"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver a Neon
+            </Link>
+            <div className="flex items-center gap-2">
+              <Image
+                src="/logo.jpg"
+                alt="Logo Neon"
+                width={28}
+                height={28}
+                className="size-7 rounded-lg object-cover"
+              />
+              <span className="font-display text-sm font-bold text-white tracking-wider">
+                Neon
+              </span>
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
             <span className="font-mono text-xs text-slate-400">
@@ -52,6 +67,15 @@ export default function PrivacyPolicyPage() {
 
         {/* Hero Section */}
         <div className="space-y-4 py-6 text-center">
+          <div className="flex justify-center pb-2">
+            <Image
+              src="/logo.jpg"
+              alt="Logo Neon"
+              width={72}
+              height={72}
+              className="size-18 rounded-2xl object-cover shadow-[0_0_30px_rgba(255,115,227,0.4)]"
+            />
+          </div>
           <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-pink-400 uppercase">
             <ShieldCheck className="h-4 w-4" />
             Protección de Datos & Privacidad

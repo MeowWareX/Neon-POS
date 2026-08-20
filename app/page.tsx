@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   CupSoda,
   Wallet,
@@ -32,10 +33,15 @@ export default function HomePage() {
       <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#090014]/80 px-4 py-4 backdrop-blur-xl sm:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-emerald-400 p-0.5 shadow-[0_0_20px_rgba(255,115,227,0.4)]">
-              <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-black">
-                <CupSoda className="h-5 w-5 text-pink-400" />
-              </div>
+            <div className="size-11 overflow-hidden rounded-2xl bg-gradient-to-tr from-pink-500 to-emerald-400 p-0.5 shadow-[0_0_20px_rgba(255,115,227,0.4)]">
+              <Image
+                src="/logo.jpg"
+                alt="Logo Neon"
+                width={44}
+                height={44}
+                className="h-full w-full rounded-[14px] object-cover"
+                priority
+              />
             </div>
             <div>
               <span className="font-display bg-gradient-to-r from-pink-400 via-emerald-300 to-yellow-300 bg-clip-text text-2xl font-bold tracking-[0.2em] text-transparent">
@@ -94,6 +100,19 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative mx-auto max-w-6xl space-y-6 px-4 pt-12 pb-16 text-center sm:px-8">
+        <div className="flex justify-center pb-2">
+          <div className="relative size-24 rounded-3xl bg-gradient-to-tr from-pink-500 via-emerald-400 to-yellow-400 p-1 shadow-[0_0_40px_rgba(255,115,227,0.5)] sm:size-28">
+            <Image
+              src="/logo.jpg"
+              alt="Logo Oficial Neon"
+              width={112}
+              height={112}
+              className="h-full w-full rounded-[22px] object-cover shadow-inner"
+              priority
+            />
+          </div>
+        </div>
+
         <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-widest text-pink-300 uppercase backdrop-blur-md">
           <Sparkles className="h-4 w-4 text-emerald-400" />
           Aplicación Oficial Neon — www.clubneon.co
@@ -242,8 +261,15 @@ export default function HomePage() {
                 Uso de Servicios de Google en la Aplicación Neon
               </h2>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs text-pink-300">
-              App Name: Neon
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-1.5 font-mono text-xs text-pink-300">
+              <Image
+                src="/logo.jpg"
+                alt="Logo Neon"
+                width={24}
+                height={24}
+                className="size-6 rounded-md object-cover"
+              />
+              <span>App Name: Neon</span>
             </div>
           </div>
 
@@ -347,9 +373,18 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-white/10 bg-black/60 px-4 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs text-slate-400 sm:flex-row">
-          <div>
-            <span className="font-bold text-white">Neon</span> — www.clubneon.co
-            © {new Date().getFullYear()}. Todos los derechos reservados.
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.jpg"
+              alt="Logo Neon"
+              width={28}
+              height={28}
+              className="size-7 rounded-lg object-cover"
+            />
+            <div>
+              <span className="font-bold text-white">Neon</span> — www.clubneon.co
+              © {new Date().getFullYear()}. Todos los derechos reservados.
+            </div>
           </div>
           <div className="flex items-center gap-6">
             <Link

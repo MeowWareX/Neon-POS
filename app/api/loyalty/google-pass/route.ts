@@ -49,7 +49,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ saveUrl });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to create Google Wallet link";
+      error instanceof Error
+        ? error.message
+        : "Failed to create Google Wallet link";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,7 +1,10 @@
 import "server-only";
 import { JWT } from "google-auth-library";
 import jwt from "jsonwebtoken";
-import { walletobjects, type walletobjects_v1 } from "@googleapis/walletobjects";
+import {
+  walletobjects,
+  type walletobjects_v1,
+} from "@googleapis/walletobjects";
 import { env, isGoogleWalletConfigured } from "@/lib/env";
 import type { LoyaltyCustomer, LoyaltyPass } from "@/types/domain";
 
@@ -59,7 +62,7 @@ async function getOrCreateLoyaltyClass(
   try {
     const { data } = await client.loyaltyclass.get({ resourceId: classId });
     return data;
-  } catch (error) {
+  } catch {
     // Class does not exist yet -> create it
   }
 
