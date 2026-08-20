@@ -12,6 +12,12 @@ const WALLET_SCOPE = "https://www.googleapis.com/auth/wallet_object.issuer";
 
 type WalletClient = ReturnType<typeof walletobjects>;
 
+type UpdateRequestBody = walletobjects_v1.Schema$LoyaltyObject & {
+  notificationSettingsForUpdates?: {
+    notifyPreference: string;
+  };
+};
+
 function cleanPrivateKey(raw: string): string {
   let key = raw.trim();
 
@@ -159,24 +165,34 @@ async function getOrCreateLoyaltyObject(
   const object = buildLoyaltyObject(customer, pass);
   const objectId = `${getIssuerId()}.${customer.id}`;
 
+  const requestBody: UpdateRequestBody = {
+    loyaltyPoints: object.loyaltyPoints,
+    textModulesData: object.textModulesData,
+    barcode: object.barcode,
+    accountName: object.accountName,
+    linksModuleData: object.linksModuleData,
+    notificationSettingsForUpdates: {
+      notifyPreference: "NOTIFY",
+    },
+  };
+
   try {
     const { data } = await client.loyaltyobject.patch({
       resourceId: objectId,
-      requestBody: {
-        loyaltyPoints: object.loyaltyPoints,
-        textModulesData: object.textModulesData,
-        barcode: object.barcode,
-        accountName: object.accountName,
-        linksModuleData: object.linksModuleData,
-        notifyPreference: "NOTIFY",
-      },
+      requestBody,
     });
     return data;
-  } catch {
-    const { data } = await client.loyaltyobject.insert({
-      requestBody: object,
-    });
-    return data;
+  } catch (patchError) {
+    console.error("Google Wallet object patch failed:", patchError);
+    try {
+      const { data } = await client.loyaltyobject.insert({
+        requestBody: object,
+      });
+      return data;
+    } catch {
+      const { data } = await client.loyaltyobject.get({ resourceId: objectId });
+      return data;
+    }
   }
 }
 
@@ -242,14 +258,18 @@ export async function updateGoogleWalletPass(
   const object = buildLoyaltyObject(customer, pass);
   const objectId = `${getIssuerId()}.${customer.id}`;
 
+  const requestBody: UpdateRequestBody = {
+    loyaltyPoints: object.loyaltyPoints,
+    textModulesData: object.textModulesData,
+    notificationSettingsForUpdates: {
+      notifyPreference: "NOTIFY",
+    },
+  };
+
   try {
     await client.loyaltyobject.patch({
       resourceId: objectId,
-      requestBody: {
-        loyaltyPoints: object.loyaltyPoints,
-        textModulesData: object.textModulesData,
-        notifyPreference: "NOTIFY",
-      },
+      requestBody,
     });
   } catch {
     try {
