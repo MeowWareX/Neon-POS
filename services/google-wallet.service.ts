@@ -160,7 +160,17 @@ async function getOrCreateLoyaltyObject(
   const objectId = `${getIssuerId()}.${customer.id}`;
 
   try {
-    const { data } = await client.loyaltyobject.get({ resourceId: objectId });
+    const { data } = await client.loyaltyobject.patch({
+      resourceId: objectId,
+      requestBody: {
+        loyaltyPoints: object.loyaltyPoints,
+        textModulesData: object.textModulesData,
+        barcode: object.barcode,
+        accountName: object.accountName,
+        linksModuleData: object.linksModuleData,
+        notifyPreference: "NOTIFY",
+      },
+    });
     return data;
   } catch {
     const { data } = await client.loyaltyobject.insert({
