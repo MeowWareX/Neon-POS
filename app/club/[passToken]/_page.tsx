@@ -77,7 +77,11 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
       window.open(payload.saveUrl, "_blank", "noopener,noreferrer");
     } catch (err) {
       console.error("Google Wallet error:", err);
-      alert("No se pudo generar tu tarjeta de Google Wallet.");
+      const message =
+        err instanceof Error && err.message && err.message !== "Failed to fetch"
+          ? err.message
+          : "Asegúrate de estar conectado e intenta de nuevo.";
+      alert(`No se pudo generar tu tarjeta de Google Wallet: ${message}`);
     } finally {
       setWalletLoading(false);
     }
@@ -269,32 +273,20 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
             `}</style>
 
             {/* Action buttons */}
-            <div className="flex gap-3">
-              <button
-                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
-                style={{
-                  background: "rgba(55, 214, 255, 0.15)",
-                  color: "#3de8c2",
-                  border: "1px solid rgba(61, 232, 194, 0.3)",
-                  opacity: walletLoading ? 0.6 : 1,
-                  cursor: walletLoading ? "wait" : "pointer",
-                }}
-                onClick={handleGoogleWallet}
-                disabled={walletLoading}
-              >
-                {walletLoading ? "Generando..." : "📱 Google Wallet"}
-              </button>
-              <button
-                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
-                style={{
-                  background: "rgba(55, 214, 255, 0.15)",
-                  color: "#3de8c2",
-                  border: "1px solid rgba(61, 232, 194, 0.3)",
-                }}
-              >
-                🍎 Apple Wallet
-              </button>
-            </div>
+            <button
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
+              style={{
+                background: "rgba(55, 214, 255, 0.15)",
+                color: "#3de8c2",
+                border: "1px solid rgba(61, 232, 194, 0.3)",
+                opacity: walletLoading ? 0.6 : 1,
+                cursor: walletLoading ? "wait" : "pointer",
+              }}
+              onClick={handleGoogleWallet}
+              disabled={walletLoading}
+            >
+              {walletLoading ? "Generando..." : "📱 Google Wallet"}
+            </button>
           </CardContent>
         </Card>
 
