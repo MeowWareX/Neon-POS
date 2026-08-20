@@ -12,6 +12,7 @@ import {
   Menu,
   ReceiptText,
   Settings2,
+  Sparkles,
   Wallet,
   Wifi,
   WifiOff,
@@ -59,6 +60,7 @@ const navItems: Array<{
     icon: CreditCard,
     adminOnly: true,
   },
+  { href: "/loyalty" as Route, label: "Fidelización", icon: Sparkles, adminOnly: true },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

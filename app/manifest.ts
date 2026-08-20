@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Neon",
+    name: "Neon - Punto de Venta (POS) y Fidelización Digital",
     short_name: "Neon",
     description:
       "Aplicación oficial de punto de venta (POS) y programa de fidelización digital Neon Club con pases para Google Wallet y Apple Wallet.",
@@ -12,6 +12,7 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#090014",
     orientation: "portrait-primary",
     lang: "es-CO",
+    categories: ["point of sale"],
     icons: [
       {
         src: "/logo.jpg",

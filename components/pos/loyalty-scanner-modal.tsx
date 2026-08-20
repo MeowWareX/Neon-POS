@@ -69,13 +69,17 @@ export function LoyaltyScannerModal({
       if (!res.ok) throw new Error("Tarjeta no encontrada");
       const data = await res.json();
       setFoundCustomer({
-        id: data.customer.id,
-        fullName: data.customer.full_name,
-        phone: data.customer.phone,
-        email: data.customer.email,
-        stampsCount: data.customer.stamps_count,
-        totalRewardsClaimed: data.customer.total_rewards_claimed,
-        passToken,
+        id: data.customer?.id,
+        fullName: data.customer?.fullName ?? data.customer?.full_name,
+        phone: data.customer?.phone,
+        email: data.customer?.email,
+        stampsCount:
+          data.customer?.stampsCount ?? data.customer?.stamps_count ?? 0,
+        totalRewardsClaimed:
+          data.customer?.totalRewardsClaimed ??
+          data.customer?.total_rewards_claimed ??
+          0,
+        passToken: data.pass?.passToken ?? data.pass?.pass_token ?? passToken,
       });
       setShowResult(true);
     } catch {

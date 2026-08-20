@@ -218,3 +218,34 @@ export async function createGoogleWalletLink(
 
   return { saveUrl };
 }
+
+export async function updateGoogleWalletPass(
+  customer: LoyaltyCustomer,
+  pass: LoyaltyPass,
+): Promise<void> {
+  const client = getClient();
+
+  if (!client) {
+    throw new Error("GoogleWalletNotConfigured");
+  }
+
+  const object = buildLoyaltyObject(customer, pass);
+  const objectId = `${getIssuerId()}.${customer.id}`;
+
+  try {
+    await client.loyaltyobject.patch({
+      resourceId: objectId,
+      requestBody: {
+        loyaltyPoints: object.loyaltyPoints,
+        textModulesData: object.textModulesData,
+        notifyPreference: "NOTIFY",
+      },
+    });
+  } catch {
+    try {
+      await client.loyaltyobject.insert({ requestBody: object });
+    } catch {
+      // The object may not be saved by the user yet; nothing to update.
+    }
+  }
+}

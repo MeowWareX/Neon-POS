@@ -6,6 +6,7 @@ import type {
   LoyaltyLog,
   WalletType,
 } from "@/types/domain";
+import { env } from "@/lib/env";
 
 type CustomerRow = Database["public"]["Tables"]["customers"]["Row"];
 type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
@@ -58,6 +59,35 @@ export interface RegisterResult {
   webUrl: string;
 }
 
+async function findCustomerByPhoneRaw(
+  supabase: SupabaseClient<Database>,
+  phone: string,
+): Promise<CustomerRow | null> {
+  const { data } = await supabase
+    .from("customers")
+    .select()
+    .eq("phone", phone)
+    .maybeSingle();
+
+  return data ?? null;
+}
+
+async function findExistingWebPass(
+  supabase: SupabaseClient<Database>,
+  customerId: string,
+): Promise<LoyaltyPassRow | null> {
+  const { data } = await supabase
+    .from("loyalty_passes")
+    .select()
+    .eq("customer_id", customerId)
+    .eq("wallet_type", "web")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  return data ?? null;
+}
+
 export async function registerCustomer(
   supabase: SupabaseClient<Database>,
   input: { fullName: string; phone: string; email?: string },
@@ -92,20 +122,31 @@ export async function registerCustomer(
     customerId = newCustomer.id;
   }
 
-  const passToken = crypto.randomUUID();
+  const existingPass = await findExistingWebPass(supabase, customerId);
 
-  const { data: newPass, error: passErr } = await supabase
-    .from("loyalty_passes")
-    .insert({
-      customer_id: customerId,
-      wallet_type: "web",
-      pass_token: passToken,
-    } satisfies LoyaltyPassInsert)
-    .select()
-    .single();
+  let newPass: LoyaltyPassRow;
+  let passToken: string;
 
-  if (passErr || !newPass) {
-    throw new Error(passErr?.message ?? "Failed to create loyalty pass");
+  if (existingPass) {
+    newPass = existingPass;
+    passToken = existingPass.pass_token;
+  } else {
+    passToken = crypto.randomUUID();
+
+    const { data: createdPass, error: passErr } = await supabase
+      .from("loyalty_passes")
+      .insert({
+        customer_id: customerId,
+        wallet_type: "web",
+        pass_token: passToken,
+      } satisfies LoyaltyPassInsert)
+      .select()
+      .single();
+
+    if (passErr || !createdPass) {
+      throw new Error(passErr?.message ?? "Failed to create loyalty pass");
+    }
+    newPass = createdPass;
   }
 
   const { data: customerRow, error: custErr2 } = await supabase
@@ -123,7 +164,7 @@ export async function registerCustomer(
     email: input.email ?? null,
   } as unknown as CustomerRow);
   const pass = mapPass(newPass);
-  const webUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/club/${passToken}`;
+  const webUrl = `${env.NEXT_PUBLIC_APP_URL ?? ""}/club/${passToken}`;
 
   return { customer, pass, webUrl };
 }
@@ -173,7 +214,7 @@ export async function getLoyaltyCardByToken(
     .order("created_at", { ascending: false })
     .limit(10);
 
-  if (logsErr) throw new Error(logsErr.message);
+  if (logsErr) return null;
 
   return {
     customer: mapCustomer(customerRow),
@@ -296,17 +337,4 @@ async function findCustomerByEmail(
     .maybeSingle();
 
   return data ? mapCustomer(data) : null;
-}
-
-async function findCustomerByPhoneRaw(
-  supabase: SupabaseClient<Database>,
-  phone: string,
-): Promise<CustomerRow | null> {
-  const { data } = await supabase
-    .from("customers")
-    .select()
-    .eq("phone", phone)
-    .maybeSingle();
-
-  return data;
 }

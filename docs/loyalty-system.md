@@ -146,9 +146,13 @@ CREATE INDEX IF NOT EXISTS idx_loyalty_logs_order ON public.loyalty_logs(order_i
   - **Salida**: `{ customer: Customer, newStampsCount: number, rewardRedeemed: boolean, message: string }` (cap `stamps_count` a `0..10`; si llega a 10 activa recompensa y con `redeemReward` la descuenta).
 - `POST /api/loyalty/google-pass` (Fase 3):
   - **Entrada**: `{ passToken: string }`
-  - **Salida**: `{ saveUrl: string }` (Enlace directo a Google Wallet)
+  - **Salida**: `{ saveUrl: string }` (Enlace `https://pay.google.com/gp/v/save/{jwt}` para guardar la tarjeta NEON en Google Wallet). Flujo: `getOrCreateLoyaltyClass` (get → insert `issuerID.neon_loyalty_v1`) → `getOrCreateLoyaltyObject` (objeto por cliente con sellos, QR con URL `/club/{passToken}` y links) → `jwt.insert` firma con RS256 y devuelve `saveUri`.
 - `GET /api/loyalty/apple-pass/[passToken]` (Fase 4):
   - **Salida**: Binario `application/vnd.apple.pkpass` firmado con PassKit.
+- `GET /api/loyalty/metrics` (Fase 5):
+  - **Salida**: `{ totals: { totalCustomers, stampsIssued, rewardsRedeemed, recurringCustomers }, walletBreakdown: Record<wallet_type, count>, topCustomers: top 10 por premios/sellos }`.
+- `GET /api/loyalty/customers` (Fase 5):
+  - **Salida**: `{ customers: [{ id, fullName, phone, email, currentStamps, totalRewardsClaimed, lifetimeStamps, orders, lastActivity, createdAt }] }` (historial completo limitado a 2000 clientes, ordenado por `created_at` desc).
 
 ---
 
@@ -164,6 +168,7 @@ Para cumplir con la regla de oro de **atención en < 10 segundos**:
    - Si el cliente llega a 10 sellos: Alerta 🎁 **"¡Raspado Gratis Disponible!"** en el modal y toast tras guardar el pedido.
    - El canje se procesa automáticamente al guardar el pedido cuando `stamps_count + sellos >= 10`, vía `POST /api/loyalty/stamp`.
 4. **Soporte Offline**: Si falla la llamada a `/api/loyalty/stamp`, se muestra un toast advirtiendo que los sellos se sincronizarán después; el pedido se conserva en la cola local (`addOrder`) y se sincroniza al recuperar la red como el resto de pedidos.
+5. **Sincronización Push Google Wallet**: Al sellar (vía token QR o búsqueda por celular), `/api/loyalty/stamp` dispara en segundo plano `updateGoogleWalletPass` (PATCH `loyaltyPoints` + `textModulesData` con `notifyPreference: NOTIFY`); si el objeto aún no existe se crea. Best-effort: los errores solo se loguean, no afectan la respuesta del POS.
 
 ---
 
@@ -192,11 +197,11 @@ Para cumplir con la regla de oro de **atención en < 10 segundos**:
 
 ### 🟡 Fase 3: Integración Nativa con Google Wallet
 
-- [ ] **3.1** Instalar dependencias `@googleapis/walletobjects` / `googleapis` / `jsonwebtoken`.
-- [ ] **3.2** Configurar variables de entorno en `.env.local` (`GOOGLE_WALLET_ISSUER_ID`, `GOOGLE_WALLET_SERVICE_ACCOUNT_KEY`).
-- [ ] **3.3** Crear script/función para inicializar la `LoyaltyClass` de Neón en Google Wallet.
-- [ ] **3.4** Implementar endpoint `POST /api/loyalty/google-pass` para firmar y emitir el enlace `Save to Google Wallet`.
-- [ ] **3.5** Implementar disparador de actualización push hacia Google Wallet al sellar desde el POS.
+- [x] **3.1** Instalar dependencias `@googleapis/walletobjects` / `google-auth-library` / `jsonwebtoken`.
+- [x] **3.2** Configurar variables de entorno en `.env.local` (`GOOGLE_WALLET_ISSUER_ID`, `GOOGLE_WALLET_CLASS_ID`, `GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_WALLET_PRIVATE_KEY`).
+- [x] **3.3** Crear script/función para inicializar la `LoyaltyClass` de Neón en Google Wallet.
+- [x] **3.4** Implementar endpoint `POST /api/loyalty/google-pass` para firmar y emitir el enlace `Save to Google Wallet`.
+- [x] **3.5** Implementar disparador de actualización push hacia Google Wallet al sellar desde el POS.
 
 ### 🟡 Fase 4: Integración Nativa con Apple Wallet (PassKit)
 
@@ -207,8 +212,8 @@ Para cumplir con la regla de oro de **atención en < 10 segundos**:
 
 ### 🟡 Fase 5: Métricas y Reportes de Fidelización
 
-- [ ] **5.1** Agregar métricas de fidelización al dashboard administrativo (clientes recurrentes, sellos emitidos, premios redimidos).
-- [ ] **5.2** Exportación y visualización del historial de clientes en el panel de administración.
+- [x] **5.1** Agregar métricas de fidelización al dashboard administrativo (clientes recurrentes, sellos emitidos, premios redimidos).
+- [x] **5.2** Exportación y visualización del historial de clientes en el panel de administración.
 
 ---
 
@@ -220,16 +225,24 @@ Para cumplir con la regla de oro de **atención en < 10 segundos**:
 | _2026-08-19_       | Antigravity AI | Fase 1 - Completa     | Migración SQL `202608190001_loyalty_system.sql` (customers, loyalty_passes, loyalty_logs + índices + RLS), tipos en database.ts/domain.ts, `schemas/loyalty.ts`, `repositories/loyalty-repository.ts`, hook `use-loyalty-card.ts`, APIs register/card/lookup, páginas `/club/register` y `/club/[passToken]` con QR y 10 sellos animados (estética neón #ff73e3, #3de8c2, #ffd24d). Se añadió la columna `rewards_granted INT DEFAULT 0` a `loyalty_logs`. |
 | _2026-08-19_       | Antigravity AI | Fase 2 - Completa     | Modal `loyalty-scanner-modal.tsx` con escaneo QR (`BarcodeDetector`) y búsqueda por teléfono; botón 💎 Tarjeta NEON integrado en `pos-terminal.tsx` (desktop + móvil); endpoint `POST /api/loyalty/stamp` con cap 0..10 y canje automático; toasts de recompensa disponible/canjeada; sellos = unidades del pedido; manejo offline con toast de sincronización diferida.                                                                                   |
 | _2026-08-19_       | Antigravity AI | Fase 1/2 - Ajustes    | Corrección de la tarjeta `/club/[passToken]` para leer el token del segmento de ruta (`useParams`); el QR ahora encodifica `/club/{passToken}` (antes apuntaba a ruta inexistente). Se documentó el cambio de esquema (rewards_granted) y se destacaron los detalles de integración.                                                                                                                                                                       |
+| _2026-08-20_       | Antigravity AI | Fase 3 - Completa     | Integración nativa Google Wallet: `services/google-wallet.service.ts` (cliente JWT con `google-auth-library`, limpieza de clave privada `\n`, get-or-create de LoyaltyClass `3388000000023186986.neon_loyalty_v1`, objetos de lealtad por cliente con QR/`linksModuleData`/`loyaltyPoints` y generación del enlace JWT firmado RS256 vía `client.jwt.insert`); endpoint `POST /api/loyalty/google-pass` validado 200 OK end-to-end con `saveUrl` real; botón "📱 Google Wallet" funcional en `/club/[passToken]` (fetch + `window.open`); push de actualización al sellar en `/api/loyalty/stamp` (best-effort, `notifyPreference: NOTIFY`); credenciales reales en `.env`/`.env.local` (issuer corregido `BCR2...` → `3388000000023186986`, el Merchant ID alfanumérico no era válido como ID de clase). Añadido `NEXT_PUBLIC_APP_URL=https://www.clubneon.co/`; versionadas `google-auth-library@10.5.0` para alinear tipos con `@googleapis/walletobjects@14` y `@types/jsonwebtoken`. |
+
+| _2026-08-20_       | Antigravity AI | Fase 5 - En curso        | Métricas y reportes de fidelización: endpoints `GET /api/loyalty/metrics` (totales: clientes, sellos emitidos, premios redimidos, recurrentes; desglose por billetera; top 10 clientes) y `GET /api/loyalty/customers` (historial con sellos de por vida, pedidos, última actividad); componente `components/dashboard/loyalty-overview.tsx` (4 KPI cards, pases por billetera, top clientes, tabla de historial con export CSV con BOM UTF-8); página `app/(platform)/loyalty/page.tsx` y nav "Fidelización" (icono Sparkles, adminOnly) en `app-shell.tsx`. **Migración pendiente**: se detectó que `loyalty_logs.rewards_granted` no existe en la BD live (el `ALTER` nunca se ejecutó); crear `202608200001_loyalty_add_rewards_granted.sql` y aplicarla (pendiente de confirmación del usuario). |
+| _2026-08-20_       | Antigravity AI | Fase 5 - Pruebas         | Aplicada en la BD live la migración `202608200001_loyalty_add_rewards_granted.sql` (columna `rewards_granted` en `loyalty_logs`). Verificado end-to-end en vivo: `GET /api/loyalty/metrics` y `GET /api/loyalty/customers` 200 OK; flujo completo registro→sello→log→métricas confirmado (Flow Test, phone 3019990001: 4 clientes, 1 sello emitido, 1 pedido). **Bug corregido**: `webUrl` devolvía doble slash (`https://www.clubneon.co//club/{token}`) por la trailing slash de `NEXT_PUBLIC_APP_URL`; se normalizó la URL en `lib/env.ts` (strip trailing slash) y se aplicó también al QR de `/club/[passToken]` y a los enlaces del pase de Google Wallet. Se eliminó la propiedad inválida `audience` de `app/manifest.ts` (rompía typecheck). Bitácora de pruebas completa: ver sección 10. |
+| _2026-08-20_       | Antigravity AI | Fase 5 - Fixes registro/POS | **Bug crítico corregido**: el form de `/club/register` redirigía a `/club/undefined` porque el endpoint devuelve el pase en camelCase (`pass.passToken`) pero la página leía `data.pass.pass_token` (snake_case); ahora acepta ambos y valida que exista token antes de redirigir (`app/club/register/_page.tsx`). **Bug corregido**: el escaneo QR del POS (`loyalty-scanner-modal.tsx`) leía `data.customer.full_name/stamps_count` (snake_case) pero `GET /api/loyalty/card` devuelve camelCase (`fullName/stampsCount`), mostrando cliente con datos vacíos; ahora acepta ambos formatos. La búsqueda por teléfono (`/api/loyalty/lookup`) ya devolvía camelCase correctamente y no estaba afectada. |
+| _2026-08-20_       | Antigravity AI | Fase 5 - Fix sellos POS   | **Bug crítico corregido (sello no se sumaba)**: `POST /api/loyalty/stamp` fallaba con `ZodError: Invalid pass token` (500) porque el `passToken` llegaba vacío. Causa raíz: (1) `registerCustomer` reutilizaba el cliente por teléfono pero **siempre insertaba un nuevo pass web** → clientes con 2+ pases; (2) `GET /api/loyalty/lookup` filtraba `wallet_type="web"` con `maybeSingle()`, que con múltiples pases devolvía `null` → `passToken: ""`; (3) `pos-terminal.tsx` enviaba ese `passToken` vacío al sellar → Zod lo rechazaba. **Soluciones**: `registerCustomer` ahora reutiliza el pass web existente del cliente (`findExistingWebPass`) antes de insertar; `lookup` ordena por `created_at` ascendente (primer pass, sin filtrar billetera); `pos-terminal.tsx` envía `phone` como respaldo y `passToken` solo si existe. Corregidas erratas de duplicación de funciones en el repo. Verificado en vivo: registro doble (mismo teléfono) devuelve el mismo token; sellado por teléfono 200 OK y `lookup` devuelve stamps incrementados. |
 
 ---
 
-## 9. Variables de Entorno Requeridas
-
 ```env
-# Google Wallet (Fase 3)
-GOOGLE_WALLET_ISSUER_ID=
+# URLs públicas de la app (requeridas por Google Wallet para logo y enlaces del pase)
+NEXT_PUBLIC_APP_URL=https://www.clubneon.co/
+
+# Google Wallet (Fase 3) - el ISSUER_ID es numérico (18-19 dígitos) de la cuenta Google Pay & Wallet Console
+GOOGLE_WALLET_ISSUER_ID=3388000000023186986
 GOOGLE_WALLET_CLASS_ID=neon_loyalty_v1
 GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL=
+# Clave PEM entre comillas; conservar los \n literales (el servicio los convierte a saltos de línea)
 GOOGLE_WALLET_PRIVATE_KEY=
 
 # Apple Wallet (Fase 4)
@@ -238,3 +251,84 @@ APPLE_TEAM_ID=
 APPLE_PASS_CERTIFICATE_BASE64=
 APPLE_PASS_KEY_PASSWORD=
 ```
+
+---
+
+## 10. Guía de Pruebas End-to-End
+
+> Pruebas validadas en vivo (2026-08-19/20) usando `npm run dev` en `http://localhost:3000` y SQL Editor de Supabase. Todas las respuestas son JSON.
+
+### 10.1 Registro de cliente (crea `customer` + `pass` web)
+
+```bash
+curl -X POST http://localhost:3000/api/loyalty/register \
+  -H "Content-Type: application/json" \
+  -d '{"fullName":"Flow Test","phone":"3019990001","email":"flowtest@neon.club"}'
+```
+
+**Esperado (200):** `{ customer, pass, webUrl }`.
+
+> [!NOTE]
+> `webUrl` debe ser `https://www.clubneon.co/club/{token}` **sin doble slash**. Se normalizó `NEXT_PUBLIC_APP_URL` en `lib/env.ts` (strip de trailing slash) para corregirlo; también aplica al QR de `/club/[passToken]` y a los enlaces del pase de Google Wallet.
+
+### 10.2 Sellar (+1) y verificar log insertado
+
+```bash
+curl -X POST http://localhost:3000/api/loyalty/stamp \
+  -H "Content-Type: application/json" \
+  -d '{"passToken":"<PASS_TOKEN>","stampsToAdd":1}'
+```
+
+**Esperado (200):** `{ customer: { stampsCount: 1 }, newStampsCount: 1, rewardRedeemed: false, message: "Sellos actualizados: 1/10" }`.
+
+> [!WARNING]
+> Si `stamp` responde 200 pero las métricas muestran `stampsIssued: 0`, verifica que `loyalty_logs.rewards_granted` exista:
+> ```sql
+> ALTER TABLE public.loyalty_logs ADD COLUMN IF NOT EXISTS rewards_granted INT DEFAULT 0;
+> ```
+> (migración `supabase/migrations/202608200001_loyalty_add_rewards_granted.sql`). El insert del log ignora errores en `loyalty-repository.ts`, así que la columna ausente falla silenciosamente.
+
+### 10.3 Canje de premio (10 sellos → raspado gratis)
+
+```bash
+# 1. Sellar 9 veces hasta llegar a 10
+curl -X POST http://localhost:3000/api/loyalty/stamp \
+  -H "Content-Type: application/json" \
+  -d '{"passToken":"<PASS_TOKEN>","stampsToAdd":9}'
+# 2. Redimir
+curl -X POST http://localhost:3000/api/loyalty/stamp \
+  -H "Content-Type: application/json" \
+  -d '{"passToken":"<PASS_TOKEN>","redeemReward":true}'
+```
+
+**Esperado:** tras el paso 1 `stampsCount: 10` y mensaje "¡Raspado gratis disponible!"; tras el paso 2 `stampsCount: 0`, `rewardRedeemed: true` y `message: "¡Raspado gratis redimido!"`.
+
+### 10.4 Tarjeta web y Google Wallet
+
+1. Abre `http://localhost:3000/club/<PASS_TOKEN>` → tarjeta NEON con 10 sellos y QR.
+2. Escanea el QR con cámara → debe abrir `/club/<PASS_TOKEN>` (el QR apunta a la app, el POS extrae el token por texto).
+3. Click **"📱 Google Wallet"** → llama `POST /api/loyalty/google-pass` y abre `https://pay.google.com/gp/v/save/{jwt}` en una pestaña nueva → "Save to Google Wallet".
+4. Al sellar desde el POS, el pase guardado en el teléfono se actualiza vía push (PATCH `loyaltyPoints` + `notifyPreference: NOTIFY`, best-effort).
+
+### 10.5 Métricas y panel de administración
+
+```bash
+curl http://localhost:3000/api/loyalty/metrics      # totals + walletBreakdown + topCustomers
+curl http://localhost:3000/api/loyalty/customers    # historial completo por cliente
+```
+
+**Esperado:** `metrics.totals.totalCustomers` refleja el total, `stampsIssued` suma los `stamps_added` positivos de `loyalty_logs`, `rewardsRedeemed` suma `rewards_granted`, `recurringCustomers` cuenta clientes con >1 log.
+
+Panel: inicia sesión → nav **"Fidelización"** (`/loyalty`, admin) → KPIs, pases por billetera, top clientes y tabla de historial con botón **"Exportar CSV"** (archivo con BOM UTF-8 listo para Excel).
+
+### 10.6 Datos de prueba registrados
+
+Durante la validación se registraron (se pueden eliminar desde el SQL Editor si estorban):
+
+| phone       | fullName    | sellos | origen |
+| :---------- | :---------- | :----- | :----- |
+| 3000000001  | Test Wallet | 1      | Fase 3 |
+| 3001122334  | eadasd      | 0      | previo  |
+| 3001234567  | test        | 0      | previo  |
+| 3019990001  | Flow Test   | 1      | 10.1   |
+| 3019990002  | Flow Test 2 | 0      | prueba webUrl |

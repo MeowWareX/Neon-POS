@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
     .from("loyalty_passes")
     .select("pass_token")
     .eq("customer_id", customer.id)
-    .eq("wallet_type", "web")
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
 
   return NextResponse.json({

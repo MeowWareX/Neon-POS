@@ -1,8 +1,15 @@
 import { z } from "zod";
 
+const stripTrailingSlash = (value: string | undefined) =>
+  value?.replace(/\/+$/, "") ?? undefined;
+
 const envSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().default("NEON OS"),
-  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_APP_URL: z
+    .string()
+    .url()
+    .optional()
+    .transform(stripTrailingSlash),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),

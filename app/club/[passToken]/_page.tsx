@@ -85,7 +85,8 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
 
   // QR apunta a la propia tarjeta; el POS extrae el pass_token del contenido
   const qrUrl = useMemo(() => {
-    return `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/club/${passToken}`;
+    const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") ?? "";
+    return `${base}/club/${passToken}`;
   }, [passToken]);
 
   if (loading) {

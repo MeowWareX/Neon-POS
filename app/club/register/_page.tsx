@@ -45,8 +45,12 @@ export function ClubRegisterPage() {
       }
 
       const data = await res.json();
+      const passToken = data?.pass?.passToken ?? data?.pass?.pass_token;
+      if (!passToken) {
+        throw new Error("No passToken returned");
+      }
       // Redirect to loyalty card page
-      window.location.href = `/club/${data.pass.pass_token}`;
+      window.location.href = `/club/${passToken}`;
     } catch {
       setMessage({
         text: "Error al registrar. Intenta de nuevo.",
