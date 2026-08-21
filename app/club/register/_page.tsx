@@ -127,11 +127,11 @@ export function ClubRegisterPage() {
       <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-sm flex-col items-center justify-center px-5 py-10 sm:max-w-md sm:py-14">
         {/* Brand mark (temporal hasta tener el logo real) */}
         <header className="space-y-5 text-center">
-          <div className="mx-auto text-center mt-4">
+          <div className="mx-auto mt-4 text-center">
             <img
               src="/logo.jpg"
               alt="NEON CLUB"
-              className="h-16 w-auto object-contain rounded-[1.35rem] border border-white/20"
+              className="h-16 w-auto rounded-[1.35rem] border border-white/20 object-contain"
             />
           </div>
           <div className="space-y-2">
@@ -177,7 +177,7 @@ export function ClubRegisterPage() {
                     Número de celular
                   </label>
                   <div className="relative">
-                    <span className="text-muted pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base select-none">
+                    <span className="text-muted pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-base select-none">
                       +57
                     </span>
                     <Input
@@ -198,9 +198,7 @@ export function ClubRegisterPage() {
                   </div>
                 </div>
 
-                {message && (
-                  <MessageBanner message={message} />
-                )}
+                {message && <MessageBanner message={message} />}
 
                 <Button
                   type="submit"
@@ -281,9 +279,7 @@ export function ClubRegisterPage() {
                   />
                 </div>
 
-                {message && (
-                  <MessageBanner message={message} />
-                )}
+                {message && <MessageBanner message={message} />}
 
                 <Button
                   type="submit"
