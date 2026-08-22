@@ -35,11 +35,16 @@ export async function GET(request: NextRequest) {
     .limit(1)
     .maybeSingle();
 
+  // Sanitize email if present (e.g. j***@gmail.com)
+  const maskedEmail = customer.email
+    ? customer.email.replace(/^(.)(.*)(@.*)$/, (_, first, middle, rest) => `${first}${"*".repeat(Math.min(middle.length, 5))}${rest}`)
+    : undefined;
+
   return NextResponse.json({
     id: customer.id,
     fullName: customer.full_name,
     phone: customer.phone,
-    email: customer.email,
+    email: maskedEmail,
     stampsCount: customer.stamps_count,
     totalRewardsClaimed: customer.total_rewards_claimed,
     passToken: pass?.pass_token ?? "",

@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles } from "lucide-react";
 
 type Step = "phone" | "details";
 
@@ -99,67 +102,58 @@ export function ClubRegisterPage() {
   };
 
   return (
-    <div
-      className="grid-dots relative min-h-dvh overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(180deg, #090014 0%, #0f0320 45%, #05010d 100%)",
-      }}
-    >
+    <div className="grid-dots relative min-h-dvh overflow-hidden bg-background">
       {/* Ambient glows */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-72"
+        className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-60"
         style={{
           background:
-            "radial-gradient(ellipse at 50% -20%, rgba(255, 79, 216, 0.28), transparent 70%)",
+            "radial-gradient(ellipse at 50% -20%, rgba(255, 62, 171, 0.35), transparent 70%)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-64"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-64 opacity-50"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 120%, rgba(55, 214, 255, 0.18), transparent 70%)",
+            "radial-gradient(ellipse at 50% 120%, rgba(0, 240, 255, 0.25), transparent 70%)",
         }}
       />
 
       <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-sm flex-col items-center justify-center px-5 py-10 sm:max-w-md sm:py-14">
-        {/* Brand mark (temporal hasta tener el logo real) */}
-        <header className="space-y-5 text-center">
-          <div className="mx-auto mt-4 text-center">
-            <img
-              src="/logo.jpg"
-              alt="NEON CLUB"
-              className="h-16 w-auto rounded-[1.35rem] border border-white/20 object-contain"
-            />
+        {/* Brand mark */}
+        <header className="space-y-4 text-center">
+          <div className="mx-auto flex justify-center">
+            <div className="size-16 overflow-hidden rounded-2xl bg-gradient-to-tr from-pink-500 to-cyan-400 p-0.5 shadow-[0_0_24px_rgba(255,62,171,0.4)]">
+              <Image
+                src="/logo.jpg"
+                alt="NEON CLUB"
+                width={64}
+                height={64}
+                className="h-full w-full rounded-[14px] object-cover"
+                priority
+              />
+            </div>
           </div>
           <div className="space-y-2">
-            <h1
-              className="font-display text-3xl font-bold tracking-[0.08em] sm:text-4xl"
-              style={{
-                background: "linear-gradient(90deg, #ff4fd8, #855dff, #37d6ff)",
-                WebkitBackgroundClip: "text",
-                color: "transparent",
-              }}
-            >
+            <Badge variant="default" className="gap-1.5 py-1 px-3">
+              <Sparkles className="h-3.5 w-3.5" />
+              Programa VIP
+            </Badge>
+            <h1 className="font-display text-gradient-neon text-3xl font-bold tracking-[0.08em] sm:text-4xl">
               NEON CLUB
             </h1>
-            <p className="text-muted mx-auto max-w-xs text-sm leading-relaxed">
+            <p className="text-muted-foreground mx-auto max-w-xs text-xs sm:text-sm leading-relaxed">
               Tu tarjeta de fidelización digital. Acumula 10 sellos y obtén un
-              raspado gratis.
+              granizado gratis.
             </p>
           </div>
         </header>
 
         {/* Wizard card */}
-        <section
-          className="glass-panel mt-8 w-full rounded-[1.75rem] border border-white/12 p-6 sm:mt-10 sm:p-7"
-          style={{
-            boxShadow:
-              "0 0 44px rgba(255, 79, 216, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
-          }}
-        >
+        <section className="glass-panel-elevated mt-6 w-full rounded-3xl border border-white/15 p-6 sm:mt-8 sm:p-7 shadow-[0_0_40px_rgba(255,62,171,0.15)]">
+
           {step === "phone" ? (
             <div key="step-phone" className="step-enter">
               <h2 className="text-lg font-bold text-white">
@@ -314,22 +308,6 @@ export function ClubRegisterPage() {
           </Link>
         </footer>
       </main>
-
-      <style jsx global>{`
-        .step-enter {
-          animation: stepIn 0.28s ease-out both;
-        }
-        @keyframes stepIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

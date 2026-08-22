@@ -1,32 +1,44 @@
+import Image from "next/image";
 import { LoginForm } from "@/components/auth/login-form";
+import { Badge } from "@/components/ui/badge";
+import { Zap } from "lucide-react";
 
 export default function LoginPage() {
   return (
     <main className="grid min-h-screen px-6 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10">
       <section className="hidden lg:block">
-        <div className="glass-panel grid-dots rounded-[2.5rem] border border-white/10 p-10">
+        <div className="glass-panel-elevated grid-dots rounded-4xl border border-white/10 p-10">
           <div className="flex items-center gap-4">
-            <img
+            <Image
               src="/logo.jpg"
               alt="Neon Logo"
-              className="size-16 rounded-2xl border border-white/20 object-cover shadow-[0_0_24px_rgba(255,79,216,0.45)]"
+              width={64}
+              height={64}
+              className="size-16 rounded-2xl border border-white/20 object-cover shadow-[0_0_24px_rgba(255,62,171,0.45)]"
             />
             <div>
-              <p className="font-display text-primary text-2xl tracking-[0.25em]">
+              <p className="font-display text-gradient-neon text-3xl font-black tracking-[0.25em]">
                 NEON
               </p>
-              <p className="font-display text-secondary text-xs tracking-[0.35em] uppercase">
-                Drinks & Snacks
+              <p className="font-display text-cyan-400 text-xs font-bold tracking-[0.35em] uppercase">
+                Drinks & Concentrados
               </p>
             </div>
           </div>
-          <h1 className="mt-8 max-w-xl text-5xl leading-tight font-semibold">
-            POS ultrarrápido, inventario simple y cierre de caja sin fricción.
-          </h1>
-          <p className="text-muted mt-5 max-w-lg text-base leading-7">
-            Diseñado para vender bebidas congeladas en menos de 10 segundos por
-            pedido, incluso con conexión inestable.
-          </p>
+
+          <div className="mt-8 space-y-4">
+            <Badge variant="default" className="gap-1.5 py-1 px-3">
+              <Zap className="h-3.5 w-3.5" />
+              Operaciones Rápidas
+            </Badge>
+            <h1 className="font-display text-4xl leading-tight font-black text-white">
+              POS ultrarrápido, inventario simple y cierre de caja sin fricción.
+            </h1>
+            <p className="text-muted-foreground max-w-lg text-sm sm:text-base leading-relaxed">
+              Diseñado para vender bebidas congeladas en menos de 10 segundos por
+              pedido, incluso con conexión inestable.
+            </p>
+          </div>
         </div>
       </section>
       <section className="flex items-center justify-center">
@@ -35,3 +47,4 @@ export default function LoginPage() {
     </main>
   );
 }
+

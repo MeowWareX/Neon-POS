@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { mapInventoryItemRow } from "@/lib/catalog-mappers";
 import { inventoryItemSchema } from "@/schemas/configuration";
@@ -6,6 +7,11 @@ import { inventoryItemSchema } from "@/schemas/configuration";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -66,6 +72,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -114,6 +125,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -165,6 +181,11 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -223,3 +244,4 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
+

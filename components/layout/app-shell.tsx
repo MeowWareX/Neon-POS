@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import {
@@ -29,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 import { useAuthStore } from "@/stores/auth-store";
+import { logoutUser } from "@/services/auth-service";
 import { useState } from "react";
 
 const navItems: Array<{
@@ -37,27 +39,41 @@ const navItems: Array<{
   icon: typeof CupSoda;
   adminOnly?: boolean;
 }> = [
-  { href: "/pos", label: "POS", icon: CupSoda },
-  { href: "/orders", label: "Pedidos", icon: ReceiptText },
-  { href: "/dashboard", label: "Dashboard", icon: BarChart3, adminOnly: true },
   {
-    href: "/liquid-sales" as Route,
-    label: "Ventas Líquidos",
-    icon: FlaskConical,
+    href: "/pos" as Route,
+    label: "POS Venta",
+    icon: CupSoda,
+  },
+  {
+    href: "/orders" as Route,
+    label: "Historial",
+    icon: ReceiptText,
+  },
+  {
+    href: "/cash" as Route,
+    label: "Caja",
+    icon: Wallet,
+  },
+  {
+    href: "/accounting" as Route,
+    label: "Contabilidad",
+    icon: CreditCard,
     adminOnly: true,
   },
-  { href: "/flavors", label: "Sabores", icon: Settings2, adminOnly: true },
   {
-    href: "/configuration",
+    href: "/inventory" as Route,
+    label: "Inventario",
+    icon: FlaskConical,
+  },
+  {
+    href: "/dashboard" as Route,
+    label: "Métricas",
+    icon: BarChart3,
+  },
+  {
+    href: "/configuration" as Route,
     label: "Configuración",
     icon: Settings2,
-    adminOnly: true,
-  },
-  { href: "/cash", label: "Caja", icon: Wallet },
-  {
-    href: "/accounting",
-    label: "Finanzas",
-    icon: CreditCard,
     adminOnly: true,
   },
   {
@@ -75,43 +91,50 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isOnline = useNetworkStatus();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleLogout = async () => {
+    await logoutUser();
+    logout();
+  };
+
   const visibleItems = navItems.filter((item) =>
     item.adminOnly ? user?.role === "admin" : true,
   );
 
   return (
     <div className="grid min-h-screen md:grid-cols-[280px_1fr]">
-      <aside className="hidden border-r border-white/10 bg-black/18 p-5 md:flex md:flex-col">
-        <div className="glass-panel rounded-4xl border border-white/10 p-5">
+      <aside className="hidden border-r border-white/10 bg-black/30 p-5 md:flex md:flex-col backdrop-blur-xl">
+        <div className="glass-panel rounded-3xl border border-white/10 p-5">
           <div className="flex items-center gap-3">
-            <img
+            <Image
               src="/logo.jpg"
               alt="Neon Logo"
-              className="size-12 shrink-0 rounded-2xl border border-white/20 object-cover shadow-[0_0_18px_rgba(255,79,216,0.4)]"
+              width={48}
+              height={48}
+              className="size-12 shrink-0 rounded-2xl border border-white/20 object-cover shadow-[0_0_18px_rgba(255,62,171,0.4)]"
             />
             <div>
-              <p className="font-display text-primary text-2xl tracking-[0.25em]">
+              <p className="font-display text-gradient-neon text-2xl font-black tracking-[0.2em]">
                 NEON
               </p>
-              <p className="text-muted text-[11px] tracking-wider uppercase">
-                Drinks & Snacks
+              <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                Drinks & Concentrados
               </p>
             </div>
           </div>
-          <p className="text-muted mt-3 text-sm">
+          <p className="text-muted-foreground mt-3 text-xs leading-relaxed">
             Fast POS para operación de fin de semana.
           </p>
           <div className="mt-4 flex items-center gap-2">
-            <Badge variant={isOnline ? "success" : "warning"}>
+            <Badge variant={isOnline ? "success" : "warning"} size="sm">
               {isOnline ? "Online" : "Offline"}
             </Badge>
-            <Badge variant="muted">
+            <Badge variant="muted" size="sm">
               {user?.role === "admin" ? "Admin" : "Operador"}
             </Badge>
           </div>
         </div>
 
-        <nav className="mt-6 grid gap-2">
+        <nav className="mt-6 grid gap-1.5">
           {visibleItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
@@ -120,35 +143,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-[1.4rem] border px-4 py-3 text-sm font-semibold transition-all",
+                  "flex items-center gap-3 rounded-2xl border px-4 py-2.5 text-xs font-bold transition-all duration-200",
                   active
-                    ? "border-primary/40 bg-primary/12 text-white shadow-[0_0_22px_rgba(255,79,216,0.18)]"
-                    : "text-muted border-white/8 bg-white/4 hover:bg-white/8 hover:text-white",
+                    ? "border-pink-500/40 bg-pink-500/15 text-pink-300 shadow-[0_0_18px_rgba(255,62,171,0.2)]"
+                    : "text-muted-foreground border-transparent bg-white/2 hover:border-white/10 hover:bg-white/6 hover:text-white",
                 )}
               >
-                <Icon className="size-5" />
+                <Icon className="size-4" />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="glass-panel mt-auto rounded-[1.75rem] border border-white/10 p-4">
-          <p className="text-sm font-semibold">{user?.name}</p>
-          <p className="text-muted mt-1 text-sm">{user?.email}</p>
+        <div className="glass-panel mt-auto rounded-2xl border border-white/10 p-4">
+          <p className="text-xs font-bold text-white">{user?.name}</p>
+          <p className="text-muted-foreground mt-0.5 text-xs truncate">{user?.email}</p>
           <Button
-            className="mt-4 w-full"
+            className="mt-3 w-full text-xs"
             size="sm"
             variant="ghost"
-            onClick={logout}
+            onClick={handleLogout}
           >
-            <LogOut className="size-4" />
+            <LogOut className="size-3.5" />
             Cerrar sesión
           </Button>
-          <div className="mt-3 text-center">
+          <div className="mt-2 text-center">
             <Link
               href="/privacy"
-              className="text-muted hover:text-primary text-[11px] underline transition-colors"
+              className="text-muted-foreground hover:text-pink-400 text-[10px] underline underline-offset-4 transition-colors"
             >
               Política de Privacidad
             </Link>
@@ -157,19 +180,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-30 border-b border-white/8 bg-[#090014]/80 px-4 py-4 backdrop-blur-xl md:px-8">
+        <header className="glass-panel sticky top-0 z-30 border-b border-white/8 px-4 py-3 md:px-8">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <img
+              <Image
                 src="/logo.jpg"
                 alt="Neon Logo"
-                className="size-9 rounded-xl border border-white/20 object-cover shadow-[0_0_12px_rgba(255,79,216,0.3)] md:hidden"
+                width={36}
+                height={36}
+                className="size-9 rounded-xl border border-white/20 object-cover shadow-[0_0_12px_rgba(255,62,171,0.3)] md:hidden"
               />
               <div>
-                <p className="font-display text-primary text-base tracking-[0.2em] uppercase md:hidden">
+                <p className="font-display text-gradient-neon text-base font-black tracking-[0.2em] uppercase md:hidden">
                   NEON OS
                 </p>
-                <p className="text-muted text-xs md:text-sm">
+                <p className="text-muted-foreground text-xs">
                   {isOnline ? "Sincronización activa" : "Modo offline activo"}
                 </p>
               </div>
@@ -184,7 +209,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 <Menu className="size-5" />
               </Button>
-              <Badge variant={isOnline ? "success" : "warning"}>
+              <Badge variant={isOnline ? "success" : "warning"} size="sm">
                 {isOnline ? (
                   <>
                     <Wifi className="mr-1 size-3" />
@@ -204,6 +229,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 px-4 py-5 pb-6 md:px-8 md:pb-8">
           {children}
         </main>
+
 
         <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <DialogContent className="max-w-sm md:hidden">
@@ -247,7 +273,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 variant="ghost"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  logout();
+                  handleLogout();
                 }}
               >
                 <LogOut className="size-4" />

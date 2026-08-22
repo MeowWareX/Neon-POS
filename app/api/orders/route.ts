@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { insertOrderWithSupabase } from "@/repositories/order-repository";
 import { orderSyncSchema } from "@/schemas/order";
 
 export async function POST(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const json = await request.json();
     const order = orderSyncSchema.parse(json);
@@ -44,3 +50,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

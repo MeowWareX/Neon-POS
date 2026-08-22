@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,70 +50,70 @@ export function LoginForm() {
   });
 
   return (
-    <Card className="neon-ring mx-auto w-full max-w-md">
+    <Card variant="elevated" className="mx-auto w-full max-w-md border-white/15 shadow-[0_0_50px_rgba(255,62,171,0.2)]">
       <CardHeader>
-        <div className="mb-2 flex items-center gap-3.5 lg:hidden">
-          <img
+        <div className="mb-3 flex items-center gap-3.5 lg:hidden">
+          <Image
             src="/logo.jpg"
             alt="Neon Logo"
-            className="size-11 rounded-xl border border-white/20 object-cover shadow-[0_0_16px_rgba(255,79,216,0.4)]"
+            width={44}
+            height={44}
+            className="size-11 rounded-xl border border-white/20 object-cover shadow-[0_0_16px_rgba(255,62,171,0.4)]"
           />
           <div>
-            <p className="font-display text-primary text-lg font-bold tracking-[0.2em] uppercase">
+            <p className="font-display text-gradient-neon text-lg font-black tracking-[0.2em] uppercase">
               NEON
             </p>
-            <p className="text-muted text-[10px] tracking-wider uppercase">
-              Drinks & Snacks
+            <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+              Drinks & Concentrados
             </p>
           </div>
         </div>
-        <CardTitle>Acceso rápido</CardTitle>
-        <CardDescription>
+        <CardTitle className="font-display text-xl font-bold text-white">Acceso a Neon OS</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
           Inicia sesión para operar el POS o administrar la operación desde
-          casa.
+          cualquier dispositivo.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={onSubmit}>
-          <div className="grid gap-3">
-            <Label htmlFor="email">Correo</Label>
-            <Input id="email" type="email" {...form.register("email")} />
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <div className="grid gap-2">
+            <Label htmlFor="email" className="text-xs font-bold text-slate-300">Correo Electrónico</Label>
+            <Input id="email" type="email" placeholder="usuario@clubneon.co" {...form.register("email")} />
             {form.formState.errors.email ? (
-              <p className="text-destructive text-sm">
+              <p className="text-destructive text-xs font-medium">
                 {form.formState.errors.email.message}
               </p>
             ) : null}
           </div>
 
-          <div className="grid gap-3">
-            <Label htmlFor="password">Contraseña</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="password" className="text-xs font-bold text-slate-300">Contraseña</Label>
             <Input
               id="password"
               type="password"
+              placeholder="••••••••"
               {...form.register("password")}
             />
             {form.formState.errors.password ? (
-              <p className="text-destructive text-sm">
+              <p className="text-destructive text-xs font-medium">
                 {form.formState.errors.password.message}
               </p>
             ) : null}
           </div>
 
-          <div className="grid gap-2">
-            {/* Demo quick-access removed to require real credentials */}
-          </div>
-
           <Button
-            className="w-full"
+            className="w-full font-bold"
             size="lg"
             disabled={isSubmitting}
             type="submit"
           >
             <LogIn className="size-4" />
-            {isSubmitting ? "Entrando..." : "Entrar a NEON OS"}
+            {isSubmitting ? "Autenticando..." : "Entrar a NEON OS"}
           </Button>
         </form>
       </CardContent>
     </Card>
   );
 }
+

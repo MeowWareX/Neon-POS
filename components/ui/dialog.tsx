@@ -16,17 +16,18 @@ export function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md transition-all duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
       <DialogPrimitive.Content
         className={cn(
-          "glass-panel fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/10 p-5 shadow-2xl",
+          "glass-panel-elevated fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-[1.75rem] border border-white/15 p-6 shadow-2xl transition-all duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           className,
         )}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="text-muted hover:text-foreground absolute top-4 right-4 rounded-full border border-white/10 bg-white/6 p-2">
+        <DialogPrimitive.Close className="absolute top-4 right-4 rounded-full border border-white/15 bg-white/6 p-2 text-muted-foreground transition-all duration-150 hover:border-pink-500/40 hover:bg-pink-500/20 hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/70">
           <X className="size-4" />
+          <span className="sr-only">Cerrar</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
@@ -37,7 +38,7 @@ export function DialogHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("space-y-2", className)} {...props} />;
+  return <div className={cn("space-y-2 pb-2", className)} {...props} />;
 }
 
 export function DialogTitle({
@@ -47,7 +48,7 @@ export function DialogTitle({
   return (
     <DialogPrimitive.Title
       className={cn(
-        "font-display text-lg tracking-[0.18em] uppercase",
+        "font-display text-lg font-bold tracking-[0.12em] text-white uppercase",
         className,
       )}
       {...props}
@@ -61,8 +62,21 @@ export function DialogDescription({
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
-      className={cn("text-muted text-sm", className)}
+      className={cn("text-muted-foreground text-xs leading-relaxed sm:text-sm", className)}
       {...props}
     />
   );
 }
+
+export function DialogFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3", className)}
+      {...props}
+    />
+  );
+}
+

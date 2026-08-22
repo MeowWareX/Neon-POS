@@ -12,7 +12,7 @@ export async function loginUser(
 
   if (supabase) {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(),
       password,
     });
 
@@ -24,22 +24,23 @@ export async function loginUser(
     const { data: profile } = await supabase
       .from("users")
       .select("id,full_name,role")
-      .eq("email", resolvedEmail)
+      .or(`auth_user_id.eq.${data.user.id},email.eq.${resolvedEmail}`)
       .maybeSingle();
+
+    const role: AppUser["role"] =
+      profile?.role === "admin" || profile?.role === "operator"
+        ? (profile.role as AppUser["role"])
+        : "operator";
 
     return {
       id: profile?.id ?? data.user.id,
       email: resolvedEmail,
       name:
         profile?.full_name ??
-        data.user.user_metadata.full_name ??
+        (data.user.user_metadata?.full_name as string | undefined) ??
         data.user.email?.split("@")[0] ??
         "Usuario",
-      role: (profile?.role === "admin" || profile?.role === "operator"
-        ? profile.role
-        : email.includes("admin")
-          ? "admin"
-          : "operator") as AppUser["role"],
+      role,
     };
   }
 
@@ -54,3 +55,13 @@ export async function loginUser(
     role: email.includes("admin") ? "admin" : "operator",
   };
 }
+
+export async function logoutUser(): Promise<void> {
+  const supabase = getSupabaseBrowserClient();
+  if (supabase) {
+    await supabase.auth.signOut().catch((err) => {
+      console.warn("Supabase signOut warning:", err);
+    });
+  }
+}
+

@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { insertPurchaseWithSupabase } from "@/repositories/admin-repository";
 import { purchaseSyncSchema } from "@/schemas/inventory";
 
 export async function POST(request: Request) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const json = await request.json();
     const purchase = purchaseSyncSchema.parse(json);

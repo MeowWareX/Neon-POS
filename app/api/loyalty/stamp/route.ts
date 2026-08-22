@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { isGoogleWalletConfigured } from "@/lib/env";
 import { loyaltyStampSchema } from "@/schemas/loyalty";
@@ -11,6 +12,11 @@ import {
 import { updateGoogleWalletPass } from "@/services/google-wallet.service";
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   const json = await request.json();
   const body = loyaltyStampSchema.parse(json);
 

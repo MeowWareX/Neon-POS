@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import {
   getLiquidInventoryWithSupabase,
@@ -7,7 +8,12 @@ import {
   upsertLiquidInventoryItemWithSupabase,
 } from "@/repositories/admin-repository";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
     if (!supabase) {
@@ -35,6 +41,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const json = await request.json();
     const supabase = getSupabaseAdminClient();
@@ -63,3 +74,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

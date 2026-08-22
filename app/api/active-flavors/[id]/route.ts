@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const { id } = await params;
     const supabase = getSupabaseAdminClient();

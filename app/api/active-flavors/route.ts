@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { mapActiveFlavorRow } from "@/lib/catalog-mappers";
 import { syncActiveFlavorWithSupabase } from "@/repositories/admin-repository";
@@ -6,7 +7,12 @@ import { activeFlavorSyncSchema } from "@/schemas/flavors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -36,6 +42,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const json = await request.json();
 
@@ -71,6 +82,11 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
 
@@ -108,3 +124,4 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+

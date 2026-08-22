@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireApiAuth } from "@/lib/auth-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import {
   deleteLiquidSaleWithSupabase,
@@ -6,7 +7,12 @@ import {
   insertLiquidSaleWithSupabase,
 } from "@/repositories/admin-repository";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const supabase = getSupabaseAdminClient();
     if (!supabase) {
@@ -30,6 +36,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireApiAuth(request, ["admin", "operator"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const json = await request.json();
     const supabase = getSupabaseAdminClient();
@@ -53,6 +64,11 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const auth = await requireApiAuth(request, ["admin"]);
+  if (!auth.ok) {
+    return auth.response;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -78,3 +94,4 @@ export async function DELETE(request: Request) {
     );
   }
 }
+
