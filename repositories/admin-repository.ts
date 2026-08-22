@@ -676,7 +676,10 @@ export async function getLiquidMovementsWithSupabase(
         .select("*")
         .order("created_at", { ascending: false });
       if (rawError) {
-        console.warn("getLiquidMovementsWithSupabase fallback warning:", rawError);
+        console.warn(
+          "getLiquidMovementsWithSupabase fallback warning:",
+          rawError,
+        );
         return [];
       }
       return (rawData || []).map((row) => ({

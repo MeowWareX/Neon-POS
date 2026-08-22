@@ -25,9 +25,10 @@ export function formatPercent(value: number) {
 }
 
 export function formatDateTime(value: string | Date) {
-  const d = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? new Date(`${value}T12:00:00-05:00`)
-    : new Date(value);
+  const d =
+    typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? new Date(`${value}T12:00:00-05:00`)
+      : new Date(value);
 
   return new Intl.DateTimeFormat("es-CO", {
     timeZone: "America/Bogota",
@@ -47,13 +48,13 @@ export function formatTime(value: string | Date) {
 }
 
 export function formatDate(value: string | Date) {
-  const d = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? new Date(`${value}T12:00:00-05:00`)
-    : new Date(value);
+  const d =
+    typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? new Date(`${value}T12:00:00-05:00`)
+      : new Date(value);
 
   return new Intl.DateTimeFormat("es-CO", {
     timeZone: "America/Bogota",
     dateStyle: "medium",
   }).format(d);
 }
-

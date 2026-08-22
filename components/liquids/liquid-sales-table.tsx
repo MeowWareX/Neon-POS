@@ -307,7 +307,7 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
                         )}
 
                         {group.notes && (
-                          <span className="text-muted text-xs truncate max-w-[300px]">
+                          <span className="text-muted max-w-[300px] truncate text-xs">
                             • {group.notes}
                           </span>
                         )}
@@ -486,4 +486,3 @@ export function LiquidSalesTable({ sales }: { sales: LiquidSale[] }) {
     </div>
   );
 }
-
