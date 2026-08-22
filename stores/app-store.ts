@@ -628,8 +628,8 @@ export const useAppStore = create<AppState>()(
       },
       addLiquidSale: (input: LiquidSaleInput) => {
         const config = LIQUID_VARIANT_CONFIG[input.variant];
-        const unitPrice = config?.price ?? 0;
-        const total = unitPrice * input.quantity;
+        const unitPrice = input.unitPrice ?? config?.price ?? 0;
+        const total = input.total ?? unitPrice * input.quantity;
 
         const newSale: LiquidSale = {
           id: crypto.randomUUID(),

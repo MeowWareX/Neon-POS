@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FlaskConical, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import {
@@ -50,7 +50,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const businessDate = useAppStore((state) => state.businessDate);
   const flavors = useAppStore((state) => state.flavors);
-  const liquidInventory = useAppStore((state) => state.liquidInventory) || [];
+  const rawLiquidInventory = useAppStore((state) => state.liquidInventory);
+  const liquidInventory = useMemo(
+    () => rawLiquidInventory || [],
+    [rawLiquidInventory],
+  );
   const addLiquidSale = useAppStore((state) => state.addLiquidSale);
 
   // Common Header State
@@ -70,6 +74,57 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const [quantity, setQuantity] = useState<number>(1);
   const [unitPriceInput, setUnitPriceInput] = useState<string>("");
   const [isCustomPrice, setIsCustomPrice] = useState<boolean>(false);
+  const [activePreset, setActivePreset] = useState<
+    "auto" | "standard" | "wholesale6" | "wholesale10" | "custom"
+  >("auto");
+
+  // Unified flavor options merging catalog flavors + stock inventory items
+  const availableFlavorOptions = useMemo(() => {
+    const optionsMap = new Map<
+      string,
+      {
+        key: string;
+        flavorId: string | null;
+        flavorName: string;
+        stock: number;
+      }
+    >();
+
+    // 1. Catalog flavors
+    flavors.forEach((f) => {
+      const stockItem = liquidInventory.find(
+        (inv) =>
+          inv.flavorId === f.id ||
+          inv.flavorName.toLowerCase() === f.name.toLowerCase(),
+      );
+      optionsMap.set(f.id, {
+        key: f.id,
+        flavorId: f.id,
+        flavorName: f.name,
+        stock: stockItem ? stockItem.currentStock : 0,
+      });
+    });
+
+    // 2. Liquid inventory stock items not covered by catalog
+    liquidInventory.forEach((inv) => {
+      const exists = Array.from(optionsMap.values()).some(
+        (opt) =>
+          (inv.flavorId && opt.flavorId === inv.flavorId) ||
+          opt.flavorName.toLowerCase() === inv.flavorName.toLowerCase(),
+      );
+      if (!exists) {
+        const key = inv.flavorId || `inv_${inv.id}`;
+        optionsMap.set(key, {
+          key,
+          flavorId: inv.flavorId || null,
+          flavorName: inv.flavorName,
+          stock: inv.currentStock,
+        });
+      }
+    });
+
+    return Array.from(optionsMap.values());
+  }, [flavors, liquidInventory]);
 
   const currentConfig = LIQUID_VARIANT_CONFIG[variant];
   const standardUnitPrice = currentConfig?.price ?? 0;
@@ -84,7 +139,17 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
 
   const handleVariantChange = (newVariant: LiquidVariantCode) => {
     setVariant(newVariant);
-    if (!isCustomPrice) {
+    const newHasAlcohol =
+      LIQUID_VARIANT_CONFIG[newVariant]?.hasAlcohol ?? false;
+    if (activePreset === "standard") {
+      setUnitPriceInput(String(newHasAlcohol ? 35000 : 30000));
+    } else if (activePreset === "wholesale6") {
+      const price = Math.round((newHasAlcohol ? 200000 : 170000) / 6);
+      setUnitPriceInput(String(price));
+    } else if (activePreset === "wholesale10") {
+      const price = newHasAlcohol ? 30000 : 26000;
+      setUnitPriceInput(String(price));
+    } else if (!isCustomPrice) {
       setUnitPriceInput("");
     }
   };
@@ -92,7 +157,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   const handleQuantityChange = (newQty: number) => {
     const validQty = Math.max(1, newQty);
     setQuantity(validQty);
-    if (!isCustomPrice) {
+    if (activePreset === "auto" && !isCustomPrice) {
       setUnitPriceInput("");
     }
   };
@@ -101,6 +166,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
     type: "standard" | "wholesale6" | "wholesale10",
   ) => {
     setIsCustomPrice(true);
+    setActivePreset(type);
     const hasAlcohol = currentConfig?.hasAlcohol ?? false;
     if (type === "standard") {
       const price = hasAlcohol ? 35000 : 30000;
@@ -117,6 +183,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
   };
 
   const resetToAutoPrice = () => {
+    setActivePreset("auto");
     setIsCustomPrice(false);
     setUnitPriceInput("");
   };
@@ -139,9 +206,17 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
       finalFlavorName = customFlavor.trim() || "Sabor Personalizado";
       finalFlavorId = null;
     } else if (flavorId !== "none") {
-      const selected = flavors.find((f) => f.id === flavorId);
-      finalFlavorName = selected ? selected.name : "Sabor Específico";
-      finalFlavorId = flavorId;
+      const selectedOpt = availableFlavorOptions.find(
+        (opt) => opt.key === flavorId,
+      );
+      if (selectedOpt) {
+        finalFlavorName = selectedOpt.flavorName;
+        finalFlavorId = selectedOpt.flavorId;
+      } else {
+        const selected = flavors.find((f) => f.id === flavorId);
+        finalFlavorName = selected ? selected.name : "Sabor Específico";
+        finalFlavorId = flavorId;
+      }
     }
 
     const isWholesale = activeUnitPrice < standardUnitPrice;
@@ -165,8 +240,15 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
 
     setItems((prev) => [...prev, newItem]);
     setQuantity(1);
-    setIsCustomPrice(false);
-    setUnitPriceInput("");
+    setFlavorId("none");
+    setCustomFlavor("");
+
+    // Keep combo / custom preset active for next flavors if a preset was selected
+    if (activePreset === "auto") {
+      setIsCustomPrice(false);
+      setUnitPriceInput("");
+    }
+
     toast.success(
       `Añadido: ${quantity}x ${currentConfig.label} (${finalFlavorName}) a ${currency(activeUnitPrice)} c/u`,
     );
@@ -194,9 +276,17 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
         finalFlavorName = customFlavor.trim() || "Sabor Personalizado";
         finalFlavorId = null;
       } else if (flavorId !== "none") {
-        const selected = flavors.find((f) => f.id === flavorId);
-        finalFlavorName = selected ? selected.name : "Sabor Específico";
-        finalFlavorId = flavorId;
+        const selectedOpt = availableFlavorOptions.find(
+          (opt) => opt.key === flavorId,
+        );
+        if (selectedOpt) {
+          finalFlavorName = selectedOpt.flavorName;
+          finalFlavorId = selectedOpt.flavorId;
+        } else {
+          const selected = flavors.find((f) => f.id === flavorId);
+          finalFlavorName = selected ? selected.name : "Sabor Específico";
+          finalFlavorId = flavorId;
+        }
       }
 
       finalItems = [
@@ -229,6 +319,8 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           flavorId: item.flavorId,
           flavorName: item.flavorName,
           quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          total: item.total,
           paymentMethod,
           customerName: customerName.trim() || null,
           notes: notes.trim() || null,
@@ -245,9 +337,14 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
       // Reset form
       setItems([]);
       setQuantity(1);
+      setActivePreset("auto");
+      setIsCustomPrice(false);
+      setUnitPriceInput("");
       setCustomerName("");
       setNotes("");
       setCustomFlavor("");
+      setFlavorId("none");
+      setOpen(false);
       setOpen(false);
     } catch (err: unknown) {
       toast.error(
@@ -400,7 +497,8 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     type="button"
                     onClick={() => applyPresetPrice("standard")}
                     className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
-                      !isCustomPrice && quantity < 6
+                      activePreset === "standard" ||
+                      (activePreset === "auto" && !isCustomPrice && quantity < 6)
                         ? "border-primary/50 bg-primary/20 text-white"
                         : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
                     }`}
@@ -412,8 +510,12 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     type="button"
                     onClick={() => applyPresetPrice("wholesale6")}
                     className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
-                      quantity >= 6 && quantity < 10 && !isCustomPrice
-                        ? "border-amber-500/50 bg-amber-500/20 text-amber-300"
+                      activePreset === "wholesale6" ||
+                      (activePreset === "auto" &&
+                        quantity >= 6 &&
+                        quantity < 10 &&
+                        !isCustomPrice)
+                        ? "border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
                         : "border-white/10 bg-white/5 text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-300"
                     }`}
                   >
@@ -425,8 +527,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     type="button"
                     onClick={() => applyPresetPrice("wholesale10")}
                     className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
-                      quantity >= 10 && !isCustomPrice
-                        ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300"
+                      activePreset === "wholesale10" ||
+                      (activePreset === "auto" &&
+                        quantity >= 10 &&
+                        !isCustomPrice)
+                        ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
                         : "border-white/10 bg-white/5 text-emerald-400/80 hover:bg-emerald-500/10 hover:text-emerald-300"
                     }`}
                   >
@@ -434,7 +539,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     {currency(currentConfig.hasAlcohol ? 300000 : 260000)})
                   </button>
 
-                  {isCustomPrice && (
+                  {(isCustomPrice || activePreset !== "auto") && (
                     <button
                       type="button"
                       onClick={resetToAutoPrice}
@@ -454,32 +559,36 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                       Sabor del Líquido
                     </Label>
                     {(() => {
-                      const selectedFlavorObj = flavors.find(
-                        (f) => f.id === flavorId,
-                      );
-                      const selectedStockItem = liquidInventory.find(
-                        (item) =>
-                          (flavorId !== "none" &&
-                            flavorId !== "custom" &&
-                            item.flavorId === flavorId) ||
-                          (selectedFlavorObj &&
-                            item.flavorName.toLowerCase() ===
-                              selectedFlavorObj.name.toLowerCase()) ||
-                          (flavorId === "custom" &&
-                            customFlavor &&
-                            item.flavorName.toLowerCase() ===
-                              customFlavor.trim().toLowerCase()),
-                      );
+                      if (flavorId === "none") return null;
+                      let stockCount: number | null = null;
 
-                      if (!selectedStockItem) return null;
-                      const inStock = selectedStockItem.currentStock;
+                      if (flavorId === "custom" && customFlavor) {
+                        const match = liquidInventory.find(
+                          (item) =>
+                            item.flavorName.toLowerCase() ===
+                            customFlavor.trim().toLowerCase(),
+                        );
+                        stockCount = match ? match.currentStock : null;
+                      } else {
+                        const selectedOpt = availableFlavorOptions.find(
+                          (opt) => opt.key === flavorId,
+                        );
+                        if (selectedOpt) {
+                          stockCount = selectedOpt.stock;
+                        }
+                      }
+
+                      if (stockCount === null) return null;
+
                       return (
                         <span
                           className={`text-[10px] font-bold ${
-                            inStock > 0 ? "text-emerald-400" : "text-rose-400"
+                            stockCount > 0
+                              ? "text-emerald-400"
+                              : "text-rose-400"
                           }`}
                         >
-                          Stock: {inStock} bolsa(s)
+                          Stock: {stockCount} bolsa(s)
                         </span>
                       );
                     })()}
@@ -490,26 +599,11 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Sin sabor específico</SelectItem>
-                      {flavors.map((f) => {
-                        const stockItem = liquidInventory.find(
-                          (inv) =>
-                            inv.flavorId === f.id ||
-                            inv.flavorName.toLowerCase() ===
-                              f.name.toLowerCase(),
-                        );
-                        const stockCount = stockItem
-                          ? stockItem.currentStock
-                          : null;
-
-                        return (
-                          <SelectItem key={f.id} value={f.id}>
-                            {f.name}{" "}
-                            {stockCount !== null
-                              ? `(${stockCount} en stock)`
-                              : ""}
-                          </SelectItem>
-                        );
-                      })}
+                      {availableFlavorOptions.map((opt) => (
+                        <SelectItem key={opt.key} value={opt.key}>
+                          {opt.flavorName} ({opt.stock} en stock)
+                        </SelectItem>
+                      ))}
                       <SelectItem value="custom">
                         ✏️ Escribir otro sabor...
                       </SelectItem>

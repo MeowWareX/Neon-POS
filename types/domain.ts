@@ -222,6 +222,8 @@ export interface LiquidSaleInput {
   flavorId?: string | null;
   flavorName?: string | null;
   quantity: number;
+  unitPrice?: number;
+  total?: number;
   paymentMethod: PaymentMethod;
   customerName?: string | null;
   notes?: string | null;
