@@ -19,12 +19,9 @@ const badgeVariants = cva(
           "border-purple-400/40 bg-purple-400/15 text-purple-300 shadow-[0_0_12px_rgba(147,51,234,0.2)]",
         destructive:
           "border-rose-500/40 bg-rose-500/15 text-rose-300 shadow-[0_0_12px_rgba(255,71,102,0.2)]",
-        glass:
-          "glass-panel border-white/20 text-slate-200",
-        outline:
-          "border-white/15 bg-transparent text-slate-300",
-        muted:
-          "border-white/10 bg-white/5 text-muted",
+        glass: "glass-panel border-white/20 text-slate-200",
+        outline: "border-white/15 bg-transparent text-slate-300",
+        muted: "border-white/10 bg-white/5 text-muted",
       },
       size: {
         sm: "px-2 py-0.5 text-[10px]",
@@ -46,7 +43,9 @@ export interface BadgeProps
 
 export function Badge({ className, variant, size, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props} />
+    <div
+      className={cn(badgeVariants({ variant, size }), className)}
+      {...props}
+    />
   );
 }
-

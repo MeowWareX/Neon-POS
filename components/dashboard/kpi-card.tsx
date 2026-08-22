@@ -27,17 +27,25 @@ export function KpiCard({
     <Card className="glass-interactive overflow-hidden">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
-          <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">{label}</p>
-          <div className={cn("flex size-8 items-center justify-center rounded-xl border", iconVariants[variant])}>
+          <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+            {label}
+          </p>
+          <div
+            className={cn(
+              "flex size-8 items-center justify-center rounded-xl border",
+              iconVariants[variant],
+            )}
+          >
             <Icon className="size-4" />
           </div>
         </div>
         <p className="font-display mt-4 text-3xl font-bold tracking-tight text-white tabular-nums sm:text-4xl">
           {value}
         </p>
-        <p className="text-muted-foreground mt-2 text-xs leading-relaxed">{hint}</p>
+        <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
+          {hint}
+        </p>
       </CardContent>
     </Card>
   );
 }
-

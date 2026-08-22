@@ -30,7 +30,6 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     viewBox="0 0 24 24"
     fill="none"
-
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
@@ -402,7 +401,9 @@ export default function HomePage() {
   const [selectedArtModal, setSelectedArtModal] = useState<string | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
   const [showAllFlavors, setShowAllFlavors] = useState(false);
-  const [pricingCategoryMobile, setPricingCategoryMobile] = useState<"con-licor" | "sin-licor">("con-licor");
+  const [pricingCategoryMobile, setPricingCategoryMobile] = useState<
+    "con-licor" | "sin-licor"
+  >("con-licor");
 
   // Profit Calculator State
   const [calcBags, setCalcBags] = useState<number>(10);
@@ -600,7 +601,7 @@ export default function HomePage() {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden items-center gap-6 text-xs font-semibold text-muted-foreground md:flex">
+          <div className="text-muted-foreground hidden items-center gap-6 text-xs font-semibold md:flex">
             <a
               href="#concentrados"
               className="transition-colors hover:text-pink-400"
@@ -651,11 +652,7 @@ export default function HomePage() {
               <Link href="/club/register">Neon Club</Link>
             </Button>
 
-            <Button
-              asChild
-              variant="emerald"
-              size="sm"
-            >
+            <Button asChild variant="emerald" size="sm">
               <a
                 href="https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20informaci%C3%B3n%20y%20precios%20al%20por%20mayor%20de%20l%C3%ADquidos%20concentrados%20para%20granizadoras"
                 target="_blank"
@@ -675,7 +672,10 @@ export default function HomePage() {
         <div className="pointer-events-none absolute top-1/2 left-1/2 -z-10 size-[450px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-500/15 blur-[120px] sm:size-[550px]"></div>
 
         <div className="space-y-5 sm:space-y-6">
-          <Badge variant="default" className="gap-2 py-1 px-3.5 text-[11px] sm:text-xs">
+          <Badge
+            variant="default"
+            className="gap-2 px-3.5 py-1 text-[11px] sm:text-xs"
+          >
             <Sparkles className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
             Mayorista & Detal · Fórmulas de Alto Rendimiento
           </Badge>
@@ -687,33 +687,51 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-base leading-relaxed font-normal">
-            Abastece tu negocio o evento con fórmulas de alta densidad listas para vaciar en tu granizadora. Sabores intensos con y sin licor, congelación rápida y <strong className="text-pink-300 font-semibold">hasta 70% de rentabilidad neta</strong>.
+          <p className="text-muted-foreground mx-auto max-w-2xl text-xs leading-relaxed font-normal sm:text-base">
+            Abastece tu negocio o evento con fórmulas de alta densidad listas
+            para vaciar en tu granizadora. Sabores intensos con y sin licor,
+            congelación rápida y{" "}
+            <strong className="font-semibold text-pink-300">
+              hasta 70% de rentabilidad neta
+            </strong>
+            .
           </p>
 
           {/* Quick Value Metrics Chips */}
           <div className="mx-auto grid max-w-2xl grid-cols-3 gap-2.5 pt-1 sm:gap-4">
             <div className="glass-card flex flex-col items-center justify-center rounded-2xl p-3 text-center sm:p-4">
-              <span className="font-display text-sm sm:text-lg font-black text-emerald-400 tabular-nums">~$850 COP</span>
-              <span className="text-muted-foreground text-[10px] sm:text-xs font-semibold">Costo por vaso</span>
+              <span className="font-display text-sm font-black text-emerald-400 tabular-nums sm:text-lg">
+                ~$850 COP
+              </span>
+              <span className="text-muted-foreground text-[10px] font-semibold sm:text-xs">
+                Costo por vaso
+              </span>
             </div>
             <div className="glass-card flex flex-col items-center justify-center rounded-2xl p-3 text-center sm:p-4">
-              <span className="font-display text-sm sm:text-lg font-black text-cyan-400 tabular-nums">~35 Vasos</span>
-              <span className="text-muted-foreground text-[10px] sm:text-xs font-semibold">Rinde cada bolsa</span>
+              <span className="font-display text-sm font-black text-cyan-400 tabular-nums sm:text-lg">
+                ~35 Vasos
+              </span>
+              <span className="text-muted-foreground text-[10px] font-semibold sm:text-xs">
+                Rinde cada bolsa
+              </span>
             </div>
             <div className="glass-card flex flex-col items-center justify-center rounded-2xl p-3 text-center sm:p-4">
-              <span className="font-display text-sm sm:text-lg font-black text-pink-400">Envíos 🇨🇴</span>
-              <span className="text-muted-foreground text-[10px] sm:text-xs font-semibold">Toda Colombia</span>
+              <span className="font-display text-sm font-black text-pink-400 sm:text-lg">
+                Envíos 🇨🇴
+              </span>
+              <span className="text-muted-foreground text-[10px] font-semibold sm:text-xs">
+                Toda Colombia
+              </span>
             </div>
           </div>
 
           {/* Action CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 sm:pt-4">
+          <div className="flex flex-col items-center justify-center gap-3 pt-3 sm:flex-row sm:pt-4">
             <Button
               asChild
               variant="emerald"
               size="lg"
-              className="w-full sm:w-auto font-bold text-sm sm:text-base px-6 sm:px-8 py-3.5 sm:py-4 shadow-lg shadow-emerald-500/25"
+              className="w-full px-6 py-3.5 text-sm font-bold shadow-lg shadow-emerald-500/25 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
             >
               <a
                 href="https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20cotizar%20un%20pedido%20al%20por%20mayor%20de%20l%C3%ADquidos%20para%20granizadora"
@@ -729,7 +747,7 @@ export default function HomePage() {
               asChild
               variant="glass"
               size="lg"
-              className="w-full sm:w-auto font-bold text-sm sm:text-base px-6 py-3.5"
+              className="w-full px-6 py-3.5 text-sm font-bold sm:w-auto sm:text-base"
             >
               <a href="#precios">
                 <BadgePercent className="h-4 w-4 text-pink-400" />
@@ -741,10 +759,13 @@ export default function HomePage() {
       </section>
 
       {/* Main Focus 1: Pricing & Volume Discounts */}
-      <section id="precios" className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-8">
-        <div className="glass-panel space-y-6 sm:space-y-8 rounded-3xl border border-white/10 p-5 backdrop-blur-xl sm:p-10">
+      <section
+        id="precios"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12"
+      >
+        <div className="glass-panel space-y-6 rounded-3xl border border-white/10 p-5 backdrop-blur-xl sm:space-y-8 sm:p-10">
           <div className="mx-auto max-w-3xl space-y-2 text-center">
-            <Badge variant="success" className="gap-1.5 py-1 px-3">
+            <Badge variant="success" className="gap-1.5 px-3 py-1">
               <BadgePercent className="h-3.5 w-3.5" />
               Precios Directos de Fábrica
             </Badge>
@@ -757,10 +778,10 @@ export default function HomePage() {
           </div>
 
           {/* Mobile Category Toggle (Only visible on mobile screens) */}
-          <div className="flex md:hidden items-center justify-center p-1 rounded-2xl bg-white/5 border border-white/10 max-w-xs mx-auto">
+          <div className="mx-auto flex max-w-xs items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-1 md:hidden">
             <button
               onClick={() => setPricingCategoryMobile("con-licor")}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all ${
                 pricingCategoryMobile === "con-licor"
                   ? "bg-pink-500 text-white shadow-md shadow-pink-500/25"
                   : "text-muted-foreground hover:text-white"
@@ -770,7 +791,7 @@ export default function HomePage() {
             </button>
             <button
               onClick={() => setPricingCategoryMobile("sin-licor")}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all ${
                 pricingCategoryMobile === "sin-licor"
                   ? "bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/25"
                   : "text-muted-foreground hover:text-white"
@@ -782,19 +803,23 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Table 1: Con Licor */}
-            <div className={`glass-card relative space-y-5 overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-pink-950/25 via-card to-black p-5 sm:p-6 shadow-xl ${
-              pricingCategoryMobile === "sin-licor" ? "hidden md:block" : "block"
-            }`}>
+            <div
+              className={`glass-card via-card relative space-y-5 overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-pink-950/25 to-black p-5 shadow-xl sm:p-6 ${
+                pricingCategoryMobile === "sin-licor"
+                  ? "hidden md:block"
+                  : "block"
+              }`}
+            >
               <div className="flex items-center justify-between border-b border-pink-500/20 pb-3 sm:pb-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl border border-pink-500/30 bg-pink-500/20 p-2.5 text-pink-400">
                     <Wine className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <h3 className="font-display text-lg sm:text-xl font-bold text-white">
+                    <h3 className="font-display text-lg font-bold text-white sm:text-xl">
                       Líquidos CON LICOR
                     </h3>
-                    <p className="text-[11px] sm:text-xs font-semibold text-pink-400">
+                    <p className="text-[11px] font-semibold text-pink-400 sm:text-xs">
                       Tequila, Whisky, Vodka & Champagne
                     </p>
                   </div>
@@ -804,8 +829,8 @@ export default function HomePage() {
                 </Badge>
               </div>
 
-              <div className="space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
-                <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 p-3.5 sm:p-4 transition-colors hover:bg-white/8">
+              <div className="space-y-2.5 text-xs sm:space-y-3 sm:text-sm">
+                <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 p-3.5 transition-colors hover:bg-white/8 sm:p-4">
                   <div>
                     <span className="block font-bold text-white">
                       1 Unidad (Bolsa Concentrada)
@@ -814,12 +839,12 @@ export default function HomePage() {
                       Prueba o venta al detal
                     </span>
                   </div>
-                  <span className="font-display text-lg sm:text-xl font-black text-pink-400 tabular-nums">
+                  <span className="font-display text-lg font-black text-pink-400 tabular-nums sm:text-xl">
                     $35.000
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border border-pink-500/30 bg-pink-500/10 p-3.5 sm:p-4 transition-colors hover:bg-pink-500/15">
+                <div className="flex items-center justify-between rounded-2xl border border-pink-500/30 bg-pink-500/10 p-3.5 transition-colors hover:bg-pink-500/15 sm:p-4">
                   <div>
                     <span className="block font-bold text-white">
                       Pack de 6 Bolsas
@@ -828,16 +853,20 @@ export default function HomePage() {
                       ~$33.333 por bolsa
                     </span>
                   </div>
-                  <span className="font-display text-lg sm:text-xl font-black text-pink-300 tabular-nums">
+                  <span className="font-display text-lg font-black text-pink-300 tabular-nums sm:text-xl">
                     $200.000
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-3.5 sm:p-4 shadow-lg">
+                <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-3.5 shadow-lg sm:p-4">
                   <div>
                     <span className="flex items-center gap-1.5 font-extrabold text-white">
                       Pack de 10 Bolsas
-                      <Badge variant="success" size="sm" className="bg-emerald-400 text-slate-950 font-black text-[10px]">
+                      <Badge
+                        variant="success"
+                        size="sm"
+                        className="bg-emerald-400 text-[10px] font-black text-slate-950"
+                      >
                         Mejor Valor
                       </Badge>
                     </span>
@@ -845,7 +874,7 @@ export default function HomePage() {
                       $30.000/bolsa · Ahorras $50.000
                     </span>
                   </div>
-                  <span className="font-display text-xl sm:text-2xl font-black text-emerald-400 tabular-nums">
+                  <span className="font-display text-xl font-black text-emerald-400 tabular-nums sm:text-2xl">
                     $300.000
                   </span>
                 </div>
@@ -869,19 +898,23 @@ export default function HomePage() {
             </div>
 
             {/* Table 2: Sin Licor */}
-            <div className={`glass-card relative space-y-5 overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/25 via-card to-black p-5 sm:p-6 shadow-xl ${
-              pricingCategoryMobile === "con-licor" ? "hidden md:block" : "block"
-            }`}>
+            <div
+              className={`glass-card via-card relative space-y-5 overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/25 to-black p-5 shadow-xl sm:p-6 ${
+                pricingCategoryMobile === "con-licor"
+                  ? "hidden md:block"
+                  : "block"
+              }`}
+            >
               <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3 sm:pb-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/20 p-2.5 text-cyan-400">
                     <CupSoda className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <h3 className="font-display text-lg sm:text-xl font-bold text-white">
+                    <h3 className="font-display text-lg font-bold text-white sm:text-xl">
                       Líquidos SIN LICOR
                     </h3>
-                    <p className="text-[11px] sm:text-xs font-semibold text-cyan-400">
+                    <p className="text-[11px] font-semibold text-cyan-400 sm:text-xs">
                       15 Sabores Frutales & Premium
                     </p>
                   </div>
@@ -891,8 +924,8 @@ export default function HomePage() {
                 </Badge>
               </div>
 
-              <div className="space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
-                <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 p-3.5 sm:p-4 transition-colors hover:bg-white/8">
+              <div className="space-y-2.5 text-xs sm:space-y-3 sm:text-sm">
+                <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 p-3.5 transition-colors hover:bg-white/8 sm:p-4">
                   <div>
                     <span className="block font-bold text-white">
                       1 Unidad (Bolsa Concentrada)
@@ -901,12 +934,12 @@ export default function HomePage() {
                       Venta al detal
                     </span>
                   </div>
-                  <span className="font-display text-lg sm:text-xl font-black text-cyan-400 tabular-nums">
+                  <span className="font-display text-lg font-black text-cyan-400 tabular-nums sm:text-xl">
                     $30.000
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3.5 sm:p-4 transition-colors hover:bg-cyan-500/15">
+                <div className="flex items-center justify-between rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3.5 transition-colors hover:bg-cyan-500/15 sm:p-4">
                   <div>
                     <span className="block font-bold text-white">
                       Pack de 6 Unidades
@@ -915,16 +948,20 @@ export default function HomePage() {
                       ~$28.333 por bolsa
                     </span>
                   </div>
-                  <span className="font-display text-lg sm:text-xl font-black text-cyan-300 tabular-nums">
+                  <span className="font-display text-lg font-black text-cyan-300 tabular-nums sm:text-xl">
                     $170.000
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-3.5 sm:p-4 shadow-lg">
+                <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-3.5 shadow-lg sm:p-4">
                   <div>
                     <span className="flex items-center gap-1.5 font-extrabold text-white">
                       Pack de 10 Unidades
-                      <Badge variant="success" size="sm" className="bg-emerald-400 text-slate-950 font-black text-[10px]">
+                      <Badge
+                        variant="success"
+                        size="sm"
+                        className="bg-emerald-400 text-[10px] font-black text-slate-950"
+                      >
                         Mejor Valor
                       </Badge>
                     </span>
@@ -932,7 +969,7 @@ export default function HomePage() {
                       $26.000/bolsa · Ahorras $40.000
                     </span>
                   </div>
-                  <span className="font-display text-xl sm:text-2xl font-black text-emerald-400 tabular-nums">
+                  <span className="font-display text-xl font-black text-emerald-400 tabular-nums sm:text-2xl">
                     $260.000
                   </span>
                 </div>
@@ -961,12 +998,12 @@ export default function HomePage() {
       {/* Main Focus 2: Profit Margin Calculator */}
       <section
         id="calculadora"
-        className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-8"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12"
       >
-        <div className="glass-panel-elevated relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-card to-black p-5 sm:p-10 backdrop-blur-xl">
-          <div className="grid grid-cols-1 items-center gap-6 lg:gap-8 lg:grid-cols-12">
+        <div className="glass-panel-elevated via-card relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 to-black p-5 backdrop-blur-xl sm:p-10">
+          <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12 lg:gap-8">
             <div className="space-y-4 lg:col-span-6">
-              <Badge variant="success" className="gap-2 py-1 px-3">
+              <Badge variant="success" className="gap-2 px-3 py-1">
                 <Calculator className="h-4 w-4" />
                 Simulador de Rentabilidad
               </Badge>
@@ -976,13 +1013,14 @@ export default function HomePage() {
               </h2>
 
               <p className="text-muted-foreground text-xs leading-relaxed sm:text-sm">
-                Ajusta las bolsas y tu precio por vaso para simular tu ingreso real en máquina granizadora.
+                Ajusta las bolsas y tu precio por vaso para simular tu ingreso
+                real en máquina granizadora.
               </p>
 
               {/* Calculator Inputs & Presets */}
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="text-muted-foreground mb-1.5 block text-xs font-bold uppercase tracking-wider">
+                  <label className="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase">
                     Tipo de Concentrado:
                   </label>
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -991,7 +1029,7 @@ export default function HomePage() {
                       className={`cursor-pointer rounded-2xl border px-3 py-2.5 text-xs font-bold transition-all duration-200 ${
                         calcType === "con-licor"
                           ? "border-pink-500 bg-pink-500/20 text-pink-300 shadow-[0_0_16px_rgba(255,62,171,0.25)]"
-                          : "border-white/10 bg-white/5 text-muted-foreground hover:border-white/20 hover:text-white"
+                          : "text-muted-foreground border-white/10 bg-white/5 hover:border-white/20 hover:text-white"
                       }`}
                     >
                       🍹 Con Licor
@@ -1001,7 +1039,7 @@ export default function HomePage() {
                       className={`cursor-pointer rounded-2xl border px-3 py-2.5 text-xs font-bold transition-all duration-200 ${
                         calcType === "sin-licor"
                           ? "border-cyan-400 bg-cyan-400/20 text-cyan-300 shadow-[0_0_16px_rgba(0,240,255,0.25)]"
-                          : "border-white/10 bg-white/5 text-muted-foreground hover:border-white/20 hover:text-white"
+                          : "text-muted-foreground border-white/10 bg-white/5 hover:border-white/20 hover:text-white"
                       }`}
                     >
                       🥤 Sin Licor
@@ -1026,7 +1064,7 @@ export default function HomePage() {
                         className={`cursor-pointer rounded-xl border py-1.5 text-[11px] font-bold transition-all ${
                           calcBags === preset
                             ? "border-emerald-500 bg-emerald-500/25 text-emerald-300"
-                            : "border-white/8 bg-white/4 text-muted-foreground hover:text-white"
+                            : "text-muted-foreground border-white/8 bg-white/4 hover:text-white"
                         }`}
                       >
                         {preset} {preset === 10 ? "⭐" : "Bolsas"}
@@ -1070,7 +1108,7 @@ export default function HomePage() {
             </div>
 
             {/* Simulation Results Display */}
-            <div className="glass-card space-y-4 sm:space-y-5 rounded-3xl border border-emerald-500/30 p-5 sm:p-6 shadow-2xl lg:col-span-6">
+            <div className="glass-card space-y-4 rounded-3xl border border-emerald-500/30 p-5 shadow-2xl sm:space-y-5 sm:p-6 lg:col-span-6">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <span className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
                   Resultado Financiero
@@ -1086,7 +1124,7 @@ export default function HomePage() {
                   <span className="text-muted-foreground block text-[11px]">
                     Inversión:
                   </span>
-                  <span className="font-display text-base sm:text-xl font-bold text-white tabular-nums">
+                  <span className="font-display text-base font-bold text-white tabular-nums sm:text-xl">
                     ${totalCost.toLocaleString("es-CO")}
                   </span>
                 </div>
@@ -1095,7 +1133,7 @@ export default function HomePage() {
                   <span className="text-muted-foreground block text-[11px]">
                     Producción Total:
                   </span>
-                  <span className="font-display text-base sm:text-xl font-bold text-emerald-400 tabular-nums">
+                  <span className="font-display text-base font-bold text-emerald-400 tabular-nums sm:text-xl">
                     {totalGlasses} vasos
                   </span>
                 </div>
@@ -1105,7 +1143,7 @@ export default function HomePage() {
                 <span className="block text-[11px] font-bold tracking-wider text-emerald-300 uppercase">
                   Ventas Brutas Estimadas:
                 </span>
-                <span className="font-display text-xl sm:text-2xl font-black text-white tabular-nums">
+                <span className="font-display text-xl font-black text-white tabular-nums sm:text-2xl">
                   ${estimatedRevenue.toLocaleString("es-CO")} COP
                 </span>
               </div>
@@ -1114,7 +1152,7 @@ export default function HomePage() {
                 <span className="block text-[11px] font-bold tracking-wider text-pink-300 uppercase">
                   GANANCIA NETA ESTIMADA:
                 </span>
-                <span className="font-display text-2xl sm:text-3xl font-black text-pink-400 tabular-nums">
+                <span className="font-display text-2xl font-black text-pink-400 tabular-nums sm:text-3xl">
                   +${estimatedProfit.toLocaleString("es-CO")} COP
                 </span>
               </div>
@@ -1142,11 +1180,11 @@ export default function HomePage() {
       {/* Main Focus 3: Sales Arts Showcase */}
       <section
         id="artes-ventas"
-        className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-8"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12"
       >
         <div className="space-y-6">
           <div className="flex flex-col items-center space-y-2 text-center">
-            <Badge variant="default" className="gap-1.5 py-1 px-3">
+            <Badge variant="default" className="gap-1.5 px-3 py-1">
               <Sparkles className="h-3.5 w-3.5" />
               Material Promocional
             </Badge>
@@ -1154,7 +1192,8 @@ export default function HomePage() {
               Piezas & Artes de Ventas Oficiales
             </h2>
             <p className="text-muted-foreground max-w-2xl text-xs sm:text-sm">
-              Artes listos para imprimir o exhibir en tu establecimiento comercial.
+              Artes listos para imprimir o exhibir en tu establecimiento
+              comercial.
             </p>
           </div>
 
@@ -1177,7 +1216,11 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent"></div>
 
                   <div className="absolute top-3.5 left-3.5">
-                    <Badge variant="default" size="sm" className="bg-pink-500/90 text-white font-extrabold backdrop-blur-md">
+                    <Badge
+                      variant="default"
+                      size="sm"
+                      className="bg-pink-500/90 font-extrabold text-white backdrop-blur-md"
+                    >
                       {art.badge}
                     </Badge>
                   </div>
@@ -1237,7 +1280,9 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col items-center justify-between gap-3 pt-4 sm:flex-row">
-              <p className="text-muted-foreground text-xs">{activeArt.subtitle}</p>
+              <p className="text-muted-foreground text-xs">
+                {activeArt.subtitle}
+              </p>
               <Button
                 asChild
                 variant="emerald"
@@ -1261,10 +1306,13 @@ export default function HomePage() {
       )}
 
       {/* Main Focus 4: Filterable Flavor Catalog & SKUs */}
-      <section id="sabores" className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-8">
+      <section
+        id="sabores"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12"
+      >
         <div className="space-y-6">
           <div className="flex flex-col items-center space-y-2 text-center">
-            <Badge variant="warning" className="gap-1.5 py-1 px-3">
+            <Badge variant="warning" className="gap-1.5 px-3 py-1">
               <Droplet className="h-3.5 w-3.5" />
               Catálogo de Sabores & SKUs
             </Badge>
@@ -1272,7 +1320,8 @@ export default function HomePage() {
               Nuestros 30+ Sabores Disponibles
             </h2>
             <p className="text-muted-foreground max-w-2xl text-xs sm:text-sm">
-              Fórmulas balanceadas con el nivel exacto de azúcar para no saturar tu granizadora.
+              Fórmulas balanceadas con el nivel exacto de azúcar para no saturar
+              tu granizadora.
             </p>
           </div>
 
@@ -1331,7 +1380,7 @@ export default function HomePage() {
                 className="glass-card glass-interactive group relative overflow-hidden rounded-2xl p-4 sm:p-5"
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-mono text-[10px] text-muted-foreground font-semibold">
+                  <span className="text-muted-foreground font-mono text-[10px] font-semibold">
                     SKU: {flavor.sku}
                   </span>
                   <span
@@ -1383,10 +1432,16 @@ export default function HomePage() {
                 variant="glass"
                 size="default"
                 onClick={() => setShowAllFlavors(!showAllFlavors)}
-                className="gap-2 text-xs font-bold border-pink-500/30 text-pink-300 hover:bg-pink-500/15"
+                className="gap-2 border-pink-500/30 text-xs font-bold text-pink-300 hover:bg-pink-500/15"
               >
-                <span>{showAllFlavors ? "Mostrar Menos Sabores" : `Ver Todos los ${FLAVOR_CATALOG.length} Sabores (${FLAVOR_CATALOG.length - 8} más)`}</span>
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showAllFlavors ? "rotate-180" : ""}`} />
+                <span>
+                  {showAllFlavors
+                    ? "Mostrar Menos Sabores"
+                    : `Ver Todos los ${FLAVOR_CATALOG.length} Sabores (${FLAVOR_CATALOG.length - 8} más)`}
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${showAllFlavors ? "rotate-180" : ""}`}
+                />
               </Button>
             </div>
           )}
@@ -1396,11 +1451,11 @@ export default function HomePage() {
       {/* Main Focus 5: Technical Reliability */}
       <section
         id="concentrados"
-        className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-8"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12"
       >
-        <div className="glass-panel space-y-6 sm:space-y-8 rounded-3xl border border-white/10 p-6 backdrop-blur-xl sm:p-10">
+        <div className="glass-panel space-y-6 rounded-3xl border border-white/10 p-6 backdrop-blur-xl sm:space-y-8 sm:p-10">
           <div className="mx-auto max-w-3xl space-y-2 text-center">
-            <Badge variant="default" className="gap-1.5 py-1 px-3">
+            <Badge variant="default" className="gap-1.5 px-3 py-1">
               <Zap className="h-3.5 w-3.5" />
               Garantía Técnica Neon
             </Badge>
@@ -1408,7 +1463,8 @@ export default function HomePage() {
               Formulado para Cuidar tu Granizadora
             </h2>
             <p className="text-muted-foreground text-xs sm:text-sm">
-              Evita bloqueos en espirales y asegura el mejor sabor copa tras copa.
+              Evita bloqueos en espirales y asegura el mejor sabor copa tras
+              copa.
             </p>
           </div>
 
@@ -1421,7 +1477,8 @@ export default function HomePage() {
                 Sabores Intensos & Estables
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Color y sabor intactos sin diluirse ni asentarse en el fondo durante toda la jornada.
+                Color y sabor intactos sin diluirse ni asentarse en el fondo
+                durante toda la jornada.
               </p>
             </div>
 
@@ -1433,7 +1490,8 @@ export default function HomePage() {
                 Congelación Rápida
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Brix balanceado para lograr textura de nieve suave en menor tiempo de máquina.
+                Brix balanceado para lograr textura de nieve suave en menor
+                tiempo de máquina.
               </p>
             </div>
 
@@ -1445,7 +1503,8 @@ export default function HomePage() {
                 Compatibilidad Universal
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Aprobado para máquinas Donper, SPM, Bras, Cofrimell, Ugolini y equipos estándar.
+                Aprobado para máquinas Donper, SPM, Bras, Cofrimell, Ugolini y
+                equipos estándar.
               </p>
             </div>
           </div>
@@ -1453,19 +1512,20 @@ export default function HomePage() {
       </section>
 
       {/* Secondary Focus: Punto Físico Banner */}
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-8">
-        <div className="glass-panel-elevated relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/40 via-purple-950/30 to-pink-950/40 p-6 sm:p-8 backdrop-blur-xl">
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8">
+        <div className="glass-panel-elevated relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/40 via-purple-950/30 to-pink-950/40 p-6 backdrop-blur-xl sm:p-8">
           <div className="flex flex-col items-center justify-between gap-5 md:flex-row">
             <div className="max-w-2xl space-y-2 text-center md:text-left">
-              <Badge variant="success" className="gap-1.5 py-1 px-3">
+              <Badge variant="success" className="gap-1.5 px-3 py-1">
                 <Store className="h-3.5 w-3.5" />
                 Punto Físico en Cartagena
               </Badge>
-              <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white">
+              <h2 className="font-display text-xl font-extrabold text-white sm:text-2xl">
                 ¿Quieres probar nuestros granizados preparados en Cartagena?
               </h2>
               <p className="text-muted-foreground text-xs sm:text-sm">
-                Conoce nuestra carta en punto de venta y acumula sellos con Neon Club (&quot;PAGA 10, LLEVA 11&quot;).
+                Conoce nuestra carta en punto de venta y acumula sellos con Neon
+                Club (&quot;PAGA 10, LLEVA 11&quot;).
               </p>
             </div>
 
@@ -1473,7 +1533,7 @@ export default function HomePage() {
               asChild
               variant="emerald"
               size="lg"
-              className="shrink-0 font-bold w-full md:w-auto"
+              className="w-full shrink-0 font-bold md:w-auto"
             >
               <Link href="/punto-fisico">
                 <Store className="h-4 w-4" />
@@ -1486,10 +1546,10 @@ export default function HomePage() {
       </section>
 
       {/* Frequently Asked Questions (FAQ) Section */}
-      <section className="mx-auto max-w-4xl px-4 py-8 sm:py-12 sm:px-8">
+      <section className="mx-auto max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
         <div className="space-y-6">
           <div className="space-y-2 text-center">
-            <Badge variant="default" className="gap-1.5 py-1 px-3">
+            <Badge variant="default" className="gap-1.5 px-3 py-1">
               <HelpCircle className="h-3.5 w-3.5" />
               Preguntas Frecuentes
             </Badge>
@@ -1499,30 +1559,34 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <div className="glass-card space-y-1.5 rounded-2xl p-4 sm:p-5 transition-all hover:border-pink-500/30">
-              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+            <div className="glass-card space-y-1.5 rounded-2xl p-4 transition-all hover:border-pink-500/30 sm:p-5">
+              <h3 className="font-display text-sm font-bold text-white sm:text-base">
                 ¿Cómo viene empacado el concentrado?
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Viene en bolsas selladas de alta resistencia y dosificación fácil, listas para vaciar directo con agua a la máquina.
+                Viene en bolsas selladas de alta resistencia y dosificación
+                fácil, listas para vaciar directo con agua a la máquina.
               </p>
             </div>
 
-            <div className="glass-card space-y-1.5 rounded-2xl p-4 sm:p-5 transition-all hover:border-cyan-400/30">
-              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+            <div className="glass-card space-y-1.5 rounded-2xl p-4 transition-all hover:border-cyan-400/30 sm:p-5">
+              <h3 className="font-display text-sm font-bold text-white sm:text-base">
                 ¿Realizan despachos fuera de Cartagena?
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Sí, enviamos a Bolívar, Costa Caribe y toda Colombia mediante las principales transportadoras del país.
+                Sí, enviamos a Bolívar, Costa Caribe y toda Colombia mediante
+                las principales transportadoras del país.
               </p>
             </div>
 
-            <div className="glass-card space-y-1.5 rounded-2xl p-4 sm:p-5 transition-all hover:border-emerald-500/30">
-              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+            <div className="glass-card space-y-1.5 rounded-2xl p-4 transition-all hover:border-emerald-500/30 sm:p-5">
+              <h3 className="font-display text-sm font-bold text-white sm:text-base">
                 ¿Brindan asesoría si apenas estoy iniciando mi negocio?
               </h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Totalmente. Te orientamos en la mezcla exacta, selección de sabores con mayor rotación y mantenimiento preventivo de tu máquina.
+                Totalmente. Te orientamos en la mezcla exacta, selección de
+                sabores con mayor rotación y mantenimiento preventivo de tu
+                máquina.
               </p>
             </div>
           </div>
@@ -1534,37 +1598,45 @@ export default function HomePage() {
         id="google-compliance"
         className="mx-auto max-w-6xl px-4 py-6 sm:px-8"
       >
-        <div className="glass-panel space-y-3 rounded-3xl border border-white/10 p-5 text-xs text-muted-foreground">
+        <div className="glass-panel text-muted-foreground space-y-3 rounded-3xl border border-white/10 p-5 text-xs">
           <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-            <span className="flex items-center gap-1.5 font-bold tracking-wider text-slate-300 uppercase text-[11px]">
+            <span className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-slate-300 uppercase">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
               Declaración de Cumplimiento Plataforma Neon
             </span>
-            <span className="font-mono text-[10px] text-muted-foreground">www.clubneon.co</span>
+            <span className="text-muted-foreground font-mono text-[10px]">
+              www.clubneon.co
+            </span>
           </div>
 
-          <p className="leading-relaxed text-[11px]">
-            La plataforma <strong className="text-slate-200">Neon</strong> utiliza autenticación Google OAuth 2.0 y servicios de Google Wallet API para la emisión de tarjetas de lealtad digitales de <strong className="text-slate-200">Neon Club</strong>. No vendemos ni compartimos datos personales con plataformas publicitarias de terceros.
+          <p className="text-[11px] leading-relaxed">
+            La plataforma <strong className="text-slate-200">Neon</strong>{" "}
+            utiliza autenticación Google OAuth 2.0 y servicios de Google Wallet
+            API para la emisión de tarjetas de lealtad digitales de{" "}
+            <strong className="text-slate-200">Neon Club</strong>. No vendemos
+            ni compartimos datos personales con plataformas publicitarias de
+            terceros.
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-black/90 px-4 py-8 pb-24 md:pb-10 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 text-xs text-muted-foreground sm:flex-row">
+      <footer className="border-t border-white/10 bg-black/90 px-4 py-8 pb-24 sm:px-8 md:pb-10">
+        <div className="text-muted-foreground mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 text-xs sm:flex-row">
           <div className="flex items-center gap-3">
             <Image
               src="/logo.jpg"
               alt="Logo Neon"
               width={32}
               height={32}
-              className="size-8 rounded-xl object-cover border border-white/15"
+              className="size-8 rounded-xl border border-white/15 object-cover"
             />
             <div>
               <span className="font-bold text-white">
                 Neon Drinks & Concentrados
               </span>{" "}
-              — www.clubneon.co © {new Date().getFullYear()}. Todos los derechos reservados.
+              — www.clubneon.co © {new Date().getFullYear()}. Todos los derechos
+              reservados.
             </div>
           </div>
 
@@ -1615,18 +1687,22 @@ export default function HomePage() {
       </footer>
 
       {/* Sticky Mobile Bottom Bar (High-Conversion Floating Trigger for Mobile Traffic) */}
-      <div className="block md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#070010]/95 backdrop-blur-xl border-t border-white/15 px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
+      <div className="fixed inset-x-0 bottom-0 z-40 block border-t border-white/15 bg-[#070010]/95 px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.8)] backdrop-blur-xl md:hidden">
+        <div className="mx-auto flex max-w-md items-center justify-between gap-3">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Pack 10 Mayorista</span>
-            <span className="font-display text-sm font-black text-emerald-400 tabular-nums">Desde $26.000 /bolsa</span>
+            <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+              Pack 10 Mayorista
+            </span>
+            <span className="font-display text-sm font-black text-emerald-400 tabular-nums">
+              Desde $26.000 /bolsa
+            </span>
           </div>
 
           <Button
             asChild
             variant="emerald"
             size="sm"
-            className="font-bold text-xs shadow-md shadow-emerald-500/30 gap-1.5 px-4"
+            className="gap-1.5 px-4 text-xs font-bold shadow-md shadow-emerald-500/30"
           >
             <a
               href="https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20hacer%20un%20pedido%20de%20l%C3%ADquidos%20concentrados"
@@ -1642,5 +1718,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-

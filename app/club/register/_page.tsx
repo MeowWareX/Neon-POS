@@ -102,7 +102,7 @@ export function ClubRegisterPage() {
   };
 
   return (
-    <div className="grid-dots relative min-h-dvh overflow-hidden bg-background">
+    <div className="grid-dots bg-background relative min-h-dvh overflow-hidden">
       {/* Ambient glows */}
       <div
         aria-hidden
@@ -137,14 +137,14 @@ export function ClubRegisterPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <Badge variant="default" className="gap-1.5 py-1 px-3">
+            <Badge variant="default" className="gap-1.5 px-3 py-1">
               <Sparkles className="h-3.5 w-3.5" />
               Programa VIP
             </Badge>
             <h1 className="font-display text-gradient-neon text-3xl font-bold tracking-[0.08em] sm:text-4xl">
               NEON CLUB
             </h1>
-            <p className="text-muted-foreground mx-auto max-w-xs text-xs sm:text-sm leading-relaxed">
+            <p className="text-muted-foreground mx-auto max-w-xs text-xs leading-relaxed sm:text-sm">
               Tu tarjeta de fidelización digital. Acumula 10 sellos y obtén un
               granizado gratis.
             </p>
@@ -152,8 +152,7 @@ export function ClubRegisterPage() {
         </header>
 
         {/* Wizard card */}
-        <section className="glass-panel-elevated mt-6 w-full rounded-3xl border border-white/15 p-6 sm:mt-8 sm:p-7 shadow-[0_0_40px_rgba(255,62,171,0.15)]">
-
+        <section className="glass-panel-elevated mt-6 w-full rounded-3xl border border-white/15 p-6 shadow-[0_0_40px_rgba(255,62,171,0.15)] sm:mt-8 sm:p-7">
           {step === "phone" ? (
             <div key="step-phone" className="step-enter">
               <h2 className="text-lg font-bold text-white">

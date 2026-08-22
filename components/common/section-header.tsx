@@ -18,7 +18,12 @@ export function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-4 md:flex-row md:items-end md:justify-between", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-4 md:flex-row md:items-end md:justify-between",
+        className,
+      )}
+    >
       <div className="space-y-1.5">
         {eyebrow ? (
           <p className="font-display text-xs font-bold tracking-[0.25em] text-cyan-400 uppercase">
@@ -41,4 +46,3 @@ export function SectionHeader({
     </div>
   );
 }
-

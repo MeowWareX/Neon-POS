@@ -23,7 +23,7 @@ export function ClubCardPage() {
   if (!passToken) {
     // Redirect to register if no pass_token passed via URL (deep link)
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 bg-background">
+      <div className="bg-background flex min-h-screen items-center justify-center p-6">
         <div className="space-y-4 text-center">
           <h1 className="font-display text-gradient-neon text-3xl font-bold">
             Tarjeta NEON Club
@@ -88,8 +88,8 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 bg-background">
-        <div className="flex items-center gap-3 text-muted-foreground text-sm">
+      <div className="bg-background flex min-h-screen items-center justify-center p-6">
+        <div className="text-muted-foreground flex items-center gap-3 text-sm">
           <span className="size-4 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
           <span>Cargando tu tarjeta VIP...</span>
         </div>
@@ -99,13 +99,17 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
 
   if (error || !customer) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 bg-background">
-        <div className="space-y-4 text-center max-w-sm">
-          <Badge variant="destructive" size="lg">Error</Badge>
+      <div className="bg-background flex min-h-screen items-center justify-center p-6">
+        <div className="max-w-sm space-y-4 text-center">
+          <Badge variant="destructive" size="lg">
+            Error
+          </Badge>
           <h1 className="font-display text-2xl font-bold text-white">
             Tarjeta no encontrada
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">Verifica que el código QR o enlace sea válido.</p>
+          <p className="text-muted-foreground text-xs sm:text-sm">
+            Verifica que el código QR o enlace sea válido.
+          </p>
           <Button asChild variant="outline" size="sm">
             <Link href="/club/register">Crear Nueva Tarjeta</Link>
           </Button>
@@ -117,25 +121,30 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
   const remainingStamps = Math.max(0, 10 - customer.stampsCount);
 
   return (
-    <div className="grid-dots min-h-screen p-4 sm:p-6 bg-background">
+    <div className="grid-dots bg-background min-h-screen p-4 sm:p-6">
       <div className="mx-auto w-full max-w-md space-y-6">
         {/* Header */}
-        <div className="space-y-2 text-center pt-4">
-          <Badge variant="default" className="gap-1.5 py-1 px-3">
+        <div className="space-y-2 pt-4 text-center">
+          <Badge variant="default" className="gap-1.5 px-3 py-1">
             <Sparkles className="h-3.5 w-3.5" />
             Tarjeta VIP Digital
           </Badge>
-          <h1 className="font-display text-gradient-neon text-3xl sm:text-4xl font-black tracking-tight">
+          <h1 className="font-display text-gradient-neon text-3xl font-black tracking-tight sm:text-4xl">
             NEON CLUB
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">Programa de Fidelización Digital</p>
+          <p className="text-muted-foreground text-xs sm:text-sm">
+            Programa de Fidelización Digital
+          </p>
         </div>
 
         {/* Main Loyalty Card */}
-        <Card variant="elevated" className="relative overflow-hidden border-emerald-500/30 shadow-[0_0_50px_rgba(16,185,129,0.15)]">
+        <Card
+          variant="elevated"
+          className="relative overflow-hidden border-emerald-500/30 shadow-[0_0_50px_rgba(16,185,129,0.15)]"
+        >
           {/* Glossy gradient at top */}
           <div
-            className="absolute inset-x-0 top-0 h-36 pointer-events-none"
+            className="pointer-events-none absolute inset-x-0 top-0 h-36"
             style={{
               background:
                 "linear-gradient(180deg, rgba(255, 62, 171, 0.15) 0%, transparent 100%)",
@@ -145,11 +154,13 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
           <CardHeader className="relative z-10 pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl font-bold text-white font-display">
+                <CardTitle className="font-display text-xl font-bold text-white">
                   {customer.fullName}
                 </CardTitle>
-                <CardDescription className="text-xs font-semibold text-emerald-400 mt-0.5">
-                  {remainingStamps === 0 ? "🎉 ¡TIENES UN PREMIO DISPONIBLE!" : `✨ Faltan ${remainingStamps} sellos para tu premio`}
+                <CardDescription className="mt-0.5 text-xs font-semibold text-emerald-400">
+                  {remainingStamps === 0
+                    ? "🎉 ¡TIENES UN PREMIO DISPONIBLE!"
+                    : `✨ Faltan ${remainingStamps} sellos para tu premio`}
                 </CardDescription>
               </div>
               <Badge variant="success" size="sm">
@@ -160,15 +171,15 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
 
           <CardContent className="relative z-10 space-y-6">
             {/* Stamp grid */}
-            <div className="grid grid-cols-5 gap-3 rounded-2xl bg-white/4 p-4 border border-white/8">
+            <div className="grid grid-cols-5 gap-3 rounded-2xl border border-white/8 bg-white/4 p-4">
               {Array.from({ length: 10 }, (_, i) => {
                 const filled = i < customer.stampsCount;
                 return (
                   <div
                     key={i}
-                    className={`flex aspect-square items-center justify-center rounded-xl font-display font-bold transition-all duration-300 ${
+                    className={`font-display flex aspect-square items-center justify-center rounded-xl font-bold transition-all duration-300 ${
                       filled
-                        ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-slate-950 shadow-[0_0_14px_rgba(16,185,129,0.5)] scale-105"
+                        ? "scale-105 bg-gradient-to-br from-emerald-400 to-teal-500 text-slate-950 shadow-[0_0_14px_rgba(16,185,129,0.5)]"
                         : "border border-pink-500/25 bg-white/3 text-pink-300/60"
                     }`}
                   >
@@ -188,7 +199,7 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
                 Muestra este código QR en el mostrador para sumar sellos
               </p>
               <div className="flex justify-center">
-                <div className="rounded-2xl p-4 bg-white shadow-[0_0_30px_rgba(0,240,255,0.25)] border border-white/20">
+                <div className="rounded-2xl border border-white/20 bg-white p-4 shadow-[0_0_30px_rgba(0,240,255,0.25)]">
                   <QRCodeSVG
                     value={qrUrl}
                     size={170}
@@ -202,7 +213,7 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
             </div>
 
             {/* Info section */}
-            <div className="space-y-2 rounded-xl bg-white/3 p-3 border border-white/6 text-xs text-muted-foreground">
+            <div className="text-muted-foreground space-y-2 rounded-xl border border-white/6 bg-white/3 p-3 text-xs">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 font-medium">
                   <Smartphone className="h-3.5 w-3.5 text-cyan-400" />
@@ -215,7 +226,9 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
                   <Gift className="h-3.5 w-3.5 text-pink-400" />
                   Premios Canjeados:
                 </span>
-                <span className="font-bold text-emerald-400">{customer.totalRewardsClaimed}</span>
+                <span className="font-bold text-emerald-400">
+                  {customer.totalRewardsClaimed}
+                </span>
               </div>
             </div>
 
@@ -228,7 +241,11 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
               disabled={walletLoading}
             >
               <Smartphone className="h-4 w-4" />
-              <span>{walletLoading ? "Generando pase..." : "Guardar en Google Wallet"}</span>
+              <span>
+                {walletLoading
+                  ? "Generando pase..."
+                  : "Guardar en Google Wallet"}
+              </span>
             </Button>
           </CardContent>
         </Card>
@@ -236,8 +253,8 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
         {/* Recent activity */}
         {recentLogs.length > 0 && (
           <Card variant="interactive">
-            <CardHeader className="py-3 px-5">
-              <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+            <CardHeader className="px-5 py-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-bold text-white">
                 <History className="h-4 w-4 text-cyan-400" />
                 Historial de Visitas
               </CardTitle>
@@ -246,7 +263,7 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
               {recentLogs.slice(0, 5).map((log) => (
                 <div
                   key={log.id}
-                  className="flex items-center justify-between py-2 text-xs border-b border-white/5 last:border-0"
+                  className="flex items-center justify-between border-b border-white/5 py-2 text-xs last:border-0"
                 >
                   <div className="flex items-center gap-2">
                     <span>{log.rewardRedeemed ? "🎁" : "✨"}</span>
@@ -284,4 +301,3 @@ function LoyaltyCardInner({ passToken }: { passToken: string }) {
     </div>
   );
 }
-

@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="grid min-h-screen md:grid-cols-[280px_1fr]">
-      <aside className="hidden border-r border-white/10 bg-black/30 p-5 md:flex md:flex-col backdrop-blur-xl">
+      <aside className="hidden border-r border-white/10 bg-black/30 p-5 backdrop-blur-xl md:flex md:flex-col">
         <div className="glass-panel rounded-3xl border border-white/10 p-5">
           <div className="flex items-center gap-3">
             <Image
@@ -158,7 +158,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="glass-panel mt-auto rounded-2xl border border-white/10 p-4">
           <p className="text-xs font-bold text-white">{user?.name}</p>
-          <p className="text-muted-foreground mt-0.5 text-xs truncate">{user?.email}</p>
+          <p className="text-muted-foreground mt-0.5 truncate text-xs">
+            {user?.email}
+          </p>
           <Button
             className="mt-3 w-full text-xs"
             size="sm"
@@ -171,7 +173,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mt-2 text-center">
             <Link
               href="/privacy"
-              className="text-muted-foreground hover:text-pink-400 text-[10px] underline underline-offset-4 transition-colors"
+              className="text-muted-foreground text-[10px] underline underline-offset-4 transition-colors hover:text-pink-400"
             >
               Política de Privacidad
             </Link>
@@ -229,7 +231,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 px-4 py-5 pb-6 md:px-8 md:pb-8">
           {children}
         </main>
-
 
         <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <DialogContent className="max-w-sm md:hidden">

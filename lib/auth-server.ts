@@ -128,8 +128,7 @@ export async function requireApiAuth(
         ok: false,
         response: NextResponse.json(
           {
-            error:
-              "Acceso denegado. Se requieren permisos de administrador.",
+            error: "Acceso denegado. Se requieren permisos de administrador.",
           },
           { status: 403 },
         ),

@@ -20,23 +20,23 @@ export default function LoginPage() {
               <p className="font-display text-gradient-neon text-3xl font-black tracking-[0.25em]">
                 NEON
               </p>
-              <p className="font-display text-cyan-400 text-xs font-bold tracking-[0.35em] uppercase">
+              <p className="font-display text-xs font-bold tracking-[0.35em] text-cyan-400 uppercase">
                 Drinks & Concentrados
               </p>
             </div>
           </div>
 
           <div className="mt-8 space-y-4">
-            <Badge variant="default" className="gap-1.5 py-1 px-3">
+            <Badge variant="default" className="gap-1.5 px-3 py-1">
               <Zap className="h-3.5 w-3.5" />
               Operaciones Rápidas
             </Badge>
             <h1 className="font-display text-4xl leading-tight font-black text-white">
               POS ultrarrápido, inventario simple y cierre de caja sin fricción.
             </h1>
-            <p className="text-muted-foreground max-w-lg text-sm sm:text-base leading-relaxed">
-              Diseñado para vender bebidas congeladas en menos de 10 segundos por
-              pedido, incluso con conexión inestable.
+            <p className="text-muted-foreground max-w-lg text-sm leading-relaxed sm:text-base">
+              Diseñado para vender bebidas congeladas en menos de 10 segundos
+              por pedido, incluso con conexión inestable.
             </p>
           </div>
         </div>
@@ -47,4 +47,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

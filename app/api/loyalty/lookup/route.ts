@@ -37,7 +37,11 @@ export async function GET(request: NextRequest) {
 
   // Sanitize email if present (e.g. j***@gmail.com)
   const maskedEmail = customer.email
-    ? customer.email.replace(/^(.)(.*)(@.*)$/, (_, first, middle, rest) => `${first}${"*".repeat(Math.min(middle.length, 5))}${rest}`)
+    ? customer.email.replace(
+        /^(.)(.*)(@.*)$/,
+        (_, first, middle, rest) =>
+          `${first}${"*".repeat(Math.min(middle.length, 5))}${rest}`,
+      )
     : undefined;
 
   return NextResponse.json({

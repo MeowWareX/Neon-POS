@@ -16,14 +16,14 @@ export function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex h-12 w-full items-center justify-between rounded-2xl border border-white/12 bg-white/6 px-4 text-sm text-foreground transition-all duration-200 outline-none hover:border-white/25 hover:bg-white/8 focus:border-cyan-400/70 focus:bg-white/10 focus:ring-4 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50",
+        "text-foreground flex h-12 w-full items-center justify-between rounded-2xl border border-white/12 bg-white/6 px-4 text-sm transition-all duration-200 outline-none hover:border-white/25 hover:bg-white/8 focus:border-cyan-400/70 focus:bg-white/10 focus:ring-4 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 text-muted-foreground transition-transform duration-200" />
+        <ChevronDown className="text-muted-foreground size-4 transition-transform duration-200" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -38,7 +38,7 @@ export function SelectContent({
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "glass-panel-elevated z-50 overflow-hidden rounded-2xl border border-white/15 p-1 shadow-2xl transition-all duration-150 animate-in fade-in-0 zoom-in-95",
+          "glass-panel-elevated animate-in fade-in-0 zoom-in-95 z-50 overflow-hidden rounded-2xl border border-white/15 p-1 shadow-2xl transition-all duration-150",
           className,
         )}
         {...props}
@@ -59,7 +59,7 @@ export function SelectItem({
   return (
     <SelectPrimitive.Item
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-xl py-2.5 pr-8 pl-3 text-sm text-foreground outline-none transition-colors hover:bg-white/10 focus:bg-pink-500/20 focus:text-pink-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "text-foreground relative flex cursor-pointer items-center rounded-xl py-2.5 pr-8 pl-3 text-sm transition-colors outline-none select-none hover:bg-white/10 focus:bg-pink-500/20 focus:text-pink-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -73,4 +73,3 @@ export function SelectItem({
     </SelectPrimitive.Item>
   );
 }
-

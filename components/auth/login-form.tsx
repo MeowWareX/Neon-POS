@@ -50,7 +50,10 @@ export function LoginForm() {
   });
 
   return (
-    <Card variant="elevated" className="mx-auto w-full max-w-md border-white/15 shadow-[0_0_50px_rgba(255,62,171,0.2)]">
+    <Card
+      variant="elevated"
+      className="mx-auto w-full max-w-md border-white/15 shadow-[0_0_50px_rgba(255,62,171,0.2)]"
+    >
       <CardHeader>
         <div className="mb-3 flex items-center gap-3.5 lg:hidden">
           <Image
@@ -69,8 +72,10 @@ export function LoginForm() {
             </p>
           </div>
         </div>
-        <CardTitle className="font-display text-xl font-bold text-white">Acceso a Neon OS</CardTitle>
-        <CardDescription className="text-xs text-muted-foreground">
+        <CardTitle className="font-display text-xl font-bold text-white">
+          Acceso a Neon OS
+        </CardTitle>
+        <CardDescription className="text-muted-foreground text-xs">
           Inicia sesión para operar el POS o administrar la operación desde
           cualquier dispositivo.
         </CardDescription>
@@ -78,8 +83,15 @@ export function LoginForm() {
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="grid gap-2">
-            <Label htmlFor="email" className="text-xs font-bold text-slate-300">Correo Electrónico</Label>
-            <Input id="email" type="email" placeholder="usuario@clubneon.co" {...form.register("email")} />
+            <Label htmlFor="email" className="text-xs font-bold text-slate-300">
+              Correo Electrónico
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="usuario@clubneon.co"
+              {...form.register("email")}
+            />
             {form.formState.errors.email ? (
               <p className="text-destructive text-xs font-medium">
                 {form.formState.errors.email.message}
@@ -88,7 +100,12 @@ export function LoginForm() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="password" className="text-xs font-bold text-slate-300">Contraseña</Label>
+            <Label
+              htmlFor="password"
+              className="text-xs font-bold text-slate-300"
+            >
+              Contraseña
+            </Label>
             <Input
               id="password"
               type="password"
@@ -116,4 +133,3 @@ export function LoginForm() {
     </Card>
   );
 }
-

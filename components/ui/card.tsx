@@ -7,8 +7,7 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-card/85 shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]",
+        default: "bg-card/85 shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]",
         elevated:
           "glass-panel-elevated shadow-[0_16px_48px_-6px_rgba(0,0,0,0.7)] border-white/15",
         interactive:
@@ -34,10 +33,7 @@ export interface CardProps
 
 export function Card({ className, variant, ...props }: CardProps) {
   return (
-    <div
-      className={cn(cardVariants({ variant }), className)}
-      {...props}
-    />
+    <div className={cn(cardVariants({ variant }), className)} {...props} />
   );
 }
 
@@ -67,7 +63,15 @@ export function CardDescription({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-muted-foreground text-xs leading-relaxed sm:text-sm", className)} {...props} />;
+  return (
+    <p
+      className={cn(
+        "text-muted-foreground text-xs leading-relaxed sm:text-sm",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function CardContent({
@@ -83,9 +87,11 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center gap-3 px-6 pb-6 pt-0 border-t border-white/5 pt-4", className)}
+      className={cn(
+        "flex items-center gap-3 border-t border-white/5 px-6 pt-0 pt-4 pb-6",
+        className,
+      )}
       {...props}
     />
   );
 }
-

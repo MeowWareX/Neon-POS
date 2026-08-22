@@ -81,12 +81,7 @@ export default function PuntoFisicoPage() {
       <header className="glass-panel sticky top-0 z-50 border-b border-white/10 px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button
-              asChild
-              variant="glass"
-              size="sm"
-              className="gap-2"
-            >
+            <Button asChild variant="glass" size="sm" className="gap-2">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Inicio</span>
@@ -130,7 +125,7 @@ export default function PuntoFisicoPage() {
 
       {/* Hero Section */}
       <section className="relative mx-auto max-w-5xl space-y-6 px-4 pt-12 pb-12 text-center sm:px-8">
-        <Badge variant="success" className="gap-2 py-1.5 px-4">
+        <Badge variant="success" className="gap-2 px-4 py-1.5">
           <CupSoda className="h-4 w-4" />
           Punto Físico de Granizados & Coctelería
         </Badge>
@@ -151,26 +146,33 @@ export default function PuntoFisicoPage() {
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 pt-4 sm:grid-cols-3">
           <div className="glass-card glass-interactive flex flex-col items-center justify-center rounded-2xl p-5 text-center">
             <MapPin className="mb-2 h-6 w-6 text-pink-400" />
-            <span className="font-display text-xs font-bold text-white uppercase tracking-wider">Ubicación</span>
-            <span className="text-muted-foreground text-xs">Cartagena, Colombia</span>
+            <span className="font-display text-xs font-bold tracking-wider text-white uppercase">
+              Ubicación
+            </span>
+            <span className="text-muted-foreground text-xs">
+              Cartagena, Colombia
+            </span>
           </div>
 
           <div className="glass-card glass-interactive flex flex-col items-center justify-center rounded-2xl p-5 text-center">
             <Clock className="mb-2 h-6 w-6 text-emerald-400" />
-            <span className="font-display text-xs font-bold text-white uppercase tracking-wider">Atención</span>
-            <span className="text-muted-foreground text-xs">Todos los días</span>
+            <span className="font-display text-xs font-bold tracking-wider text-white uppercase">
+              Atención
+            </span>
+            <span className="text-muted-foreground text-xs">
+              Todos los días
+            </span>
           </div>
 
           <div className="glass-card glass-interactive flex flex-col items-center justify-center rounded-2xl p-5 text-center">
             <InstagramIcon className="mb-2 h-6 w-6 text-amber-400" />
-            <span className="font-display text-xs font-bold text-white uppercase tracking-wider">
+            <span className="font-display text-xs font-bold tracking-wider text-white uppercase">
               Redes Sociales
             </span>
             <span className="text-muted-foreground text-xs">@neon_ctg</span>
           </div>
         </div>
       </section>
-
 
       {/* Specialty Highlights Section */}
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
@@ -185,192 +187,221 @@ export default function PuntoFisicoPage() {
             </p>
           </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {/* Sin Licor */}
-              <div className="glass-card space-y-4 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-card to-black/60 p-6">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/20 p-3 text-emerald-400">
-                    <CupSoda className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-lg font-bold text-white">
-                      Granizados Sin Licor
-                    </h3>
-                    <p className="text-xs text-emerald-400">
-                      Sabores Frutales e Intensos
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {/* Sin Licor */}
+            <div className="glass-card via-card space-y-4 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 to-black/60 p-6">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/20 p-3 text-emerald-400">
+                  <CupSoda className="h-6 w-6" />
                 </div>
-                <ul className="space-y-2.5 text-xs text-muted-foreground">
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Mango Biche / Sandía / Fresa</span>
-                    <Badge variant="success" size="sm">
-                      Punto Físico
-                    </Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Maracumango / Mora Azul</span>
-                    <Badge variant="success" size="sm">
-                      Punto Físico
-                    </Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Chicle / Bombombum / Lulo</span>
-                    <Badge variant="success" size="sm">
-                      Punto Físico
-                    </Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Kiwi / Mandarina / Limonada</span>
-                    <Badge variant="success" size="sm">
-                      Punto Físico
-                    </Badge>
-                  </li>
-                </ul>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white">
+                    Granizados Sin Licor
+                  </h3>
+                  <p className="text-xs text-emerald-400">
+                    Sabores Frutales e Intensos
+                  </p>
+                </div>
               </div>
+              <ul className="text-muted-foreground space-y-2.5 text-xs">
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Mango Biche / Sandía / Fresa
+                  </span>
+                  <Badge variant="success" size="sm">
+                    Punto Físico
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">Maracumango / Mora Azul</span>
+                  <Badge variant="success" size="sm">
+                    Punto Físico
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">Chicle / Bombombum / Lulo</span>
+                  <Badge variant="success" size="sm">
+                    Punto Físico
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Kiwi / Mandarina / Limonada
+                  </span>
+                  <Badge variant="success" size="sm">
+                    Punto Físico
+                  </Badge>
+                </li>
+              </ul>
+            </div>
 
-              {/* Premium */}
-              <div className="glass-card space-y-4 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 via-card to-black/60 p-6">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/20 p-3 text-amber-400">
-                    <Sparkles className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-lg font-bold text-white">
-                      Sabores Premium
-                    </h3>
-                    <p className="text-xs text-amber-400">
-                      Recetas Especiales de la Casa
-                    </p>
-                  </div>
+            {/* Premium */}
+            <div className="glass-card via-card space-y-4 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-black/60 p-6">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/20 p-3 text-amber-400">
+                  <Sparkles className="h-6 w-6" />
                 </div>
-                <ul className="space-y-2.5 text-xs text-muted-foreground">
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Limonada Cerezada</span>
-                    <Badge variant="warning" size="sm">Especial</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Limonada de Coco / Maracucoco</span>
-                    <Badge variant="warning" size="sm">Especial</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Piña Colada / Milo</span>
-                    <Badge variant="warning" size="sm">Especial</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Cocoloco / Bayllys</span>
-                    <Badge variant="warning" size="sm">Especial</Badge>
-                  </li>
-                </ul>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white">
+                    Sabores Premium
+                  </h3>
+                  <p className="text-xs text-amber-400">
+                    Recetas Especiales de la Casa
+                  </p>
+                </div>
               </div>
+              <ul className="text-muted-foreground space-y-2.5 text-xs">
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">Limonada Cerezada</span>
+                  <Badge variant="warning" size="sm">
+                    Especial
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Limonada de Coco / Maracucoco
+                  </span>
+                  <Badge variant="warning" size="sm">
+                    Especial
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">Piña Colada / Milo</span>
+                  <Badge variant="warning" size="sm">
+                    Especial
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">Cocoloco / Bayllys</span>
+                  <Badge variant="warning" size="sm">
+                    Especial
+                  </Badge>
+                </li>
+              </ul>
+            </div>
 
-              {/* Con Licor */}
-              <div className="glass-card space-y-4 rounded-3xl border border-pink-500/30 bg-gradient-to-b from-pink-950/20 via-card to-black/60 p-6">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl border border-pink-500/30 bg-pink-500/20 p-3 text-pink-400">
-                    <Wine className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-lg font-bold text-white">
-                      Granizados Con Licor
-                    </h3>
-                    <p className="text-xs text-pink-400">
-                      Cócteles Prenden la Noche
-                    </p>
-                  </div>
+            {/* Con Licor */}
+            <div className="glass-card via-card space-y-4 rounded-3xl border border-pink-500/30 bg-gradient-to-b from-pink-950/20 to-black/60 p-6">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl border border-pink-500/30 bg-pink-500/20 p-3 text-pink-400">
+                  <Wine className="h-6 w-6" />
                 </div>
-                <ul className="space-y-2.5 text-xs text-muted-foreground">
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Ojo de Diablo (Fresa+Vodka+Whisky+Champagne)</span>
-                    <Badge variant="default" size="sm">TOP</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Sambapalo (Limón + Tequila)</span>
-                    <Badge variant="default" size="sm">Tequila</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Tussy (Sandía/Fresa/Cereza + Whisky)</span>
-                    <Badge variant="default" size="sm">Whisky</Badge>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-white">Chichonero / Sombra / Azulito</span>
-                    <Badge variant="default" size="sm">Vodka</Badge>
-                  </li>
-                </ul>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white">
+                    Granizados Con Licor
+                  </h3>
+                  <p className="text-xs text-pink-400">
+                    Cócteles Prenden la Noche
+                  </p>
+                </div>
               </div>
+              <ul className="text-muted-foreground space-y-2.5 text-xs">
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Ojo de Diablo (Fresa+Vodka+Whisky+Champagne)
+                  </span>
+                  <Badge variant="default" size="sm">
+                    TOP
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Sambapalo (Limón + Tequila)
+                  </span>
+                  <Badge variant="default" size="sm">
+                    Tequila
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Tussy (Sandía/Fresa/Cereza + Whisky)
+                  </span>
+                  <Badge variant="default" size="sm">
+                    Whisky
+                  </Badge>
+                </li>
+                <li className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-white">
+                    Chichonero / Sombra / Azulito
+                  </span>
+                  <Badge variant="default" size="sm">
+                    Vodka
+                  </Badge>
+                </li>
+              </ul>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Loyalty Club Section */}
-        <section className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
-          <div className="glass-panel-elevated space-y-6 rounded-3xl border border-pink-500/40 bg-gradient-to-r from-pink-950/30 via-purple-950/20 to-emerald-950/30 p-8 backdrop-blur-xl">
-            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-              <div className="max-w-xl space-y-2">
-                <Badge variant="default" className="gap-2 py-1 px-3">
-                  <Wallet className="h-4 w-4" />
-                  Programa de Lealtad Neon Club
-                </Badge>
-                <h2 className="font-display text-2xl font-black text-white sm:text-3xl">
-                  ¡PAGA 10 Y LLEVA 11 EN PUNTO FÍSICO!
-                </h2>
-                <p className="text-muted-foreground text-xs sm:text-sm">
-                  Registra tu tarjeta digital en Google Wallet o Apple Wallet. Con
-                  cada compra en nuestro punto físico acumulas sellos
-                  automáticamente.
-                </p>
-              </div>
-              <Button
-                asChild
-                variant="default"
-                size="lg"
-                className="shrink-0 font-bold"
-              >
-                <Link href="/club/register">
-                  <Wallet className="h-4 w-4" />
-                  <span>Obtener Tarjeta Digital</span>
-                </Link>
-              </Button>
+      {/* Loyalty Club Section */}
+      <section className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
+        <div className="glass-panel-elevated space-y-6 rounded-3xl border border-pink-500/40 bg-gradient-to-r from-pink-950/30 via-purple-950/20 to-emerald-950/30 p-8 backdrop-blur-xl">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="max-w-xl space-y-2">
+              <Badge variant="default" className="gap-2 px-3 py-1">
+                <Wallet className="h-4 w-4" />
+                Programa de Lealtad Neon Club
+              </Badge>
+              <h2 className="font-display text-2xl font-black text-white sm:text-3xl">
+                ¡PAGA 10 Y LLEVA 11 EN PUNTO FÍSICO!
+              </h2>
+              <p className="text-muted-foreground text-xs sm:text-sm">
+                Registra tu tarjeta digital en Google Wallet o Apple Wallet. Con
+                cada compra en nuestro punto físico acumulas sellos
+                automáticamente.
+              </p>
+            </div>
+            <Button
+              asChild
+              variant="default"
+              size="lg"
+              className="shrink-0 font-bold"
+            >
+              <Link href="/club/register">
+                <Wallet className="h-4 w-4" />
+                <span>Obtener Tarjeta Digital</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-black/90 px-4 py-8 sm:px-8">
+        <div className="text-muted-foreground mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs sm:flex-row">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.jpg"
+              alt="Logo Neon"
+              width={28}
+              height={28}
+              className="size-7 rounded-xl border border-white/15 object-cover"
+            />
+            <div>
+              <span className="font-bold text-white">Neon Drinks & Snacks</span>{" "}
+              — Cartagena, Colombia.
             </div>
           </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-white/10 bg-black/90 px-4 py-8 sm:px-8">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs text-muted-foreground sm:flex-row">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo.jpg"
-                alt="Logo Neon"
-                width={28}
-                height={28}
-                className="size-7 rounded-xl object-cover border border-white/15"
-              />
-              <div>
-                <span className="font-bold text-white">Neon Drinks & Snacks</span>{" "}
-                — Cartagena, Colombia.
-              </div>
-            </div>
-            <div className="flex items-center gap-6">
-              <Link href="/" className="transition-colors hover:text-pink-400">
-                Inicio
-              </Link>
-              <Link
-                href="/privacy"
-                className="transition-colors hover:text-pink-400"
-              >
-                Privacidad
-              </Link>
-              <Link
-                href="/terms"
-                className="transition-colors hover:text-pink-400"
-              >
-                Términos
-              </Link>
-            </div>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="transition-colors hover:text-pink-400">
+              Inicio
+            </Link>
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-pink-400"
+            >
+              Privacidad
+            </Link>
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-pink-400"
+            >
+              Términos
+            </Link>
           </div>
-        </footer>
-      </div>
-    );
-  }
-
+        </div>
+      </footer>
+    </div>
+  );
+}

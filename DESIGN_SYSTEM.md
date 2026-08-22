@@ -24,24 +24,24 @@ Todos los tokens están construidos con variables CSS nativas y expuestos a trav
 
 ### 2.1 Colores Base de Superficie
 
-| Token CSS | Variable Tailwind | Hex / Color | Uso |
-| :--- | :--- | :--- | :--- |
-| `--background` | `bg-background` | `#070010` | Lienzo principal obsidiana |
-| `--card` | `bg-card` | `#0f0320` | Tarjetas y contenedores base |
-| `--card-elevated` | `bg-card-elevated` | `#16082e` | Modales, popovers y tarjetas destacadas |
-| `--card-hover` | `hover:bg-card-hover` | `#1e0b3d` | Estado hover de tarjetas interactivas |
-| `--border` | `border-border` | `rgba(255,255,255, 0.10)` | Bordes sutiles de cristal |
-| `--border-focus` | `border-border-focus` | `rgba(0, 240, 255, 0.50)` | Halo de foco en inputs y selectores |
+| Token CSS         | Variable Tailwind     | Hex / Color               | Uso                                     |
+| :---------------- | :-------------------- | :------------------------ | :-------------------------------------- |
+| `--background`    | `bg-background`       | `#070010`                 | Lienzo principal obsidiana              |
+| `--card`          | `bg-card`             | `#0f0320`                 | Tarjetas y contenedores base            |
+| `--card-elevated` | `bg-card-elevated`    | `#16082e`                 | Modales, popovers y tarjetas destacadas |
+| `--card-hover`    | `hover:bg-card-hover` | `#1e0b3d`                 | Estado hover de tarjetas interactivas   |
+| `--border`        | `border-border`       | `rgba(255,255,255, 0.10)` | Bordes sutiles de cristal               |
+| `--border-focus`  | `border-border-focus` | `rgba(0, 240, 255, 0.50)` | Halo de foco en inputs y selectores     |
 
 ### 2.2 Acentos Neón Semánticos
 
-| Acento | Variable | Hex / Glow | Significado Semántico |
-| :--- | :--- | :--- | :--- |
-| **Pink Glow** | `--neon-pink` | `#ff3eab` | CTA Principal, Marca Neon, Sabores con Licor, Coctelería TOP |
-| **Cyan Glow** | `--neon-cyan` | `#00f0ff` | Acciones Secundarias, Sabores Sin Licor, Info de Plataforma, Halos de Foco |
-| **Emerald Glow** | `--neon-emerald` | `#10b981` | Packs Mayoristas "Mejor Valor", Márgenes de Ganancia, WhatsApp Orders, Estado Online |
-| **Amber Glow** | `--neon-amber` | `#fbbf24` | Sabores Premium, Promociones Especiales, Advertencias, Estado Offline |
-| **Purple Glow** | `--neon-purple` | `#8b5cf6` | Tarjetas VIP Neon Club, Gradientes Holográficos |
+| Acento           | Variable         | Hex / Glow | Significado Semántico                                                                |
+| :--------------- | :--------------- | :--------- | :----------------------------------------------------------------------------------- |
+| **Pink Glow**    | `--neon-pink`    | `#ff3eab`  | CTA Principal, Marca Neon, Sabores con Licor, Coctelería TOP                         |
+| **Cyan Glow**    | `--neon-cyan`    | `#00f0ff`  | Acciones Secundarias, Sabores Sin Licor, Info de Plataforma, Halos de Foco           |
+| **Emerald Glow** | `--neon-emerald` | `#10b981`  | Packs Mayoristas "Mejor Valor", Márgenes de Ganancia, WhatsApp Orders, Estado Online |
+| **Amber Glow**   | `--neon-amber`   | `#fbbf24`  | Sabores Premium, Promociones Especiales, Advertencias, Estado Offline                |
+| **Purple Glow**  | `--neon-purple`  | `#8b5cf6`  | Tarjetas VIP Neon Club, Gradientes Holográficos                                      |
 
 ---
 
@@ -52,10 +52,10 @@ El sistema implementa dos familias tipográficas complementarias:
 ### 3.1 Familias Tipográficas
 
 - **Display & Titulares (`font-display`)**: `Orbitron` (Google Fonts).
-  - *Uso*: Logotipos, H1/H2/H3 principales, números de KPI, badges en mayúsculas y precios destacados.
-  - *Tracking*: Amplio (`tracking-wider`, `tracking-[0.15em]`).
+  - _Uso_: Logotipos, H1/H2/H3 principales, números de KPI, badges en mayúsculas y precios destacados.
+  - _Tracking_: Amplio (`tracking-wider`, `tracking-[0.15em]`).
 - **Cuerpo de Texto & Datos (`font-sans` / `font-body`)**: `Space Grotesk` (Google Fonts).
-  - *Uso*: Párrafos descriptivos, etiquetas de formulario, botones, tablas y datos numéricos continuos.
+  - _Uso_: Párrafos descriptivos, etiquetas de formulario, botones, tablas y datos numéricos continuos.
 
 ### 3.2 Utilidades de Texto con Gradiente
 
@@ -67,15 +67,17 @@ El sistema implementa dos familias tipográficas complementarias:
 
 ## 4. Glassmorphism & Elevación de Capas
 
-El sistema cuenta con tres niveles de profundidad con efecto cristal (*frosted glass*):
+El sistema cuenta con tres niveles de profundidad con efecto cristal (_frosted glass_):
 
 ### Nivel 1: Panel Base (`.glass-panel`)
+
 - **Backdrop Blur**: `16px`
 - **Fondo**: `rgba(15, 3, 32, 0.65)`
 - **Borde**: `1px solid rgba(255, 255, 255, 0.08)`
 - **Uso**: Barras de navegación fijas, tablas de datos, contenedores secundarios.
 
 ### Nivel 2: Panel Elevado (`.glass-panel-elevated`)
+
 - **Backdrop Blur**: `24px`
 - **Fondo**: `linear-gradient(180deg, rgba(22, 8, 46, 0.85) 0%, rgba(10, 1, 22, 0.95) 100%)`
 - **Borde**: `1px solid rgba(255, 255, 255, 0.15)`
@@ -83,6 +85,7 @@ El sistema cuenta con tres niveles de profundidad con efecto cristal (*frosted g
 - **Uso**: Modales (`Dialog`), tarjetas de producto destacadas, formulario de registro VIP.
 
 ### Nivel 3: Tarjeta Interactiva (`.glass-card` + `.glass-interactive`)
+
 - **Efecto Hover**: Elevación en eje Y (`translateY(-2px)`), transición de borde iluminado y sombra neón reactiva.
 - **Uso**: Catálogo de sabores, cartas de precios al por mayor, módulos del POS.
 
