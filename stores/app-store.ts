@@ -100,20 +100,50 @@ function applyRemoteCatalog(
 ) {
   const fallback = buildDemoState();
   const fallbackSizes = state.sizes?.length ? state.sizes : fallback.sizes;
-  const fallbackTypes = state.productTypes?.length ? state.productTypes : fallback.productTypes;
-  const fallbackFlavors = state.flavors?.length ? state.flavors : fallback.flavors;
-  const fallbackActiveFlavors = state.activeFlavors?.length ? state.activeFlavors : fallback.activeFlavors;
+  const fallbackTypes = state.productTypes?.length
+    ? state.productTypes
+    : fallback.productTypes;
+  const fallbackFlavors = state.flavors?.length
+    ? state.flavors
+    : fallback.flavors;
+  const fallbackActiveFlavors = state.activeFlavors?.length
+    ? state.activeFlavors
+    : fallback.activeFlavors;
   const fallbackExtras = state.extras?.length ? state.extras : fallback.extras;
-  const fallbackInventory = state.inventoryItems?.length ? state.inventoryItems : fallback.inventoryItems;
-  const fallbackRules = state.inventoryConsumptionRules?.length ? state.inventoryConsumptionRules : fallback.inventoryConsumptionRules;
+  const fallbackInventory = state.inventoryItems?.length
+    ? state.inventoryItems
+    : fallback.inventoryItems;
+  const fallbackRules = state.inventoryConsumptionRules?.length
+    ? state.inventoryConsumptionRules
+    : fallback.inventoryConsumptionRules;
 
-  const remoteSizes = catalog.sizes && catalog.sizes.length > 0 ? catalog.sizes : fallbackSizes;
-  const remoteTypes = catalog.productTypes && catalog.productTypes.length > 0 ? catalog.productTypes : fallbackTypes;
-  const remoteFlavors = catalog.flavors && catalog.flavors.length > 0 ? catalog.flavors : fallbackFlavors;
-  const remoteActiveFlavors = catalog.activeFlavors && catalog.activeFlavors.length > 0 ? catalog.activeFlavors : fallbackActiveFlavors;
-  const remoteExtras = catalog.extras && catalog.extras.length > 0 ? catalog.extras : fallbackExtras;
-  const remoteInventory = catalog.inventoryItems && catalog.inventoryItems.length > 0 ? catalog.inventoryItems : fallbackInventory;
-  const remoteRules = catalog.inventoryConsumptionRules && catalog.inventoryConsumptionRules.length > 0 ? catalog.inventoryConsumptionRules : fallbackRules;
+  const remoteSizes =
+    catalog.sizes && catalog.sizes.length > 0 ? catalog.sizes : fallbackSizes;
+  const remoteTypes =
+    catalog.productTypes && catalog.productTypes.length > 0
+      ? catalog.productTypes
+      : fallbackTypes;
+  const remoteFlavors =
+    catalog.flavors && catalog.flavors.length > 0
+      ? catalog.flavors
+      : fallbackFlavors;
+  const remoteActiveFlavors =
+    catalog.activeFlavors && catalog.activeFlavors.length > 0
+      ? catalog.activeFlavors
+      : fallbackActiveFlavors;
+  const remoteExtras =
+    catalog.extras && catalog.extras.length > 0
+      ? catalog.extras
+      : fallbackExtras;
+  const remoteInventory =
+    catalog.inventoryItems && catalog.inventoryItems.length > 0
+      ? catalog.inventoryItems
+      : fallbackInventory;
+  const remoteRules =
+    catalog.inventoryConsumptionRules &&
+    catalog.inventoryConsumptionRules.length > 0
+      ? catalog.inventoryConsumptionRules
+      : fallbackRules;
 
   return {
     sizes: remoteSizes,
@@ -123,11 +153,27 @@ function applyRemoteCatalog(
     activeFlavors: remoteActiveFlavors,
     inventoryItems: remoteInventory,
     inventoryConsumptionRules: remoteRules,
-    cashSessions: catalog.cashSessions?.length ? catalog.cashSessions : (state.cashSessions?.length ? state.cashSessions : fallback.cashSessions),
+    cashSessions: catalog.cashSessions?.length
+      ? catalog.cashSessions
+      : state.cashSessions?.length
+        ? state.cashSessions
+        : fallback.cashSessions,
     orders: catalog.orders?.length ? catalog.orders : state.orders,
-    liquidSales: catalog.liquidSales?.length ? catalog.liquidSales : (state.liquidSales?.length ? state.liquidSales : fallback.liquidSales),
-    liquidInventory: catalog.liquidInventory?.length ? catalog.liquidInventory : (state.liquidInventory?.length ? state.liquidInventory : fallback.liquidInventory),
-    liquidInventoryMovements: catalog.liquidInventoryMovements?.length ? catalog.liquidInventoryMovements : (state.liquidInventoryMovements?.length ? state.liquidInventoryMovements : fallback.liquidInventoryMovements),
+    liquidSales: catalog.liquidSales?.length
+      ? catalog.liquidSales
+      : state.liquidSales?.length
+        ? state.liquidSales
+        : fallback.liquidSales,
+    liquidInventory: catalog.liquidInventory?.length
+      ? catalog.liquidInventory
+      : state.liquidInventory?.length
+        ? state.liquidInventory
+        : fallback.liquidInventory,
+    liquidInventoryMovements: catalog.liquidInventoryMovements?.length
+      ? catalog.liquidInventoryMovements
+      : state.liquidInventoryMovements?.length
+        ? state.liquidInventoryMovements
+        : fallback.liquidInventoryMovements,
   };
 }
 
@@ -226,7 +272,10 @@ export const useAppStore = create<AppState>()(
             );
           }
         } catch (error: unknown) {
-          console.warn("Could not load full remote catalog, using offline fallback", error);
+          console.warn(
+            "Could not load full remote catalog, using offline fallback",
+            error,
+          );
         }
       },
       addOrder: (order) =>

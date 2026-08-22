@@ -43,17 +43,15 @@ export async function loginUser(
     // Auto-upsert into public.users so auth_user_id is properly linked in DB
     if (!profile) {
       try {
-        await supabase
-          .from("users")
-          .upsert(
-            {
-              auth_user_id: data.user.id,
-              email: resolvedEmail,
-              full_name: name,
-              role,
-            },
-            { onConflict: "email" },
-          );
+        await supabase.from("users").upsert(
+          {
+            auth_user_id: data.user.id,
+            email: resolvedEmail,
+            full_name: name,
+            role,
+          },
+          { onConflict: "email" },
+        );
       } catch {
         // Ignore DB upsert error
       }

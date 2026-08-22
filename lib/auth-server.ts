@@ -127,21 +127,19 @@ export async function requireApiAuth(
 
     if (admin && (!profile || !profile.auth_user_id)) {
       try {
-        await admin
-          .from("users")
-          .upsert(
-            {
-              auth_user_id: authUser.id,
-              email,
-              full_name:
-                profile?.full_name ??
-                (authUser.user_metadata?.full_name as string | undefined) ??
-                authUser.email?.split("@")[0] ??
-                (role === "admin" ? "Admin Neon" : "Operador Neon"),
-              role,
-            },
-            { onConflict: "email" },
-          );
+        await admin.from("users").upsert(
+          {
+            auth_user_id: authUser.id,
+            email,
+            full_name:
+              profile?.full_name ??
+              (authUser.user_metadata?.full_name as string | undefined) ??
+              authUser.email?.split("@")[0] ??
+              (role === "admin" ? "Admin Neon" : "Operador Neon"),
+            role,
+          },
+          { onConflict: "email" },
+        );
       } catch {
         // Ignore DB upsert conflict error
       }

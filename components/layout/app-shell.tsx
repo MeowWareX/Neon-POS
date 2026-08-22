@@ -98,7 +98,6 @@ const navItems: Array<{
   },
 ];
 
-
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
