@@ -498,7 +498,9 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
                     onClick={() => applyPresetPrice("standard")}
                     className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${
                       activePreset === "standard" ||
-                      (activePreset === "auto" && !isCustomPrice && quantity < 6)
+                      (activePreset === "auto" &&
+                        !isCustomPrice &&
+                        quantity < 6)
                         ? "border-primary/50 bg-primary/20 text-white"
                         : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
                     }`}
