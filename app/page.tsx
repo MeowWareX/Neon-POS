@@ -95,7 +95,8 @@ const FLAVOR_CATALOG = [
     base: "Fresa + Vodka + Whisky + Champagne",
     color: "#ff1e56",
     badge: "Top Ventas 🔥",
-    description: "Fuerte, dulce y peligrosamente delicioso. Rojo fuego vibrante.",
+    description:
+      "Fuerte, dulce y peligrosamente delicioso. Rojo fuego vibrante.",
   },
   {
     sku: "NEON-LIC-002",
@@ -135,7 +136,8 @@ const FLAVOR_CATALOG = [
     base: "Maracuyá + Vodka",
     color: "#eab308",
     badge: "Tropical Vodka",
-    description: "Explosión tropical de maracuyá ácido con el toque frío de vodka.",
+    description:
+      "Explosión tropical de maracuyá ácido con el toque frío de vodka.",
   },
   {
     sku: "NEON-LIC-006",
@@ -399,7 +401,9 @@ export default function HomePage() {
 
   // Profit Calculator State
   const [calcBags, setCalcBags] = useState<number>(6);
-  const [calcType, setCalcType] = useState<"sin-licor" | "con-licor">("con-licor");
+  const [calcType, setCalcType] = useState<"sin-licor" | "con-licor">(
+    "con-licor",
+  );
   const [calcGlassPrice, setCalcGlassPrice] = useState<number>(10000);
 
   // Calculations
@@ -408,20 +412,22 @@ export default function HomePage() {
       ? calcBags >= 10
         ? 30000
         : calcBags >= 6
-        ? 33333
-        : 35000
+          ? 33333
+          : 35000
       : calcBags >= 10
-      ? 26000
-      : calcBags >= 6
-      ? 28333
-      : 30000;
+        ? 26000
+        : calcBags >= 6
+          ? 28333
+          : 30000;
 
   const totalCost = costPerBag * calcBags;
   const estimatedGlassesPerBag = 35; // ~35 vasos de 10-12oz por bolsa mezclada
   const totalGlasses = calcBags * estimatedGlassesPerBag;
   const estimatedRevenue = totalGlasses * calcGlassPrice;
   const estimatedProfit = estimatedRevenue - totalCost;
-  const marginPercentage = Math.round((estimatedProfit / estimatedRevenue) * 100);
+  const marginPercentage = Math.round(
+    (estimatedProfit / estimatedRevenue) * 100,
+  );
 
   const filteredFlavors =
     activeCategoryFilter === "all"
@@ -447,10 +453,7 @@ export default function HomePage() {
       areaServed: "CO",
       availableLanguage: ["Spanish"],
     },
-    sameAs: [
-      "https://instagram.com/neon_ctg",
-      "https://facebook.com/neon_ctg",
-    ],
+    sameAs: ["https://instagram.com/neon_ctg", "https://facebook.com/neon_ctg"],
   };
 
   const productCatalogSchema = {
@@ -553,7 +556,9 @@ export default function HomePage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productCatalogSchema) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productCatalogSchema),
+        }}
       />
       <script
         type="application/ld+json"
@@ -586,22 +591,40 @@ export default function HomePage() {
 
           {/* Navigation Links */}
           <div className="hidden items-center gap-6 text-xs font-semibold text-slate-300 md:flex">
-            <a href="#concentrados" className="transition-colors hover:text-pink-400">
+            <a
+              href="#concentrados"
+              className="transition-colors hover:text-pink-400"
+            >
               Líquidos Mayoristas
             </a>
-            <a href="#artes-ventas" className="transition-colors hover:text-pink-400">
+            <a
+              href="#artes-ventas"
+              className="transition-colors hover:text-pink-400"
+            >
               Artes de Venta
             </a>
-            <a href="#precios" className="transition-colors hover:text-pink-400">
+            <a
+              href="#precios"
+              className="transition-colors hover:text-pink-400"
+            >
               Precios & Promos
             </a>
-            <a href="#calculadora" className="transition-colors hover:text-pink-400">
+            <a
+              href="#calculadora"
+              className="transition-colors hover:text-pink-400"
+            >
               Calculadora Negocios
             </a>
-            <a href="#sabores" className="transition-colors hover:text-pink-400">
+            <a
+              href="#sabores"
+              className="transition-colors hover:text-pink-400"
+            >
               Catálogo Sabores
             </a>
-            <Link href="/punto-fisico" className="text-emerald-400 transition-colors hover:text-emerald-300 flex items-center gap-1">
+            <Link
+              href="/punto-fisico"
+              className="flex items-center gap-1 text-emerald-400 transition-colors hover:text-emerald-300"
+            >
               <Store className="h-3.5 w-3.5" />
               Punto Físico
             </Link>
@@ -636,8 +659,9 @@ export default function HomePage() {
 
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/40 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-emerald-500/20 px-4 py-1.5 text-xs font-bold tracking-widest text-pink-300 uppercase backdrop-blur-md">
-            <Sparkles className="h-4 w-4 text-emerald-400 animate-pulse" />
-            Proveedor Oficial de Líquidos Concentrados para Granizadoras en Colombia
+            <Sparkles className="h-4 w-4 animate-pulse text-emerald-400" />
+            Proveedor Oficial de Líquidos Concentrados para Granizadoras en
+            Colombia
           </div>
 
           <h1 className="font-display mx-auto max-w-5xl text-4xl leading-tight font-black tracking-tight sm:text-6xl md:text-7xl">
@@ -647,13 +671,18 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-slate-200 sm:text-xl font-normal">
-            Potencia las ventas de tu negocio, evento o establecimiento. Suministramos al por mayor y detal{" "}
-            <strong className="text-pink-300 font-semibold">fórmulas concentradas de alto rendimiento</strong> con sabores intensos con licor y sin licor, diseñadas para congelación perfecta y máxima rentabilidad.
+          <p className="mx-auto max-w-3xl text-base leading-relaxed font-normal text-slate-200 sm:text-xl">
+            Potencia las ventas de tu negocio, evento o establecimiento.
+            Suministramos al por mayor y detal{" "}
+            <strong className="font-semibold text-pink-300">
+              fórmulas concentradas de alto rendimiento
+            </strong>{" "}
+            con sabores intensos con licor y sin licor, diseñadas para
+            congelación perfecta y máxima rentabilidad.
           </p>
 
           {/* Quick Value Badges */}
-          <div className="mx-auto flex flex-wrap items-center justify-center gap-3 text-xs text-slate-300 pt-2">
+          <div className="mx-auto flex flex-wrap items-center justify-center gap-3 pt-2 text-xs text-slate-300">
             <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5">
               <Droplet className="h-4 w-4 text-pink-400" />
               <span>Sabores Intensos y Vibrantes</span>
@@ -700,9 +729,12 @@ export default function HomePage() {
       </section>
 
       {/* Main Focus 1: Sales Arts Showcase (Artes de Ventas) */}
-      <section id="artes-ventas" className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
+      <section
+        id="artes-ventas"
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-8"
+      >
         <div className="space-y-6">
-          <div className="flex flex-col items-center text-center space-y-2">
+          <div className="flex flex-col items-center space-y-2 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-400 uppercase">
               <Sparkles className="h-3.5 w-3.5" />
               Material de Ventas & Cartas de Sabores
@@ -711,7 +743,9 @@ export default function HomePage() {
               Nuestras Piezas & Artes de Ventas Oficiales
             </h2>
             <p className="max-w-2xl text-xs text-slate-300 sm:text-sm">
-              Haz clic en cualquiera de los artes promocionales para ampliarlo. Disponibles para exhibir en tu establecimiento o solicitar pedidos de líquido concentrado directo por sabor.
+              Haz clic en cualquiera de los artes promocionales para ampliarlo.
+              Disponibles para exhibir en tu establecimiento o solicitar pedidos
+              de líquido concentrado directo por sabor.
             </p>
           </div>
 
@@ -721,7 +755,7 @@ export default function HomePage() {
               <div
                 key={art.id}
                 onClick={() => setSelectedArtModal(art.id)}
-                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/50 backdrop-blur-xl transition-all duration-300 hover:border-pink-500/50 hover:shadow-[0_0_30px_rgba(255,115,227,0.3)] hover:-translate-y-1"
+                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/50 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/50 hover:shadow-[0_0_30px_rgba(255,115,227,0.3)]"
               >
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-900">
                   <Image
@@ -734,7 +768,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
 
                   <div className="absolute top-4 left-4">
-                    <span className="rounded-full bg-pink-500/90 px-3 py-1 text-[11px] font-extrabold text-white uppercase tracking-wider backdrop-blur-md">
+                    <span className="rounded-full bg-pink-500/90 px-3 py-1 text-[11px] font-extrabold tracking-wider text-white uppercase backdrop-blur-md">
                       {art.badge}
                     </span>
                   </div>
@@ -743,14 +777,14 @@ export default function HomePage() {
                     <Maximize2 className="h-4 w-4" />
                   </div>
 
-                  <div className="absolute bottom-4 left-4 right-4 space-y-1">
-                    <h3 className="text-lg font-bold text-white group-hover:text-pink-300 transition-colors">
+                  <div className="absolute right-4 bottom-4 left-4 space-y-1">
+                    <h3 className="text-lg font-bold text-white transition-colors group-hover:text-pink-300">
                       {art.title}
                     </h3>
-                    <p className="text-xs text-slate-300 line-clamp-2">
+                    <p className="line-clamp-2 text-xs text-slate-300">
                       {art.subtitle}
                     </p>
-                    <div className="pt-1 flex items-center gap-1 text-[11px] font-bold text-emerald-400">
+                    <div className="flex items-center gap-1 pt-1 text-[11px] font-bold text-emerald-400">
                       <span>Ver arte en alta resolución</span>
                       <ChevronRight className="h-3 w-3" />
                     </div>
@@ -766,12 +800,14 @@ export default function HomePage() {
       {activeArt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md">
           <div className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-3xl border border-white/20 bg-slate-950 p-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+            <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-3">
               <div>
-                <span className="text-xs font-bold text-pink-400 uppercase tracking-widest">
+                <span className="text-xs font-bold tracking-widest text-pink-400 uppercase">
                   {activeArt.category}
                 </span>
-                <h3 className="text-lg font-bold text-white">{activeArt.title}</h3>
+                <h3 className="text-lg font-bold text-white">
+                  {activeArt.title}
+                </h3>
               </div>
               <button
                 onClick={() => setSelectedArtModal(null)}
@@ -791,15 +827,15 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3">
+            <div className="flex flex-col items-center justify-between gap-3 pt-3 sm:flex-row">
               <p className="text-xs text-slate-400">{activeArt.subtitle}</p>
               <a
                 href={`https://wa.me/573113795540?text=Hola%20NEON%2C%20quisiera%20pedir%20l%C3%ADquidos%20relacionados%20con%20el%20arte%3A%20${encodeURIComponent(
-                  activeArt.title
+                  activeArt.title,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 transition-transform hover:scale-105"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 transition-transform hover:scale-105 sm:w-auto"
               >
                 <Phone className="h-4 w-4" />
                 Pedir Sabores de este Arte por WhatsApp
@@ -812,7 +848,7 @@ export default function HomePage() {
       {/* Main Focus 2: Pricing & Volume Discounts */}
       <section id="precios" className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
         <div className="glass-panel space-y-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl sm:p-10">
-          <div className="text-center space-y-2 max-w-3xl mx-auto">
+          <div className="mx-auto max-w-3xl space-y-2 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400 uppercase">
               <BadgePercent className="h-3.5 w-3.5" />
               Precios Directos de Fábrica
@@ -821,21 +857,26 @@ export default function HomePage() {
               Lista de Precios al Por Mayor y Detal
             </h2>
             <p className="text-xs text-slate-300 sm:text-sm">
-              Líquidos concentrados listos para dosificar y vaciar en máquinas granizadoras. Descuentos progresivos por volumen.
+              Líquidos concentrados listos para dosificar y vaciar en máquinas
+              granizadoras. Descuentos progresivos por volumen.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {/* Table 1: Con Licor */}
-            <div className="relative overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-pink-950/30 via-slate-950 to-black p-6 space-y-6 shadow-xl">
+            <div className="relative space-y-6 overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-pink-950/30 via-slate-950 to-black p-6 shadow-xl">
               <div className="flex items-center justify-between border-b border-pink-500/20 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl bg-pink-500/20 p-3 text-pink-400">
                     <Wine className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Líquidos CON LICOR</h3>
-                    <p className="text-xs text-pink-400 font-semibold">Tequila, Whisky, Vodka & Champagne</p>
+                    <h3 className="text-xl font-bold text-white">
+                      Líquidos CON LICOR
+                    </h3>
+                    <p className="text-xs font-semibold text-pink-400">
+                      Tequila, Whisky, Vodka & Champagne
+                    </p>
                   </div>
                 </div>
                 <span className="rounded-full bg-pink-500/20 px-3 py-1 text-xs font-extrabold text-pink-300">
@@ -846,31 +887,47 @@ export default function HomePage() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-4">
                   <div>
-                    <span className="font-bold text-white block">1 Unidad (Bolsa Concentrada)</span>
-                    <span className="text-xs text-slate-400">Prueba o venta al detal</span>
+                    <span className="block font-bold text-white">
+                      1 Unidad (Bolsa Concentrada)
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      Prueba o venta al detal
+                    </span>
                   </div>
-                  <span className="text-xl font-black text-pink-400">$35.000</span>
+                  <span className="text-xl font-black text-pink-400">
+                    $35.000
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border border-pink-500/30 bg-pink-500/10 p-4">
                   <div>
-                    <span className="font-bold text-white block">Pack de 6 Bolsas</span>
-                    <span className="text-xs text-pink-300 font-semibold">Precio por bolsa: ~$33.333</span>
+                    <span className="block font-bold text-white">
+                      Pack de 6 Bolsas
+                    </span>
+                    <span className="text-xs font-semibold text-pink-300">
+                      Precio por bolsa: ~$33.333
+                    </span>
                   </div>
-                  <span className="text-xl font-black text-pink-300">$200.000</span>
+                  <span className="text-xl font-black text-pink-300">
+                    $200.000
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-4 shadow-lg">
                   <div>
-                    <span className="font-extrabold text-white block flex items-center gap-1.5">
+                    <span className="block flex items-center gap-1.5 font-extrabold text-white">
                       Pack de 10 Bolsas
-                      <span className="rounded-full bg-emerald-400 text-slate-950 px-2 py-0.5 text-[10px] font-black uppercase">
+                      <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-black text-slate-950 uppercase">
                         Mejor Valor
                       </span>
                     </span>
-                    <span className="text-xs text-emerald-300 font-semibold">Precio por bolsa: $30.000 (Ahorro $50k)</span>
+                    <span className="text-xs font-semibold text-emerald-300">
+                      Precio por bolsa: $30.000 (Ahorro $50k)
+                    </span>
                   </div>
-                  <span className="text-2xl font-black text-emerald-400">$300.000</span>
+                  <span className="text-2xl font-black text-emerald-400">
+                    $300.000
+                  </span>
                 </div>
               </div>
 
@@ -878,22 +935,26 @@ export default function HomePage() {
                 href="https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20ordenar%20líquidos%20concentrados%20CON%20LICOR"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 py-3.5 text-xs font-bold text-white shadow-lg shadow-pink-500/25 transition-transform hover:scale-[1.02]"
+                className="block rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 py-3.5 text-center text-xs font-bold text-white shadow-lg shadow-pink-500/25 transition-transform hover:scale-[1.02]"
               >
                 Pedir Pack Con Licor por WhatsApp
               </a>
             </div>
 
             {/* Table 2: Sin Licor */}
-            <div className="relative overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/30 via-slate-950 to-black p-6 space-y-6 shadow-xl">
+            <div className="relative space-y-6 overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/30 via-slate-950 to-black p-6 shadow-xl">
               <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl bg-cyan-500/20 p-3 text-cyan-400">
                     <CupSoda className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Líquidos SIN LICOR</h3>
-                    <p className="text-xs text-cyan-400 font-semibold">15 Sabores Frutales & Premium</p>
+                    <h3 className="text-xl font-bold text-white">
+                      Líquidos SIN LICOR
+                    </h3>
+                    <p className="text-xs font-semibold text-cyan-400">
+                      15 Sabores Frutales & Premium
+                    </p>
                   </div>
                 </div>
                 <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-extrabold text-cyan-300">
@@ -904,31 +965,47 @@ export default function HomePage() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-4">
                   <div>
-                    <span className="font-bold text-white block">1 Unidad (Bolsa Concentrada)</span>
-                    <span className="text-xs text-slate-400">Venta al detal</span>
+                    <span className="block font-bold text-white">
+                      1 Unidad (Bolsa Concentrada)
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      Venta al detal
+                    </span>
                   </div>
-                  <span className="text-xl font-black text-cyan-400">$30.000</span>
+                  <span className="text-xl font-black text-cyan-400">
+                    $30.000
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
                   <div>
-                    <span className="font-bold text-white block">Pack de 6 Unidades</span>
-                    <span className="text-xs text-cyan-300 font-semibold">Precio por bolsa: ~$28.333</span>
+                    <span className="block font-bold text-white">
+                      Pack de 6 Unidades
+                    </span>
+                    <span className="text-xs font-semibold text-cyan-300">
+                      Precio por bolsa: ~$28.333
+                    </span>
                   </div>
-                  <span className="text-xl font-black text-cyan-300">$170.000</span>
+                  <span className="text-xl font-black text-cyan-300">
+                    $170.000
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 p-4 shadow-lg">
                   <div>
-                    <span className="font-extrabold text-white block flex items-center gap-1.5">
+                    <span className="block flex items-center gap-1.5 font-extrabold text-white">
                       Pack de 10 Unidades
-                      <span className="rounded-full bg-emerald-400 text-slate-950 px-2 py-0.5 text-[10px] font-black uppercase">
+                      <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-black text-slate-950 uppercase">
                         Mejor Valor
                       </span>
                     </span>
-                    <span className="text-xs text-emerald-300 font-semibold">Precio por bolsa: $26.000 (Ahorro $40k)</span>
+                    <span className="text-xs font-semibold text-emerald-300">
+                      Precio por bolsa: $26.000 (Ahorro $40k)
+                    </span>
                   </div>
-                  <span className="text-2xl font-black text-emerald-400">$260.000</span>
+                  <span className="text-2xl font-black text-emerald-400">
+                    $260.000
+                  </span>
                 </div>
               </div>
 
@@ -936,7 +1013,7 @@ export default function HomePage() {
                 href="https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20ordenar%20líquidos%20concentrados%20SIN%20LICOR"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center rounded-2xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/25 transition-transform hover:scale-[1.02]"
+                className="block rounded-2xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3.5 text-center text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/25 transition-transform hover:scale-[1.02]"
               >
                 Pedir Pack Sin Licor por WhatsApp
               </a>
@@ -946,10 +1023,13 @@ export default function HomePage() {
       </section>
 
       {/* Main Focus 3: Wholesale Profit Margin Calculator */}
-      <section id="calculadora" className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
+      <section
+        id="calculadora"
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-8"
+      >
         <div className="relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 via-slate-950 to-black p-6 backdrop-blur-xl sm:p-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-center">
-            <div className="lg:col-span-6 space-y-4">
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+            <div className="space-y-4 lg:col-span-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400 uppercase">
                 <Calculator className="h-4 w-4" />
                 Simulador de Negocio para Emprendedores
@@ -959,20 +1039,22 @@ export default function HomePage() {
                 Calculadora de Rentabilidad Neon
               </h2>
 
-              <p className="text-xs text-slate-300 sm:text-sm leading-relaxed">
-                Descubre cuánto dinero puedes generar en tu máquina granizadora vendiendo nuestros líquidos concentrados. Ajusta el número de bolsas y tu precio de venta por vaso.
+              <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+                Descubre cuánto dinero puedes generar en tu máquina granizadora
+                vendiendo nuestros líquidos concentrados. Ajusta el número de
+                bolsas y tu precio de venta por vaso.
               </p>
 
               {/* Calculator Inputs */}
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  <label className="mb-2 block text-xs font-bold text-slate-300 uppercase">
                     Tipo de Líquido Concentrado:
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setCalcType("con-licor")}
-                      className={`rounded-xl border py-2.5 px-3 text-xs font-bold transition-all ${
+                      className={`rounded-xl border px-3 py-2.5 text-xs font-bold transition-all ${
                         calcType === "con-licor"
                           ? "border-pink-500 bg-pink-500/20 text-pink-300"
                           : "border-white/10 bg-white/5 text-slate-400"
@@ -982,7 +1064,7 @@ export default function HomePage() {
                     </button>
                     <button
                       onClick={() => setCalcType("sin-licor")}
-                      className={`rounded-xl border py-2.5 px-3 text-xs font-bold transition-all ${
+                      className={`rounded-xl border px-3 py-2.5 text-xs font-bold transition-all ${
                         calcType === "sin-licor"
                           ? "border-cyan-500 bg-cyan-500/20 text-cyan-300"
                           : "border-white/10 bg-white/5 text-slate-400"
@@ -994,9 +1076,11 @@ export default function HomePage() {
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-300 mb-2">
+                  <div className="mb-2 flex justify-between text-xs font-bold text-slate-300">
                     <span>Cantidad de Bolsas Concentradas:</span>
-                    <span className="text-emerald-400 font-extrabold text-sm">{calcBags} bolsas</span>
+                    <span className="text-sm font-extrabold text-emerald-400">
+                      {calcBags} bolsas
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -1004,9 +1088,9 @@ export default function HomePage() {
                     max="50"
                     value={calcBags}
                     onChange={(e) => setCalcBags(Number(e.target.value))}
-                    className="w-full accent-emerald-400 cursor-pointer"
+                    className="w-full cursor-pointer accent-emerald-400"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 pt-1">
+                  <div className="flex justify-between pt-1 text-[10px] text-slate-400">
                     <span>1 Bolsa</span>
                     <span>10 Bolsas (Precio Pro)</span>
                     <span>50 Bolsas</span>
@@ -1014,9 +1098,9 @@ export default function HomePage() {
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-300 mb-2">
+                  <div className="mb-2 flex justify-between text-xs font-bold text-slate-300">
                     <span>Precio estimado de venta por vaso:</span>
-                    <span className="text-emerald-400 font-extrabold text-sm">
+                    <span className="text-sm font-extrabold text-emerald-400">
                       ${calcGlassPrice.toLocaleString("es-CO")} COP
                     </span>
                   </div>
@@ -1027,9 +1111,9 @@ export default function HomePage() {
                     step="500"
                     value={calcGlassPrice}
                     onChange={(e) => setCalcGlassPrice(Number(e.target.value))}
-                    className="w-full accent-emerald-400 cursor-pointer"
+                    className="w-full cursor-pointer accent-emerald-400"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 pt-1">
+                  <div className="flex justify-between pt-1 text-[10px] text-slate-400">
                     <span>$4.000</span>
                     <span>$10.000 (Promedio)</span>
                     <span>$20.000 (Discoteca/Evento)</span>
@@ -1039,9 +1123,9 @@ export default function HomePage() {
             </div>
 
             {/* Simulation Results Display */}
-            <div className="lg:col-span-6 rounded-3xl border border-emerald-500/30 bg-black/60 p-6 space-y-6 shadow-2xl">
+            <div className="space-y-6 rounded-3xl border border-emerald-500/30 bg-black/60 p-6 shadow-2xl lg:col-span-6">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">
                   Resultados Estimados
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-black text-emerald-400">
@@ -1052,22 +1136,26 @@ export default function HomePage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
-                  <span className="block text-[11px] text-slate-400">Inversión en Concentrado:</span>
+                  <span className="block text-[11px] text-slate-400">
+                    Inversión en Concentrado:
+                  </span>
                   <span className="text-xl font-bold text-white">
                     ${totalCost.toLocaleString("es-CO")}
                   </span>
                 </div>
 
                 <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
-                  <span className="block text-[11px] text-slate-400">Vasos Producidos (~35/bolsa):</span>
+                  <span className="block text-[11px] text-slate-400">
+                    Vasos Producidos (~35/bolsa):
+                  </span>
                   <span className="text-xl font-bold text-emerald-400">
                     {totalGlasses} vasos
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/50 to-teal-950/50 p-5 space-y-1">
-                <span className="block text-xs text-emerald-300 font-bold uppercase tracking-wider">
+              <div className="space-y-1 rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/50 to-teal-950/50 p-5">
+                <span className="block text-xs font-bold tracking-wider text-emerald-300 uppercase">
                   Ingreso Total Estimado en Ventas:
                 </span>
                 <span className="text-3xl font-black text-white">
@@ -1075,8 +1163,8 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <div className="rounded-2xl border border-pink-500/40 bg-gradient-to-r from-pink-950/50 to-purple-950/50 p-5 space-y-1">
-                <span className="block text-xs text-pink-300 font-bold uppercase tracking-wider">
+              <div className="space-y-1 rounded-2xl border border-pink-500/40 bg-gradient-to-r from-pink-950/50 to-purple-950/50 p-5">
+                <span className="block text-xs font-bold tracking-wider text-pink-300 uppercase">
                   GANANCIA NETA ESTIMADA:
                 </span>
                 <span className="text-3xl font-black text-pink-400">
@@ -1101,7 +1189,7 @@ export default function HomePage() {
       {/* Main Focus 4: Filterable Flavor Catalog & SKUs */}
       <section id="sabores" className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
         <div className="space-y-6">
-          <div className="flex flex-col items-center text-center space-y-2">
+          <div className="flex flex-col items-center space-y-2 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-xs font-bold text-yellow-400 uppercase">
               <Droplet className="h-3.5 w-3.5" />
               Catálogo Completo de Sabores & SKUs
@@ -1110,7 +1198,8 @@ export default function HomePage() {
               Nuestros Sabores Formulados para Granizadoras
             </h2>
             <p className="max-w-2xl text-xs text-slate-300 sm:text-sm">
-              Conoce nuestro portafolio completo con código de referencia SKU para facilitar tus pedidos.
+              Conoce nuestro portafolio completo con código de referencia SKU
+              para facilitar tus pedidos.
             </p>
           </div>
 
@@ -1166,9 +1255,9 @@ export default function HomePage() {
             {filteredFlavors.map((flavor) => (
               <div
                 key={flavor.sku}
-                className="glass-panel group relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-xl transition-all duration-300 hover:border-pink-500/40 hover:-translate-y-1"
+                className="glass-panel group relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/40"
               >
-                <div className="flex items-center justify-between mb-3">
+                <div className="mb-3 flex items-center justify-between">
                   <span className="font-mono text-[10px] text-slate-400">
                     SKU: {flavor.sku}
                   </span>
@@ -1180,8 +1269,8 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <div className="space-y-1 mb-3">
-                  <h3 className="text-lg font-bold text-white group-hover:text-pink-300 transition-colors">
+                <div className="mb-3 space-y-1">
+                  <h3 className="text-lg font-bold text-white transition-colors group-hover:text-pink-300">
                     {flavor.name}
                   </h3>
                   <p className="text-xs font-semibold text-emerald-400">
@@ -1189,17 +1278,17 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">
+                <p className="mb-4 line-clamp-2 text-xs leading-relaxed text-slate-300">
                   {flavor.description}
                 </p>
 
                 <a
                   href={`https://wa.me/573113795540?text=Hola%20NEON%2C%20deseo%20solicitar%20el%20sabor%20${encodeURIComponent(
-                    flavor.name
+                    flavor.name,
                   )}%20(SKU%3A%20${flavor.sku})`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 w-full rounded-xl border border-white/10 bg-white/5 py-2 text-[11px] font-bold text-slate-300 transition-colors group-hover:border-emerald-500/50 group-hover:bg-emerald-500/20 group-hover:text-emerald-300"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2 text-[11px] font-bold text-slate-300 transition-colors group-hover:border-emerald-500/50 group-hover:bg-emerald-500/20 group-hover:text-emerald-300"
                 >
                   <Phone className="h-3.5 w-3.5" />
                   Pedir este SKU
@@ -1211,9 +1300,12 @@ export default function HomePage() {
       </section>
 
       {/* Main Focus 5: Why Neon Liquid Concentrates? (Benefits for businesses) */}
-      <section id="concentrados" className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
-        <div className="glass-panel rounded-3xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl sm:p-12 space-y-8">
-          <div className="text-center space-y-2 max-w-3xl mx-auto">
+      <section
+        id="concentrados"
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-8"
+      >
+        <div className="glass-panel space-y-8 rounded-3xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl sm:p-12">
+          <div className="mx-auto max-w-3xl space-y-2 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-400 uppercase">
               <Zap className="h-3.5 w-3.5" />
               Por Qué Elegir Líquidos Neon
@@ -1222,7 +1314,8 @@ export default function HomePage() {
               Diseñados Específicamente para Granizadoras
             </h2>
             <p className="text-xs text-slate-300 sm:text-sm">
-              Formulación técnica superior para que tu máquina opere sin atascos y tus granizados destaquen sobre la competencia.
+              Formulación técnica superior para que tu máquina opere sin atascos
+              y tus granizados destaquen sobre la competencia.
             </p>
           </div>
 
@@ -1231,9 +1324,12 @@ export default function HomePage() {
               <div className="w-fit rounded-xl bg-pink-500/20 p-3 text-pink-400">
                 <Award className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">1. Sabores Intensos & Estables</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Nuestras esencias no se diluyen ni pierden color durante la congelación prolongada en el tanque de la granizadora.
+              <h3 className="text-lg font-bold text-white">
+                1. Sabores Intensos & Estables
+              </h3>
+              <p className="text-xs leading-relaxed text-slate-300">
+                Nuestras esencias no se diluyen ni pierden color durante la
+                congelación prolongada en el tanque de la granizadora.
               </p>
             </div>
 
@@ -1241,9 +1337,12 @@ export default function HomePage() {
               <div className="w-fit rounded-xl bg-emerald-500/20 p-3 text-emerald-400">
                 <Zap className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">2. Rendimiento Garantizado</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Concentrado de alta densidad con la relación justa de azúcares para congelar rápido formando la nieve granizada ideal.
+              <h3 className="text-lg font-bold text-white">
+                2. Rendimiento Garantizado
+              </h3>
+              <p className="text-xs leading-relaxed text-slate-300">
+                Concentrado de alta densidad con la relación justa de azúcares
+                para congelar rápido formando la nieve granizada ideal.
               </p>
             </div>
 
@@ -1251,9 +1350,12 @@ export default function HomePage() {
               <div className="w-fit rounded-xl bg-yellow-500/20 p-3 text-yellow-400">
                 <PackageCheck className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">3. Asesoría Técnica para Granizadoras</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Te orientamos en la dosificación exacta para marcas de máquinas como Donper, SPM, Bras, Cofrimell y Ugolini.
+              <h3 className="text-lg font-bold text-white">
+                3. Asesoría Técnica para Granizadoras
+              </h3>
+              <p className="text-xs leading-relaxed text-slate-300">
+                Te orientamos en la dosificación exacta para marcas de máquinas
+                como Donper, SPM, Bras, Cofrimell y Ugolini.
               </p>
             </div>
           </div>
@@ -1263,8 +1365,8 @@ export default function HomePage() {
       {/* Secondary Focus: Punto Físico Banner */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-8">
         <div className="relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/40 via-purple-950/30 to-pink-950/40 p-8 backdrop-blur-xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-3 max-w-2xl text-center md:text-left">
+          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+            <div className="max-w-2xl space-y-3 text-center md:text-left">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300 uppercase">
                 <Store className="h-3.5 w-3.5" />
                 Punto de Venta Físico en Cartagena
@@ -1273,13 +1375,15 @@ export default function HomePage() {
                 ¿Quieres probar nuestros granizados preparados en punto físico?
               </h2>
               <p className="text-xs text-slate-300 sm:text-sm">
-                Conoce la carta de bebidas preparadas al instante en Cartagena y nuestro programa de fidelización digital Neon Club (&quot;PAGA 10, LLEVA 11&quot;).
+                Conoce la carta de bebidas preparadas al instante en Cartagena y
+                nuestro programa de fidelización digital Neon Club (&quot;PAGA
+                10, LLEVA 11&quot;).
               </p>
             </div>
 
             <Link
               href="/punto-fisico"
-              className="shrink-0 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 px-6 py-4 text-xs font-extrabold text-slate-950 shadow-xl shadow-emerald-500/20 transition-transform hover:scale-105"
+              className="flex shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 px-6 py-4 text-xs font-extrabold text-slate-950 shadow-xl shadow-emerald-500/20 transition-transform hover:scale-105"
             >
               <Store className="h-4 w-4" />
               Ver Detalles del Punto Físico
@@ -1292,7 +1396,7 @@ export default function HomePage() {
       {/* Frequently Asked Questions (FAQ) Section */}
       <section className="mx-auto max-w-5xl px-4 py-12 sm:px-8">
         <div className="space-y-6">
-          <div className="text-center space-y-2">
+          <div className="space-y-2 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-400 uppercase">
               <HelpCircle className="h-3.5 w-3.5" />
               Preguntas Frecuentes
@@ -1303,30 +1407,37 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-4">
-            <div className="glass-panel rounded-2xl border border-white/10 bg-black/40 p-6 space-y-2">
+            <div className="glass-panel space-y-2 rounded-2xl border border-white/10 bg-black/40 p-6">
               <h3 className="text-base font-bold text-white">
                 ¿Cómo viene empacado el líquido concentrado?
               </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Viene en bolsas selladas de alta resistencia de fácil dosificación, diseñadas para vaciar directo a la mezcla de tu granizadora.
+              <p className="text-xs leading-relaxed text-slate-300">
+                Viene en bolsas selladas de alta resistencia de fácil
+                dosificación, diseñadas para vaciar directo a la mezcla de tu
+                granizadora.
               </p>
             </div>
 
-            <div className="glass-panel rounded-2xl border border-white/10 bg-black/40 p-6 space-y-2">
+            <div className="glass-panel space-y-2 rounded-2xl border border-white/10 bg-black/40 p-6">
               <h3 className="text-base font-bold text-white">
                 ¿Realizan despachos fuera de Cartagena?
               </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Sí, coordinamos envíos de concentrados al por mayor a Bolívar, Costa Caribe y toda Colombia mediante las principales transportadoras.
+              <p className="text-xs leading-relaxed text-slate-300">
+                Sí, coordinamos envíos de concentrados al por mayor a Bolívar,
+                Costa Caribe y toda Colombia mediante las principales
+                transportadoras.
               </p>
             </div>
 
-            <div className="glass-panel rounded-2xl border border-white/10 bg-black/40 p-6 space-y-2">
+            <div className="glass-panel space-y-2 rounded-2xl border border-white/10 bg-black/40 p-6">
               <h3 className="text-base font-bold text-white">
-                ¿Ofrecen asesoría si apenas estoy iniciando mi negocio de granizados?
+                ¿Ofrecen asesoría si apenas estoy iniciando mi negocio de
+                granizados?
               </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Totalmente. Te asesoramos en la mezcla correcta, selección de sabores con mayor rotación y mantenimiento de tu máquina granizadora.
+              <p className="text-xs leading-relaxed text-slate-300">
+                Totalmente. Te asesoramos en la mezcla correcta, selección de
+                sabores con mayor rotación y mantenimiento de tu máquina
+                granizadora.
               </p>
             </div>
           </div>
@@ -1334,10 +1445,13 @@ export default function HomePage() {
       </section>
 
       {/* Google API & Platform Compliance Statement (Discrete Section for Reviewers) */}
-      <section id="google-compliance" className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
+      <section
+        id="google-compliance"
+        className="mx-auto max-w-6xl px-4 py-8 sm:px-8"
+      >
         <div className="glass-panel space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6 text-xs text-slate-400">
           <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <span className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-bold tracking-wider text-slate-300 uppercase">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
               Declaración de Cumplimiento Plataforma Neon
             </span>
@@ -1345,7 +1459,14 @@ export default function HomePage() {
           </div>
 
           <p className="leading-relaxed">
-            La plataforma <strong className="text-slate-200">Neon</strong> utiliza autenticación Google OAuth 2.0 y servicios de Google Wallet API para la emisión de tarjetas de lealtad digitales de <strong className="text-slate-200">Neon Club</strong>. Los datos obtenidos a través de las API de Google se emplean de acuerdo con la <em>Google API Services User Data Policy</em>. No vendemos ni compartimos datos personales con plataformas publicitarias de terceros.
+            La plataforma <strong className="text-slate-200">Neon</strong>{" "}
+            utiliza autenticación Google OAuth 2.0 y servicios de Google Wallet
+            API para la emisión de tarjetas de lealtad digitales de{" "}
+            <strong className="text-slate-200">Neon Club</strong>. Los datos
+            obtenidos a través de las API de Google se emplean de acuerdo con la{" "}
+            <em>Google API Services User Data Policy</em>. No vendemos ni
+            compartimos datos personales con plataformas publicitarias de
+            terceros.
           </p>
         </div>
       </section>
@@ -1362,7 +1483,11 @@ export default function HomePage() {
               className="size-8 rounded-lg object-cover"
             />
             <div>
-              <span className="font-bold text-white">Neon Drinks & Concentrados</span> — www.clubneon.co © {new Date().getFullYear()}. Todos los derechos reservados.
+              <span className="font-bold text-white">
+                Neon Drinks & Concentrados
+              </span>{" "}
+              — www.clubneon.co © {new Date().getFullYear()}. Todos los derechos
+              reservados.
             </div>
           </div>
 
@@ -1388,15 +1513,24 @@ export default function HomePage() {
               <span>311 379 5540</span>
             </a>
 
-            <Link href="/punto-fisico" className="transition-colors hover:text-emerald-400">
+            <Link
+              href="/punto-fisico"
+              className="transition-colors hover:text-emerald-400"
+            >
               Punto Físico
             </Link>
 
-            <Link href="/privacy" className="transition-colors hover:text-pink-400">
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-pink-400"
+            >
               Privacidad
             </Link>
 
-            <Link href="/terms" className="transition-colors hover:text-pink-400">
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-pink-400"
+            >
               Términos
             </Link>
           </div>

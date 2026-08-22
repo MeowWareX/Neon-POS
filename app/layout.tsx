@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.clubneon.co"),
   applicationName: "Neon Drinks & Concentrados",
   title: {
-    default: "Neon | Líquidos Concentrados para Máquinas Granizadoras al Por Mayor y Detal",
+    default:
+      "Neon | Líquidos Concentrados para Máquinas Granizadoras al Por Mayor y Detal",
     template: "%s | Neon Drinks & Concentrados",
   },
   description:

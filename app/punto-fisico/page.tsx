@@ -113,7 +113,7 @@ export default function PuntoFisicoPage() {
               href="https://wa.me/573113795540?text=Hola%20Neon%2C%20quisiera%20saber%20la%20ubicaci%C3%B3n%20del%20punto%20f%C3%ADsico"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/30"
+              className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/30"
             >
               <Phone className="h-3.5 w-3.5" />
               <span>WhatsApp Store</span>
@@ -157,7 +157,9 @@ export default function PuntoFisicoPage() {
 
           <div className="glass-panel flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
             <InstagramIcon className="mb-2 h-6 w-6 text-yellow-400" />
-            <span className="text-xs font-semibold text-white">Redes Sociales</span>
+            <span className="text-xs font-semibold text-white">
+              Redes Sociales
+            </span>
             <span className="text-xs text-slate-400">@neon_ctg</span>
           </div>
         </div>
@@ -171,51 +173,68 @@ export default function PuntoFisicoPage() {
               Nuestra Carta en Punto Físico
             </h2>
             <p className="text-xs text-slate-400 sm:text-sm">
-              Servidos helados al instante directamente desde nuestras máquinas granizadoras.
+              Servidos helados al instante directamente desde nuestras máquinas
+              granizadoras.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Sin Licor */}
-            <div className="glass-panel rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-black/40 to-black/60 p-6 space-y-4">
+            <div className="glass-panel space-y-4 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-black/40 to-black/60 p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-emerald-500/20 p-3 text-emerald-400">
                   <CupSoda className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Granizados Sin Licor</h3>
-                  <p className="text-xs text-emerald-400">Sabores Frutales e Intensos</p>
+                  <h3 className="text-lg font-bold text-white">
+                    Granizados Sin Licor
+                  </h3>
+                  <p className="text-xs text-emerald-400">
+                    Sabores Frutales e Intensos
+                  </p>
                 </div>
               </div>
               <ul className="space-y-2 text-xs text-slate-300">
                 <li className="flex items-center justify-between border-b border-white/5 pb-1">
                   <span>Mango Biche / Sandía / Fresa</span>
-                  <span className="font-semibold text-emerald-400">Punto Físico</span>
+                  <span className="font-semibold text-emerald-400">
+                    Punto Físico
+                  </span>
                 </li>
                 <li className="flex items-center justify-between border-b border-white/5 pb-1">
                   <span>Maracumango / Mora Azul</span>
-                  <span className="font-semibold text-emerald-400">Punto Físico</span>
+                  <span className="font-semibold text-emerald-400">
+                    Punto Físico
+                  </span>
                 </li>
                 <li className="flex items-center justify-between border-b border-white/5 pb-1">
                   <span>Chicle / Bombombum / Lulo</span>
-                  <span className="font-semibold text-emerald-400">Punto Físico</span>
+                  <span className="font-semibold text-emerald-400">
+                    Punto Físico
+                  </span>
                 </li>
                 <li className="flex items-center justify-between border-b border-white/5 pb-1">
                   <span>Kiwi / Mandarina / Limonada</span>
-                  <span className="font-semibold text-emerald-400">Punto Físico</span>
+                  <span className="font-semibold text-emerald-400">
+                    Punto Físico
+                  </span>
                 </li>
               </ul>
             </div>
 
             {/* Premium */}
-            <div className="glass-panel rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 p-6 space-y-4">
+            <div className="glass-panel space-y-4 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-amber-500/20 p-3 text-amber-400">
                   <Sparkles className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Sabores Premium</h3>
-                  <p className="text-xs text-amber-400">Recetas Especiales de la Casa</p>
+                  <h3 className="text-lg font-bold text-white">
+                    Sabores Premium
+                  </h3>
+                  <p className="text-xs text-amber-400">
+                    Recetas Especiales de la Casa
+                  </p>
                 </div>
               </div>
               <ul className="space-y-2 text-xs text-slate-300">
@@ -239,14 +258,18 @@ export default function PuntoFisicoPage() {
             </div>
 
             {/* Con Licor */}
-            <div className="glass-panel rounded-3xl border border-pink-500/30 bg-gradient-to-b from-pink-950/20 via-black/40 to-black/60 p-6 space-y-4">
+            <div className="glass-panel space-y-4 rounded-3xl border border-pink-500/30 bg-gradient-to-b from-pink-950/20 via-black/40 to-black/60 p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-pink-500/20 p-3 text-pink-400">
                   <Wine className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Granizados Con Licor</h3>
-                  <p className="text-xs text-pink-400">Cócteles Prenden la Noche</p>
+                  <h3 className="text-lg font-bold text-white">
+                    Granizados Con Licor
+                  </h3>
+                  <p className="text-xs text-pink-400">
+                    Cócteles Prenden la Noche
+                  </p>
                 </div>
               </div>
               <ul className="space-y-2 text-xs text-slate-300">
@@ -275,8 +298,8 @@ export default function PuntoFisicoPage() {
       {/* Loyalty Club Section */}
       <section className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
         <div className="glass-panel space-y-6 rounded-3xl border border-pink-500/40 bg-gradient-to-r from-pink-950/30 via-purple-950/20 to-emerald-950/30 p-8 backdrop-blur-xl">
-          <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:justify-between">
-            <div className="space-y-2 max-w-xl">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="max-w-xl space-y-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-semibold text-pink-400 uppercase">
                 <Wallet className="h-4 w-4" />
                 Programa de Lealtad Neon Club
@@ -285,12 +308,14 @@ export default function PuntoFisicoPage() {
                 ¡PAGA 10 Y LLEVA 11 EN PUNTO FÍSICO!
               </h2>
               <p className="text-xs text-slate-300 sm:text-sm">
-                Registra tu tarjeta digital en Google Wallet o Apple Wallet. Con cada compra en nuestro punto físico acumulas sellos automáticamente.
+                Registra tu tarjeta digital en Google Wallet o Apple Wallet. Con
+                cada compra en nuestro punto físico acumulas sellos
+                automáticamente.
               </p>
             </div>
             <Link
               href="/club/register"
-              className="shrink-0 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 to-emerald-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-pink-500/25 transition-transform hover:scale-[1.03]"
+              className="flex shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 to-emerald-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-pink-500/25 transition-transform hover:scale-[1.03]"
             >
               <Wallet className="h-4 w-4" />
               Obtener Tarjeta Digital
@@ -311,17 +336,24 @@ export default function PuntoFisicoPage() {
               className="size-7 rounded-lg object-cover"
             />
             <div>
-              <span className="font-bold text-white">Neon Drinks & Snacks</span> — Cartagena, Colombia.
+              <span className="font-bold text-white">Neon Drinks & Snacks</span>{" "}
+              — Cartagena, Colombia.
             </div>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/" className="transition-colors hover:text-pink-400">
               Inicio
             </Link>
-            <Link href="/privacy" className="transition-colors hover:text-pink-400">
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-pink-400"
+            >
               Privacidad
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-pink-400">
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-pink-400"
+            >
               Términos
             </Link>
           </div>
