@@ -1,8 +1,4 @@
-"use client";
-
 import { useMemo, useState } from "react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   AlertTriangle,
   ArrowDownRight,
@@ -13,6 +9,7 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,7 +24,12 @@ export function LiquidMovementsTable() {
   const [filterType, setFilterType] = useState<string>("all");
 
   const filteredMovements = useMemo(() => {
-    const list = liquidInventoryMovements || [];
+    const list = [...(liquidInventoryMovements || [])].sort((a, b) => {
+      const timeA = new Date(a.createdAt).getTime();
+      const timeB = new Date(b.createdAt).getTime();
+      return timeB - timeA;
+    });
+
     return list.filter((mov) => {
       const matchesSearch =
         !search ||
@@ -163,18 +165,7 @@ export function LiquidMovementsTable() {
           {/* Mobile View (< md) */}
           <div className="space-y-3 md:hidden">
             {filteredMovements.map((mov) => {
-              let formattedDate = "";
-              try {
-                formattedDate = format(
-                  new Date(mov.createdAt),
-                  "dd MMM, yyyy HH:mm",
-                  {
-                    locale: es,
-                  },
-                );
-              } catch {
-                formattedDate = mov.createdAt;
-              }
+              const formattedDate = formatDateTime(mov.createdAt);
 
               return (
                 <div
@@ -232,18 +223,7 @@ export function LiquidMovementsTable() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {filteredMovements.map((mov) => {
-                  let formattedDate = "";
-                  try {
-                    formattedDate = format(
-                      new Date(mov.createdAt),
-                      "dd MMM, yyyy HH:mm",
-                      {
-                        locale: es,
-                      },
-                    );
-                  } catch {
-                    formattedDate = mov.createdAt;
-                  }
+                  const formattedDate = formatDateTime(mov.createdAt);
 
                   return (
                     <tr

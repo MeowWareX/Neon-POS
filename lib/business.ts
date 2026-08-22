@@ -1,4 +1,3 @@
-import { formatISO, startOfDay } from "date-fns";
 import type {
   Extra,
   Order,
@@ -10,7 +9,13 @@ import type {
 } from "@/types/domain";
 
 export function getBusinessDate(date = new Date()) {
-  return formatISO(startOfDay(date), { representation: "date" });
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Bogota",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formatter.format(date);
 }
 
 export function createOrderNumber(sequence: number) {

@@ -311,9 +311,13 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
 
     setIsSubmitting(true);
     try {
-      // Process each item in the multi-item sale
+      const batchGroupId = crypto.randomUUID();
+      const sharedCreatedAt = new Date().toISOString();
+
+      // Process each item in the multi-item sale with common batchId and timestamp
       finalItems.forEach((item) => {
         addLiquidSale({
+          groupId: batchGroupId,
           saleDate,
           variant: item.variant,
           flavorId: item.flavorId,
@@ -324,6 +328,7 @@ export function LiquidSaleModal({ trigger }: { trigger?: React.ReactNode }) {
           paymentMethod,
           customerName: customerName.trim() || null,
           notes: notes.trim() || null,
+          createdAt: sharedCreatedAt,
         });
       });
 

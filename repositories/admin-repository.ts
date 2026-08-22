@@ -585,31 +585,37 @@ export async function insertLiquidSaleWithSupabase(
 export async function getLiquidSalesWithSupabase(
   supabase: SupabaseClient<Database>,
 ): Promise<LiquidSale[]> {
-  const { data, error } = await supabase
-    .from("liquid_sales")
-    .select("*")
-    .is("deleted_at", null)
-    .order("sale_date", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("liquid_sales")
+      .select("*")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      console.warn("getLiquidSalesWithSupabase warning:", error);
+      return [];
+    }
+
+    return (data || []).map((row) => ({
+      id: row.id,
+      saleDate: row.sale_date,
+      variant: row.variant as LiquidVariantCode,
+      flavorId: row.flavor_id,
+      flavorName: row.flavor_name,
+      quantity: Number(row.quantity),
+      unitPrice: Number(row.unit_price),
+      total: Number(row.total),
+      paymentMethod: row.payment_method as PaymentMethod,
+      customerName: row.customer_name,
+      notes: row.notes,
+      syncState: "synced",
+      createdAt: row.created_at,
+    }));
+  } catch (err) {
+    console.error("getLiquidSalesWithSupabase error:", err);
+    return [];
   }
-
-  return (data || []).map((row) => ({
-    id: row.id,
-    saleDate: row.sale_date,
-    variant: row.variant as LiquidVariantCode,
-    flavorId: row.flavor_id,
-    flavorName: row.flavor_name,
-    quantity: Number(row.quantity),
-    unitPrice: Number(row.unit_price),
-    total: Number(row.total),
-    paymentMethod: row.payment_method as PaymentMethod,
-    customerName: row.customer_name,
-    notes: row.notes,
-    syncState: "synced",
-    createdAt: row.created_at,
-  }));
 }
 
 export async function deleteLiquidSaleWithSupabase(
@@ -626,56 +632,84 @@ export async function deleteLiquidSaleWithSupabase(
 export async function getLiquidInventoryWithSupabase(
   supabase: SupabaseClient<Database>,
 ): Promise<LiquidInventoryItem[]> {
-  const { data, error } = await supabase
-    .from("liquid_inventory")
-    .select("*")
-    .is("deleted_at", null)
-    .order("flavor_name", { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from("liquid_inventory")
+      .select("*")
+      .is("deleted_at", null)
+      .order("flavor_name", { ascending: true });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      console.warn("getLiquidInventoryWithSupabase warning:", error);
+      return [];
+    }
+
+    return (data || []).map((row) => ({
+      id: row.id,
+      flavorId: row.flavor_id,
+      flavorName: row.flavor_name,
+      variant: row.variant as LiquidVariantCode | null,
+      currentStock: Number(row.current_stock),
+      unit: row.unit,
+      minStock: Number(row.min_stock),
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }));
+  } catch (err) {
+    console.error("getLiquidInventoryWithSupabase error:", err);
+    return [];
   }
-
-  return (data || []).map((row) => ({
-    id: row.id,
-    flavorId: row.flavor_id,
-    flavorName: row.flavor_name,
-    variant: row.variant as LiquidVariantCode | null,
-    currentStock: Number(row.current_stock),
-    unit: row.unit,
-    minStock: Number(row.min_stock),
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }));
 }
 
 export async function getLiquidMovementsWithSupabase(
   supabase: SupabaseClient<Database>,
 ): Promise<LiquidInventoryMovement[]> {
-  const { data, error } = await supabase
-    .from("liquid_inventory_movements")
-    .select("*, liquid_inventory(flavor_name)")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("liquid_inventory_movements")
+      .select("*, liquid_inventory(flavor_name)")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      const { data: rawData, error: rawError } = await supabase
+        .from("liquid_inventory_movements")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (rawError) {
+        console.warn("getLiquidMovementsWithSupabase fallback warning:", rawError);
+        return [];
+      }
+      return (rawData || []).map((row) => ({
+        id: row.id,
+        liquidInventoryId: row.liquid_inventory_id,
+        flavorName: "Desconocido",
+        movementType: row.movement_type as LiquidMovementType,
+        quantity: Number(row.quantity),
+        notes: row.notes,
+        referenceId: row.reference_id,
+        createdAt: row.created_at,
+      }));
+    }
+
+    type LiquidMovementRow =
+      Database["public"]["Tables"]["liquid_inventory_movements"]["Row"] & {
+        liquid_inventory?: { flavor_name?: string } | null;
+      };
+
+    return (data || []).map((row: LiquidMovementRow) => ({
+      id: row.id,
+      liquidInventoryId: row.liquid_inventory_id,
+      flavorName: row.liquid_inventory?.flavor_name || "Desconocido",
+      movementType: row.movement_type as LiquidMovementType,
+      quantity: Number(row.quantity),
+      notes: row.notes,
+      referenceId: row.reference_id,
+      createdAt: row.created_at,
+    }));
+  } catch (err) {
+    console.error("getLiquidMovementsWithSupabase error:", err);
+    return [];
   }
-
-  type LiquidMovementRow =
-    Database["public"]["Tables"]["liquid_inventory_movements"]["Row"] & {
-      liquid_inventory?: { flavor_name?: string } | null;
-    };
-
-  return (data || []).map((row: LiquidMovementRow) => ({
-    id: row.id,
-    liquidInventoryId: row.liquid_inventory_id,
-    flavorName: row.liquid_inventory?.flavor_name || "Desconocido",
-    movementType: row.movement_type as LiquidMovementType,
-    quantity: Number(row.quantity),
-    notes: row.notes,
-    referenceId: row.reference_id,
-    createdAt: row.created_at,
-  }));
 }
 
 export async function upsertLiquidInventoryItemWithSupabase(

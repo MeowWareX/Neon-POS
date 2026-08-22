@@ -1,6 +1,5 @@
 "use client";
 
-import { format, isSameDay } from "date-fns";
 import { EmptyState } from "@/components/common/empty-state";
 import { SalesTrendChart } from "@/components/charts/sales-trend-chart";
 import { KpiCard } from "@/components/dashboard/kpi-card";
@@ -19,7 +18,8 @@ import {
   summarizeOrderSlice,
   getCountsBreakdown,
 } from "@/lib/analytics";
-import { compactNumber, currency } from "@/lib/utils";
+import { compactNumber, currency, formatDate } from "@/lib/utils";
+import { getBusinessDate } from "@/lib/business";
 import { useAppStore } from "@/stores/app-store";
 
 export function DashboardOverview() {
@@ -35,9 +35,7 @@ export function DashboardOverview() {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(() =>
-    format(new Date(), "yyyy-MM-dd"),
-  );
+  const [selectedDate, setSelectedDate] = useState(() => getBusinessDate());
 
   const loadOrders = async () => {
     try {
@@ -85,9 +83,8 @@ export function DashboardOverview() {
   }
 
   const summary = summarizeOrders(effectiveOrders);
-  const selectedDateValue = new Date(`${selectedDate}T00:00:00`);
-  const selectedDayOrders = effectiveOrders.filter((order) =>
-    isSameDay(new Date(order.createdAt), selectedDateValue),
+  const selectedDayOrders = effectiveOrders.filter(
+    (order) => getBusinessDate(new Date(order.createdAt)) === selectedDate,
   );
   const selectedDaySummary = summarizeOrderSlice(selectedDayOrders);
   const trend = getSalesTrend(effectiveOrders);
@@ -112,7 +109,7 @@ export function DashboardOverview() {
     productTypes,
     flavors,
   });
-  const selectedDayLabel = format(selectedDateValue, "PPP");
+  const selectedDayLabel = formatDate(selectedDate);
 
   const paymentValue = (
     method: string,
@@ -157,7 +154,7 @@ export function DashboardOverview() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => setSelectedDate(format(new Date(), "yyyy-MM-dd"))}
+              onClick={() => setSelectedDate(getBusinessDate())}
             >
               Hoy
             </Button>

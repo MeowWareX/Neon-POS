@@ -934,9 +934,96 @@ export function buildDemoState(): DemoState {
 
   const liquidSales: LiquidSale[] = [];
 
-  const liquidInventory: LiquidInventoryItem[] = [];
+  const liquidInventory: LiquidInventoryItem[] = [
+    {
+      id: "66666666-1111-1111-1111-111111111111",
+      flavorId: "55555555-1111-1111-1111-111111111111",
+      flavorName: "Chicle",
+      variant: "base_sin_licor",
+      currentStock: 6,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "66666666-2222-2222-2222-222222222222",
+      flavorId: "55555555-2222-2222-2222-222222222222",
+      flavorName: "Sandía",
+      variant: "base_sin_licor",
+      currentStock: 5,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "66666666-3333-3333-3333-333333333333",
+      flavorId: "55555555-3333-3333-3333-333333333333",
+      flavorName: "Maracumango",
+      variant: "base_sin_licor",
+      currentStock: 4,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "66666666-4444-4444-4444-444444444444",
+      flavorId: "55555555-4444-4444-4444-444444444444",
+      flavorName: "Limón",
+      variant: "base_sin_licor",
+      currentStock: 3,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "66666666-5555-5555-5555-555555555555",
+      flavorId: "88888888-8888-8888-8888-888888888888",
+      flavorName: "Enchilado / Directo",
+      variant: "base_sin_licor",
+      currentStock: 4,
+      unit: "bolsa",
+      minStock: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
 
-  const liquidInventoryMovements: LiquidInventoryMovement[] = [];
+  const liquidInventoryMovements: LiquidInventoryMovement[] = [
+    {
+      id: "77777777-1111-1111-1111-111111111111",
+      liquidInventoryId: "66666666-1111-1111-1111-111111111111",
+      flavorName: "Chicle",
+      movementType: "production",
+      quantity: 6,
+      notes: "Stock inicial de concentrado",
+      referenceId: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: "77777777-2222-2222-2222-222222222222",
+      liquidInventoryId: "66666666-2222-2222-2222-222222222222",
+      flavorName: "Sandía",
+      movementType: "production",
+      quantity: 5,
+      notes: "Stock inicial de concentrado",
+      referenceId: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: "77777777-3333-3333-3333-333333333333",
+      liquidInventoryId: "66666666-3333-3333-3333-333333333333",
+      flavorName: "Maracumango",
+      movementType: "production",
+      quantity: 4,
+      notes: "Stock inicial de concentrado",
+      referenceId: null,
+      createdAt: new Date().toISOString(),
+    },
+  ];
 
   return {
     users,

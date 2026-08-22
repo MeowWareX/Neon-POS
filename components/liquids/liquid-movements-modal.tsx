@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   History,
   ArrowUpRight,
@@ -10,6 +8,7 @@ import {
   AlertTriangle,
   RefreshCw,
 } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,16 +112,7 @@ export function LiquidMovementsModal({
               </thead>
               <tbody className="divide-y divide-white/5">
                 {movements.map((mov) => {
-                  let formattedDate = "";
-                  try {
-                    formattedDate = format(
-                      new Date(mov.createdAt),
-                      "dd MMM, yyyy HH:mm",
-                      { locale: es },
-                    );
-                  } catch {
-                    formattedDate = mov.createdAt;
-                  }
+                  const formattedDate = formatDateTime(mov.createdAt);
 
                   return (
                     <tr

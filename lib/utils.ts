@@ -25,21 +25,35 @@ export function formatPercent(value: number) {
 }
 
 export function formatDateTime(value: string | Date) {
+  const d = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? new Date(`${value}T12:00:00-05:00`)
+    : new Date(value);
+
   return new Intl.DateTimeFormat("es-CO", {
+    timeZone: "America/Bogota",
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(d);
 }
 
 export function formatTime(value: string | Date) {
+  const d = new Date(value);
   return new Intl.DateTimeFormat("es-CO", {
+    timeZone: "America/Bogota",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(value));
+    hour12: true,
+  }).format(d);
 }
 
 export function formatDate(value: string | Date) {
+  const d = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? new Date(`${value}T12:00:00-05:00`)
+    : new Date(value);
+
   return new Intl.DateTimeFormat("es-CO", {
+    timeZone: "America/Bogota",
     dateStyle: "medium",
-  }).format(new Date(value));
+  }).format(d);
 }
+

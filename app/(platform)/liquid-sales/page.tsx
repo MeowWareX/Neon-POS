@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Coins,
   Droplet,
   FlaskConical,
   PackageCheck,
+  RefreshCw,
   TrendingUp,
 } from "lucide-react";
 import { LIQUID_YIELD_LITERS } from "@/lib/constants";
 import { currency } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAppStore } from "@/stores/app-store";
+import { Button } from "@/components/ui/button";
 import { LiquidInventoryCard } from "@/components/liquids/liquid-inventory-card";
 import { LiquidMovementsTable } from "@/components/liquids/liquid-movements-table";
 import { LiquidSaleModal } from "@/components/liquids/liquid-sale-modal";
@@ -23,6 +25,40 @@ export default function LiquidSalesPage() {
   const user = useAuthStore((state) => state.user);
   const rawLiquidSales = useAppStore((state) => state.liquidSales);
   const liquidSales = rawLiquidSales || [];
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const reloadData = async () => {
+    try {
+      setIsRefreshing(true);
+      const [salesRes, invRes] = await Promise.all([
+        fetch("/api/liquid-sales", { cache: "no-store" }),
+        fetch("/api/liquid-inventory", { cache: "no-store" }),
+      ]);
+
+      if (salesRes.ok) {
+        const sales = await salesRes.json();
+        if (Array.isArray(sales)) {
+          useAppStore.setState({ liquidSales: sales });
+        }
+      }
+
+      if (invRes.ok) {
+        const data = await invRes.json();
+        useAppStore.setState({
+          liquidInventory: data.inventory || [],
+          liquidInventoryMovements: data.movements || [],
+        });
+      }
+    } catch (err) {
+      console.error("Error refreshing liquid sales:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    reloadData();
+  }, []);
 
   const metrics = useMemo(() => {
     const list = rawLiquidSales || [];
@@ -81,7 +117,19 @@ export default function LiquidSalesPage() {
           </div>
         </div>
 
-        <div className="w-full sm:w-auto">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={reloadData}
+            disabled={isRefreshing}
+            className="border-white/10 bg-white/5 hover:bg-white/10"
+            title="Recargar datos"
+          >
+            <RefreshCw
+              className={`size-4 text-white ${isRefreshing ? "animate-spin" : ""}`}
+            />
+          </Button>
           <LiquidSaleModal />
         </div>
       </div>

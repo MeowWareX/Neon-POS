@@ -202,6 +202,7 @@ export interface HistoricalDay {
 
 export interface LiquidSale {
   id: string;
+  groupId?: string | null;
   saleDate: string;
   variant: LiquidVariantCode;
   flavorId?: string | null;
@@ -217,6 +218,7 @@ export interface LiquidSale {
 }
 
 export interface LiquidSaleInput {
+  groupId?: string | null;
   saleDate: string;
   variant: LiquidVariantCode;
   flavorId?: string | null;
@@ -227,6 +229,20 @@ export interface LiquidSaleInput {
   paymentMethod: PaymentMethod;
   customerName?: string | null;
   notes?: string | null;
+  createdAt?: string;
+}
+
+export interface GroupedLiquidSale {
+  groupId: string;
+  saleDate: string;
+  createdAt: string;
+  customerName: string | null;
+  paymentMethod: PaymentMethod;
+  notes: string | null;
+  items: LiquidSale[];
+  totalQuantity: number;
+  totalAmount: number;
+  syncState?: SyncState;
 }
 
 export type LiquidMovementType =

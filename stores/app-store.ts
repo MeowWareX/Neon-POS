@@ -645,6 +645,7 @@ export const useAppStore = create<AppState>()(
 
         const newSale: LiquidSale = {
           id: crypto.randomUUID(),
+          groupId: input.groupId || null,
           saleDate: input.saleDate,
           variant: input.variant,
           flavorId: input.flavorId || null,
@@ -656,7 +657,7 @@ export const useAppStore = create<AppState>()(
           customerName: input.customerName || null,
           notes: input.notes || null,
           syncState: "pending",
-          createdAt: new Date().toISOString(),
+          createdAt: input.createdAt || new Date().toISOString(),
         };
 
         let updatedItem: LiquidInventoryItem | null = null;

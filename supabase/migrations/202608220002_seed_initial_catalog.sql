@@ -61,3 +61,16 @@ values
 on conflict (name) do update set
   price = excluded.price,
   cost = excluded.cost;
+
+-- 6. Liquid Inventory Stock
+insert into public.liquid_inventory (id, flavor_id, flavor_name, variant, current_stock, unit, min_stock)
+values
+  ('66666666-1111-1111-1111-111111111111', '55555555-1111-1111-1111-111111111111', 'Chicle', 'base_sin_licor', 6, 'bolsa', 2),
+  ('66666666-2222-2222-2222-222222222222', '55555555-2222-2222-2222-222222222222', 'Sandía', 'base_sin_licor', 5, 'bolsa', 2),
+  ('66666666-3333-3333-3333-333333333333', '55555555-3333-3333-3333-333333333333', 'Maracumango', 'base_sin_licor', 4, 'bolsa', 2),
+  ('66666666-4444-4444-4444-444444444444', '55555555-4444-4444-4444-444444444444', 'Limón', 'base_sin_licor', 3, 'bolsa', 2),
+  ('66666666-5555-5555-5555-555555555555', '88888888-8888-8888-8888-888888888888', 'Enchilado / Directo', 'base_sin_licor', 4, 'bolsa', 2)
+on conflict (id) do update set
+  flavor_name = excluded.flavor_name,
+  current_stock = excluded.current_stock;
+
