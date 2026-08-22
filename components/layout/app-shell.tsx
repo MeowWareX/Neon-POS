@@ -41,12 +41,12 @@ const navItems: Array<{
 }> = [
   {
     href: "/pos" as Route,
-    label: "POS Venta",
+    label: "POS",
     icon: CupSoda,
   },
   {
     href: "/orders" as Route,
-    label: "Historial",
+    label: "Pedidos",
     icon: ReceiptText,
   },
   {
@@ -55,25 +55,39 @@ const navItems: Array<{
     icon: Wallet,
   },
   {
-    href: "/accounting" as Route,
-    label: "Contabilidad",
-    icon: CreditCard,
+    href: "/dashboard" as Route,
+    label: "Dashboard",
+    icon: BarChart3,
+    adminOnly: true,
+  },
+  {
+    href: "/liquid-sales" as Route,
+    label: "Ventas Líquidos",
+    icon: FlaskConical,
+    adminOnly: true,
+  },
+  {
+    href: "/flavors" as Route,
+    label: "Sabores",
+    icon: Settings2,
     adminOnly: true,
   },
   {
     href: "/inventory" as Route,
     label: "Inventario",
     icon: FlaskConical,
-  },
-  {
-    href: "/dashboard" as Route,
-    label: "Métricas",
-    icon: BarChart3,
+    adminOnly: true,
   },
   {
     href: "/configuration" as Route,
     label: "Configuración",
     icon: Settings2,
+    adminOnly: true,
+  },
+  {
+    href: "/accounting" as Route,
+    label: "Finanzas",
+    icon: CreditCard,
     adminOnly: true,
   },
   {
@@ -83,6 +97,7 @@ const navItems: Array<{
     adminOnly: true,
   },
 ];
+
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

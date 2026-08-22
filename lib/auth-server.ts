@@ -114,14 +114,38 @@ export async function requireApiAuth(
     const email = authUser.email?.toLowerCase() ?? "";
     const { data: profile } = await clientForProfile
       .from("users")
-      .select("id, full_name, role, email")
+      .select("id, full_name, role, email, auth_user_id")
       .or(`auth_user_id.eq.${authUser.id},email.eq.${email}`)
       .maybeSingle();
 
     const role: AppUser["role"] =
       profile?.role === "admin" || profile?.role === "operator"
         ? (profile.role as AppUser["role"])
-        : "operator";
+        : (authUser.user_metadata?.role as AppUser["role"]) ||
+          (authUser.user_metadata?.is_admin ? "admin" : undefined) ||
+          (email.includes("admin") ? "admin" : "operator");
+
+    if (admin && (!profile || !profile.auth_user_id)) {
+      try {
+        await admin
+          .from("users")
+          .upsert(
+            {
+              auth_user_id: authUser.id,
+              email,
+              full_name:
+                profile?.full_name ??
+                (authUser.user_metadata?.full_name as string | undefined) ??
+                authUser.email?.split("@")[0] ??
+                (role === "admin" ? "Admin Neon" : "Operador Neon"),
+              role,
+            },
+            { onConflict: "email" },
+          );
+      } catch {
+        // Ignore DB upsert conflict error
+      }
+    }
 
     if (!allowedRoles.includes(role)) {
       return {

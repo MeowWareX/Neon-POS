@@ -30,16 +30,39 @@ export async function loginUser(
     const role: AppUser["role"] =
       profile?.role === "admin" || profile?.role === "operator"
         ? (profile.role as AppUser["role"])
-        : "operator";
+        : (data.user.user_metadata?.role as AppUser["role"]) ||
+          (data.user.app_metadata?.role as AppUser["role"]) ||
+          (resolvedEmail.includes("admin") ? "admin" : "operator");
+
+    const name =
+      profile?.full_name ??
+      (data.user.user_metadata?.full_name as string | undefined) ??
+      data.user.email?.split("@")[0] ??
+      (role === "admin" ? "Admin Neon" : "Operador Neon");
+
+    // Auto-upsert into public.users so auth_user_id is properly linked in DB
+    if (!profile) {
+      try {
+        await supabase
+          .from("users")
+          .upsert(
+            {
+              auth_user_id: data.user.id,
+              email: resolvedEmail,
+              full_name: name,
+              role,
+            },
+            { onConflict: "email" },
+          );
+      } catch {
+        // Ignore DB upsert error
+      }
+    }
 
     return {
       id: profile?.id ?? data.user.id,
       email: resolvedEmail,
-      name:
-        profile?.full_name ??
-        (data.user.user_metadata?.full_name as string | undefined) ??
-        data.user.email?.split("@")[0] ??
-        "Usuario",
+      name,
       role,
     };
   }

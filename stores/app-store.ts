@@ -98,61 +98,36 @@ function applyRemoteCatalog(
   state: ReturnType<typeof buildDemoState>,
   catalog: Awaited<ReturnType<typeof loadRemoteCatalog>>,
 ) {
-  const remoteSizes = catalog.sizes || [];
-  const mergedSizes = [...remoteSizes];
-  state.sizes.forEach((ds) => {
-    if (!mergedSizes.some((s) => s.code === ds.code || s.id === ds.id)) {
-      mergedSizes.push(ds);
-    }
-  });
+  const fallback = buildDemoState();
+  const fallbackSizes = state.sizes?.length ? state.sizes : fallback.sizes;
+  const fallbackTypes = state.productTypes?.length ? state.productTypes : fallback.productTypes;
+  const fallbackFlavors = state.flavors?.length ? state.flavors : fallback.flavors;
+  const fallbackActiveFlavors = state.activeFlavors?.length ? state.activeFlavors : fallback.activeFlavors;
+  const fallbackExtras = state.extras?.length ? state.extras : fallback.extras;
+  const fallbackInventory = state.inventoryItems?.length ? state.inventoryItems : fallback.inventoryItems;
+  const fallbackRules = state.inventoryConsumptionRules?.length ? state.inventoryConsumptionRules : fallback.inventoryConsumptionRules;
 
-  const remoteTypes = catalog.productTypes || [];
-  const mergedTypes = [...remoteTypes];
-  state.productTypes.forEach((dt) => {
-    if (!mergedTypes.some((t) => t.code === dt.code || t.id === dt.id)) {
-      mergedTypes.push(dt);
-    }
-  });
-
-  const remoteFlavors = catalog.flavors || [];
-  const mergedFlavors = [...remoteFlavors];
-  state.flavors.forEach((df) => {
-    if (
-      !mergedFlavors.some(
-        (f) => f.name.toLowerCase() === df.name.toLowerCase() || f.id === df.id,
-      )
-    ) {
-      mergedFlavors.push(df);
-    }
-  });
+  const remoteSizes = catalog.sizes && catalog.sizes.length > 0 ? catalog.sizes : fallbackSizes;
+  const remoteTypes = catalog.productTypes && catalog.productTypes.length > 0 ? catalog.productTypes : fallbackTypes;
+  const remoteFlavors = catalog.flavors && catalog.flavors.length > 0 ? catalog.flavors : fallbackFlavors;
+  const remoteActiveFlavors = catalog.activeFlavors && catalog.activeFlavors.length > 0 ? catalog.activeFlavors : fallbackActiveFlavors;
+  const remoteExtras = catalog.extras && catalog.extras.length > 0 ? catalog.extras : fallbackExtras;
+  const remoteInventory = catalog.inventoryItems && catalog.inventoryItems.length > 0 ? catalog.inventoryItems : fallbackInventory;
+  const remoteRules = catalog.inventoryConsumptionRules && catalog.inventoryConsumptionRules.length > 0 ? catalog.inventoryConsumptionRules : fallbackRules;
 
   return {
-    sizes: mergedSizes.length ? mergedSizes : state.sizes,
-    productTypes: mergedTypes.length ? mergedTypes : state.productTypes,
-    extras: catalog.extras?.length ? catalog.extras : state.extras,
-    flavors: mergedFlavors.length ? mergedFlavors : state.flavors,
-    activeFlavors: catalog.activeFlavors?.length
-      ? catalog.activeFlavors
-      : state.activeFlavors,
-    inventoryItems: catalog.inventoryItems?.length
-      ? catalog.inventoryItems
-      : state.inventoryItems,
-    inventoryConsumptionRules: catalog.inventoryConsumptionRules?.length
-      ? catalog.inventoryConsumptionRules
-      : state.inventoryConsumptionRules,
-    cashSessions: catalog.cashSessions?.length
-      ? catalog.cashSessions
-      : state.cashSessions,
+    sizes: remoteSizes,
+    productTypes: remoteTypes,
+    extras: remoteExtras,
+    flavors: remoteFlavors,
+    activeFlavors: remoteActiveFlavors,
+    inventoryItems: remoteInventory,
+    inventoryConsumptionRules: remoteRules,
+    cashSessions: catalog.cashSessions?.length ? catalog.cashSessions : (state.cashSessions?.length ? state.cashSessions : fallback.cashSessions),
     orders: catalog.orders?.length ? catalog.orders : state.orders,
-    liquidSales: catalog.liquidSales?.length
-      ? catalog.liquidSales
-      : state.liquidSales,
-    liquidInventory: catalog.liquidInventory?.length
-      ? catalog.liquidInventory
-      : state.liquidInventory,
-    liquidInventoryMovements: catalog.liquidInventoryMovements?.length
-      ? catalog.liquidInventoryMovements
-      : state.liquidInventoryMovements,
+    liquidSales: catalog.liquidSales?.length ? catalog.liquidSales : (state.liquidSales?.length ? state.liquidSales : fallback.liquidSales),
+    liquidInventory: catalog.liquidInventory?.length ? catalog.liquidInventory : (state.liquidInventory?.length ? state.liquidInventory : fallback.liquidInventory),
+    liquidInventoryMovements: catalog.liquidInventoryMovements?.length ? catalog.liquidInventoryMovements : (state.liquidInventoryMovements?.length ? state.liquidInventoryMovements : fallback.liquidInventoryMovements),
   };
 }
 
@@ -212,7 +187,7 @@ async function loadRemoteCatalog() {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      ...emptyState,
+      ...buildDemoState(),
       users: [],
       initialized: false,
       businessDate: getBusinessDate(),
@@ -241,29 +216,17 @@ export const useAppStore = create<AppState>()(
         set({ initialized: true });
 
         try {
-          if (typeof window === "undefined" || !window.navigator.onLine) {
-            throw new Error(
-              "Network not available - cannot initialize from database",
+          if (typeof window !== "undefined" && window.navigator.onLine) {
+            const catalog = await loadRemoteCatalog();
+            set((state) =>
+              applyRemoteCatalog(
+                state as ReturnType<typeof buildDemoState>,
+                catalog,
+              ),
             );
           }
-
-          const catalog = await loadRemoteCatalog();
-
-          // Validate that we got critical data from BD
-          if (!catalog.sizes || catalog.sizes.length === 0) {
-            throw new Error("No catalog data loaded from database");
-          }
-
-          set((state) =>
-            applyRemoteCatalog(
-              state as ReturnType<typeof buildDemoState>,
-              catalog,
-            ),
-          );
         } catch (error: unknown) {
-          console.error("Failed to initialize from database", error);
-          set({ initialized: false });
-          throw error;
+          console.warn("Could not load full remote catalog, using offline fallback", error);
         }
       },
       addOrder: (order) =>
