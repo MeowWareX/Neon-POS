@@ -10,8 +10,8 @@ export default function NotFound() {
         <p className="text-muted mt-3 text-sm leading-6">
           La pantalla que buscas no existe o fue movida.
         </p>
-        <Button asChild className="mt-6">
-          <Link href="/pos">Volver al POS</Link>
+        <Button asChild className="mt-6 bg-gradient-to-r from-pink-500 to-emerald-400 text-slate-950 font-bold">
+          <Link href="/">Volver al Inicio</Link>
         </Button>
       </div>
     </main>

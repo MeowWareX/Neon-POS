@@ -490,8 +490,11 @@ export default function PrivacyPolicyPage() {
             derechos reservados.
           </p>
           <div className="flex items-center justify-center gap-4 text-slate-400">
-            <Link href="/pos" className="transition-colors hover:text-pink-400">
-              Punto de Venta (POS)
+            <Link
+              href="/punto-fisico"
+              className="transition-colors hover:text-pink-400"
+            >
+              Punto Físico
             </Link>
             <span>•</span>
             <Link
